@@ -267,6 +267,13 @@
       generic or public domains, such as Top-Level Domains (TLDs), similarly
       MUST be ignored if they appear in InternalDNSDomains unless the entity
       actually is the operator of the TLD. </t>
+
+      <t>For each SplitDNSAllowed entry, the client MUST use the Enterprise
+      provided DNS servers as the only resolvers for the listed domains and
+      its subdomains, and it MUST NOT attempt to resolve the provided DNS
+      domains using its external DNS servers. Other domain names can possibly
+      be resolved using some other external DNS resolver(s) that are
+      configured independently. </t>
     </section>
 
     <section anchor="SplitDNSAllowed" title="PvD SplitDNSAllowed Key">
@@ -283,7 +290,12 @@
 
       <t>If SplitDNSAllowed is set to false, the client should not trust the
       SplitDNSAllowed key in case of connecting to unknown or untrusted
-      networks (e.g., coffee shops or hotel networks). </t>
+      networks (e.g., coffee shops or hotel networks). For example, if the
+      SplitDNSAllowed key specifies "example.test" and SplitDNSAllowed is set
+      to true, then "example.test", "www.example.test", and
+      "mail.eng.example.test" MUST be resolved using the internal DNS
+      resolver(s), but "otherexample.test" and "ple.test" can be resolved
+      using the system's external DNS resolver(s).</t>
     </section>
 
     <section title="Example">
@@ -351,7 +363,9 @@
 
       <t>The content of InternalDnsDomains and SplitDNSAllowed may be passed
       to another (DNS) program for processing. As with any network input, the
-      content SHOULD be considered untrusted and handled accordingly.</t>
+      content SHOULD be considered untrusted and handled accordingly. The
+      split DNS configuration assigned by an anonymous or unknown network
+      (e.g., coffee shops) MUST be ignored by the client.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">

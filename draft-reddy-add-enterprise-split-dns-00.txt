@@ -66,7 +66,7 @@ Table of Contents
    4.  Split DNS . . . . . . . . . . . . . . . . . . . . . . . . . .   5
    5.  PvD InternalDNSDomains Key  . . . . . . . . . . . . . . . . .   6
    6.  PvD SplitDNSAllowed Key . . . . . . . . . . . . . . . . . . .   6
-   7.  Example . . . . . . . . . . . . . . . . . . . . . . . . . . .   6
+   7.  Example . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
    8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   7
      8.1.  VPN tunnel  . . . . . . . . . . . . . . . . . . . . . . .   7
    9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   7
@@ -306,6 +306,13 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
    InternalDNSDomains unless the entity actually is the operator of the
    TLD.
 
+   For each SplitDNSAllowed entry, the client MUST use the Enterprise
+   provided DNS servers as the only resolvers for the listed domains and
+   its subdomains, and it MUST NOT attempt to resolve the provided DNS
+   domains using its external DNS servers.  Other domain names can
+   possibly be resolved using some other external DNS resolver(s) that
+   are configured independently.
+
 6.  PvD SplitDNSAllowed Key
 
    If the Enterprise restricts all the DNS queries to be sent to the
@@ -321,15 +328,8 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
    If SplitDNSAllowed is set to false, the client should not trust the
    SplitDNSAllowed key in case of connecting to unknown or untrusted
-   networks (e.g., coffee shops or hotel networks).
-
-7.  Example
-
-   The following example show how the JSON keys defined in this document
-   can be used:
-
-
-
+   networks (e.g., coffee shops or hotel networks).  For example, if the
+   SplitDNSAllowed key specifies "example.test" and SplitDNSAllowed is
 
 
 
@@ -337,6 +337,16 @@ Reddy                     Expires July 30, 2021                 [Page 6]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
+
+   set to true, then "example.test", "www.example.test", and
+   "mail.eng.example.test" MUST be resolved using the internal DNS
+   resolver(s), but "otherexample.test" and "ple.test" can be resolved
+   using the system's external DNS resolver(s).
+
+7.  Example
+
+   The following example show how the JSON keys defined in this document
+   can be used:
 
       {
         "identifier": "cafe.example.com.",
@@ -376,16 +386,6 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
    If the Enterprise network is using the local DoH/DoT server
    configured as a Forwarding DNS server [RFC8499] relying on the
    upstream resolver (e.g., at an ISP) to perform recursive DNS lookups,
-   DNS messages exchanged between the local DoH/DoT server and recursive
-   resolver MUST be encrypted.  If the Enterprise network is using the
-   local DoH/DoT server configured as a recursive DNS server, DNS
-   messages exchanges between the recursive resolver and authoritative
-   servers SHOULD be encrypted to conform to the requirements discussed
-   in [I-D.ietf-dprive-phase2-requirements].
-
-
-
-
 
 
 
@@ -393,6 +393,13 @@ Reddy                     Expires July 30, 2021                 [Page 7]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
+
+   DNS messages exchanged between the local DoH/DoT server and recursive
+   resolver MUST be encrypted.  If the Enterprise network is using the
+   local DoH/DoT server configured as a recursive DNS server, DNS
+   messages exchanges between the recursive resolver and authoritative
+   servers SHOULD be encrypted to conform to the requirements discussed
+   in [I-D.ietf-dprive-phase2-requirements].
 
 10.  Security Considerations
 
@@ -407,6 +414,8 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
    The content of InternalDnsDomains and SplitDNSAllowed may be passed
    to another (DNS) program for processing.  As with any network input,
    the content SHOULD be considered untrusted and handled accordingly.
+   The split DNS configuration assigned by an anonymous or unknown
+   network (e.g., coffee shops) MUST be ignored by the client.
 
 11.  IANA Considerations
 
@@ -432,15 +441,6 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-   [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
-              Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
-              2000, <https://www.rfc-editor.org/info/rfc2826>.
-
-   [RFC7858]  Hu, Z., Zhu, L., Heidemann, J., Mankin, A., Wessels, D.,
-              and P. Hoffman, "Specification for DNS over Transport
-              Layer Security (TLS)", RFC 7858, DOI 10.17487/RFC7858, May
-              2016, <https://www.rfc-editor.org/info/rfc7858>.
-
 
 
 
@@ -449,6 +449,15 @@ Reddy                     Expires July 30, 2021                 [Page 8]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
+
+   [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
+              Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
+              2000, <https://www.rfc-editor.org/info/rfc2826>.
+
+   [RFC7858]  Hu, Z., Zhu, L., Heidemann, J., Mankin, A., Wessels, D.,
+              and P. Hoffman, "Specification for DNS over Transport
+              Layer Security (TLS)", RFC 7858, DOI 10.17487/RFC7858, May
+              2016, <https://www.rfc-editor.org/info/rfc7858>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -489,15 +498,6 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
               <https://github.com/mozilla/policy-templates/blob/master/
               README.md#dnsoverhttps>.
 
-   [I-D.arkko-farrell-arch-model-t]
-              Arkko, J. and S. Farrell, "Challenges and Changes in the
-              Internet Threat Model", draft-arkko-farrell-arch-model-
-              t-04 (work in progress), July 2020.
-
-
-
-
-
 
 
 
@@ -505,6 +505,11 @@ Reddy                     Expires July 30, 2021                 [Page 9]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
+
+   [I-D.arkko-farrell-arch-model-t]
+              Arkko, J. and S. Farrell, "Challenges and Changes in the
+              Internet Threat Model", draft-arkko-farrell-arch-model-
+              t-04 (work in progress), July 2020.
 
    [I-D.btw-add-home]
               Boucadair, M., Reddy.K, T., Wing, D., Cook, N., and T.
@@ -549,11 +554,6 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
               us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-
               beec-fb367325c0f9>.
 
-   [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
-              Pre-Shared Key Extensible Authentication Protocol (EAP)
-              Method", RFC 4764, DOI 10.17487/RFC4764, January 2007,
-              <https://www.rfc-editor.org/info/rfc4764>.
-
 
 
 
@@ -561,6 +561,11 @@ Reddy                     Expires July 30, 2021                [Page 10]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
+
+   [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
+              Pre-Shared Key Extensible Authentication Protocol (EAP)
+              Method", RFC 4764, DOI 10.17487/RFC4764, January 2007,
+              <https://www.rfc-editor.org/info/rfc4764>.
 
    [RFC6950]  Peterson, J., Kolkman, O., Tschofenig, H., and B. Aboba,
               "Architectural Considerations on Application Features in
@@ -605,11 +610,6 @@ Author's Address
    India
 
    Email: kondtir@gmail.com
-
-
-
-
-
 
 
 
