@@ -4,8 +4,8 @@
 
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
-Intended status: Standards Track                        January 26, 2021
-Expires: July 30, 2021
+Intended status: Standards Track                        January 27, 2021
+Expires: July 31, 2021
 
 
              Split DNS configuration in Enterprise Networks
@@ -34,7 +34,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 30, 2021.
+   This Internet-Draft will expire on July 31, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy                     Expires July 30, 2021                 [Page 1]
+Reddy                     Expires July 31, 2021                 [Page 1]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
@@ -69,14 +69,14 @@ Table of Contents
    7.  Example . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
    8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   7
      8.1.  VPN tunnel  . . . . . . . . . . . . . . . . . . . . . . .   7
-   9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   7
+   9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   8
    10. Security Considerations . . . . . . . . . . . . . . . . . . .   8
    11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
      13.1.  Normative References . . . . . . . . . . . . . . . . . .   8
      13.2.  Informative References . . . . . . . . . . . . . . . . .   9
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  11
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  12
 
 1.  Introduction
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy                     Expires July 30, 2021                 [Page 2]
+Reddy                     Expires July 31, 2021                 [Page 2]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
@@ -165,7 +165,7 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
 
 
-Reddy                     Expires July 30, 2021                 [Page 3]
+Reddy                     Expires July 31, 2021                 [Page 3]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
@@ -221,7 +221,7 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
 
 
-Reddy                     Expires July 30, 2021                 [Page 4]
+Reddy                     Expires July 31, 2021                 [Page 4]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
@@ -277,7 +277,7 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
 
 
-Reddy                     Expires July 30, 2021                 [Page 5]
+Reddy                     Expires July 31, 2021                 [Page 5]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
@@ -316,7 +316,7 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 6.  PvD SplitDNSAllowed Key
 
    If the Enterprise restricts all the DNS queries to be sent to the
-   Internal DNS server, SplitDNSAllowed will be set to False.  Split DNS
+   Internal DNS server, SplitDNSAllowed will be set to false.  Split DNS
    configurations may be preferable to sending all DNS queries to the
    Enterprise DNS server in some deployments.  This allows the endpoint
    to only send DNS queries for the enterprise to the internal DNS
@@ -324,24 +324,25 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
    activity of the user.  It also allows the enterprise DNS servers to
    only be configured for the enterprise DNS domains, which removes the
    legal and technical responsibility of the enterprise to resolve every
-   DNS domain potentially asked for by the endpoints.
+   DNS domain potentially asked for by the endpoints.  For example, if
+   the SplitDNSAllowed key specifies "example.test" and SplitDNSAllowed
+   is set to true, then "example.test", "www.example.test", and
+   "mail.eng.example.test" MUST be resolved using the internal DNS
+   resolver(s), but "otherexample.test" and "ple.test" can be resolved
+   using the system's external DNS resolver(s).
 
-   If SplitDNSAllowed is set to false, the client should not trust the
-   SplitDNSAllowed key in case of connecting to unknown or untrusted
-   networks (e.g., coffee shops or hotel networks).  For example, if the
-   SplitDNSAllowed key specifies "example.test" and SplitDNSAllowed is
 
 
-
-Reddy                     Expires July 30, 2021                 [Page 6]
+Reddy                     Expires July 31, 2021                 [Page 6]
 
 Internet-Draft   Split DNS config in Enterprise Networks    January 2021
 
 
-   set to true, then "example.test", "www.example.test", and
-   "mail.eng.example.test" MUST be resolved using the internal DNS
-   resolver(s), but "otherexample.test" and "ple.test" can be resolved
-   using the system's external DNS resolver(s).
+   If SplitDNSAllowed is set to false, the client should not trust the
+   SplitDNSAllowed key in case of connecting to unknown or untrusted
+   networks (e.g., coffee shops or hotel networks).  For example, If
+   SplitDNSAllowed is set to false, client can choose to use a alternate
+   network to resolve the external domain names.
 
 7.  Example
 
@@ -381,19 +382,23 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
    Other VPN tunnel types have similar configuration capabilities, not
    detailed here.
 
+
+
+
+
+
+
+
+Reddy                     Expires July 31, 2021                 [Page 7]
+
+Internet-Draft   Split DNS config in Enterprise Networks    January 2021
+
+
 9.  Upstream Encryption
 
    If the Enterprise network is using the local DoH/DoT server
    configured as a Forwarding DNS server [RFC8499] relying on the
    upstream resolver (e.g., at an ISP) to perform recursive DNS lookups,
-
-
-
-Reddy                     Expires July 30, 2021                 [Page 7]
-
-Internet-Draft   Split DNS config in Enterprise Networks    January 2021
-
-
    DNS messages exchanged between the local DoH/DoT server and recursive
    resolver MUST be encrypted.  If the Enterprise network is using the
    local DoH/DoT server configured as a recursive DNS server, DNS
@@ -436,19 +441,19 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
               BCP 5, RFC 1918, DOI 10.17487/RFC1918, February 1996,
               <https://www.rfc-editor.org/info/rfc1918>.
 
+
+
+
+
+Reddy                     Expires July 31, 2021                 [Page 8]
+
+Internet-Draft   Split DNS config in Enterprise Networks    January 2021
+
+
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
-
-
-
-
-
-Reddy                     Expires July 30, 2021                 [Page 8]
-
-Internet-Draft   Split DNS config in Enterprise Networks    January 2021
-
 
    [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
               Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
@@ -493,18 +498,18 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
               <https://support.google.com/chromebook/
               answer/3438631?hl=en>.
 
+
+
+
+Reddy                     Expires July 31, 2021                 [Page 9]
+
+Internet-Draft   Split DNS config in Enterprise Networks    January 2021
+
+
    [Firefox-Policy]
               "Policy templates for Firefox",
               <https://github.com/mozilla/policy-templates/blob/master/
               README.md#dnsoverhttps>.
-
-
-
-
-Reddy                     Expires July 30, 2021                 [Page 9]
-
-Internet-Draft   Split DNS config in Enterprise Networks    January 2021
-
 
    [I-D.arkko-farrell-arch-model-t]
               Arkko, J. and S. Farrell, "Challenges and Changes in the
@@ -549,18 +554,18 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
               ngInternet/Conceptual/iPhoneOTAConfiguration/OTASecurity/
               OTASecurity.html>.
 
+
+
+
+Reddy                     Expires July 31, 2021                [Page 10]
+
+Internet-Draft   Split DNS config in Enterprise Networks    January 2021
+
+
    [PEAP]     Microsoft, "[MS-PEAP]: Protected Extensible Authentication
               Protocol (PEAP)", <https://docs.microsoft.com/en-
               us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-
               beec-fb367325c0f9>.
-
-
-
-
-Reddy                     Expires July 30, 2021                [Page 10]
-
-Internet-Draft   Split DNS config in Enterprise Networks    January 2021
-
 
    [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
               Pre-Shared Key Extensible Authentication Protocol (EAP)
@@ -601,6 +606,18 @@ Internet-Draft   Split DNS config in Enterprise Networks    January 2021
    [win10s]   Microsoft, "Windows 10 in S mode",
               <https://www.microsoft.com/en-us/windows/s-mode>.
 
+
+
+
+
+
+
+
+Reddy                     Expires July 31, 2021                [Page 11]
+
+Internet-Draft   Split DNS config in Enterprise Networks    January 2021
+
+
 Author's Address
 
    Tirumaleswar Reddy
@@ -613,4 +630,43 @@ Author's Address
 
 
 
-Reddy                     Expires July 30, 2021                [Page 11]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reddy                     Expires July 31, 2021                [Page 12]
