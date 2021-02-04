@@ -137,7 +137,7 @@
       provided by the Enterprise network, for example using the techniques
       proposed in <xref target="I-D.btw-add-home"></xref> and <xref
       target="I-D.pauly-add-deer"></xref>. Discovery of encrypted DNS server
-      for roamed enterprise endpoints is discussed in <xref
+      for roaming enterprise endpoints is discussed in <xref
       target="I-D.btw-add-ipsecme-ike"></xref> (see <xref
       target="VPN"></xref>).</t>
 
@@ -206,7 +206,7 @@
       Encrypted DNS server to only access internal-only DNS names and use
       another public DNS server for public domains or use the discovered
       Enterprise Encrypted DNS server to access both internal-only DNS names
-      and public domains. </t>
+      and public domains.</t>
 
       <t>The scope of this document is restricted to unmanaged BYOD devices
       without a configuration profile. The unmanaged BYOD devices use the
@@ -238,7 +238,7 @@
       from operating their own private name spaces" but notes that if private
       networks "wish to make use of names uniquely defined for the global
       Internet, they have to fetch that information from the global DNS naming
-      hierarchy". </t>
+      hierarchy".</t>
 
       <t>There are various DNS deployments outside of the global public DNS,
       including "split horizon" deployments and DNS usages on private (or
@@ -273,7 +273,7 @@
     <section anchor="InternalDNSDomains" title="PvD InternalDNSDomains Key">
       <t>As discussed in <xref target="split-horizon"></xref>, the Enterprise
       internal resources tend to have internal-only DNS names and require the
-      use of special internal-only DNS servers to get resolved. </t>
+      use of special internal-only DNS servers to get resolved.</t>
 
       <t>The PvD Key InternalDNSDomains adds support for private
       (internal-only) DNS domains. These domains are intended to be resolved
@@ -298,13 +298,13 @@
 
     <section anchor="SplitDNSAllowed" title="PvD SplitDNSAllowed Key">
       <t>If an Enterprise network restricts all the DNS queries to be sent to
-      the Internal DNS server, SplitDNSAllowed will be set to false. </t>
+      the Internal DNS server, SplitDNSAllowed will be set to false.</t>
 
       <t>Split DNS configurations may be preferable to sending all DNS queries
       to an Enterprise DNS server in some deployments. This allows an endpoint
       to only send DNS queries for the enterprise to the internal DNS servers.
       The Enterprise remains unaware of all non-enterprise (DNS) activity of
-      the user. </t>
+      the user.</t>
 
       <t>It also allows the Enterprise DNS servers to only be configured for
       the enterprise DNS domains, which removes the legal and technical
@@ -370,7 +370,7 @@
       configured as a Forwarding DNS server <xref target="RFC8499"></xref>
       relying upon the upstream resolver (e.g., at an ISP) to perform
       recursive DNS lookups, DNS messages exchanged between the local
-      encrypted DNS server and the recursive resolver MUST be encrypted. </t>
+      encrypted DNS server and the recursive resolver MUST be encrypted.</t>
 
       <t>If the Enterprise network is using the local encrypted DNS server
       configured as a recursive DNS server, DNS messages exchanges between the
@@ -401,7 +401,7 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>TODO</t>
+      <t>Thanks to Mohamed Boucadair for the discussion and comments.</t>
     </section>
   </middle>
 

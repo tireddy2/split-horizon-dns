@@ -150,7 +150,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
    split-horizon DNS.  DNS clients can discover and authenticate
    encrypted DNS servers provided by the Enterprise network, for example
    using the techniques proposed in [I-D.btw-add-home] and
-   [I-D.pauly-add-deer].  Discovery of encrypted DNS server for roamed
+   [I-D.pauly-add-deer].  Discovery of encrypted DNS server for roaming
    enterprise endpoints is discussed in [I-D.btw-add-ipsecme-ike] (see
    Section 8).
 
@@ -452,7 +452,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 12.  Acknowledgements
 
-   TODO
+   Thanks to Mohamed Boucadair for the discussion and comments.
 
 13.  References
 
