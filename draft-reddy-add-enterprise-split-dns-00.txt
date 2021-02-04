@@ -4,20 +4,21 @@
 
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
-Intended status: Standards Track                        February 2, 2021
-Expires: August 6, 2021
+Intended status: Standards Track                        February 4, 2021
+Expires: August 8, 2021
 
 
-             Split DNS configuration in Enterprise Networks
+Split DNS Configuration in Enterprise Networks: Focus on Unmanaged BYOD
+                                Devices
                 draft-reddy-add-enterprise-split-dns-00
 
 Abstract
 
-   This document discusses mechanism to convey the internal-only DNS
-   names to endpoints connected to an Enterprise network and to
-   determine if the Enterprise network allows split-horizon DNS.  It
-   defines two Provisioning Domain keys InternalDNSDomains and
-   SplitDNSAllowed.
+   This document discusses a mechanism to convey a list of internal-only
+   DNS names to endpoints connected to an Enterprise network and defines
+   a procedure to determine whether the Enterprise network allows split-
+   horizon DNS.  To that aim, the document defines two Provisioning
+   Domain keys InternalDNSDomains and SplitDNSAllowed.
 
 Status of This Memo
 
@@ -34,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 6, 2021.
+   This Internet-Draft will expire on August 8, 2021.
 
 Copyright Notice
 
@@ -48,77 +49,81 @@ Copyright Notice
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
-   the Trust Legal Provisions and are provided without warranty as
-   described in the Simplified BSD License.
 
 
 
-Reddy                    Expires August 6, 2021                 [Page 1]
+
+Reddy                    Expires August 8, 2021                 [Page 1]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   4
    3.  Scope of the Document . . . . . . . . . . . . . . . . . . . .   4
    4.  Split DNS . . . . . . . . . . . . . . . . . . . . . . . . . .   5
    5.  PvD InternalDNSDomains Key  . . . . . . . . . . . . . . . . .   6
    6.  PvD SplitDNSAllowed Key . . . . . . . . . . . . . . . . . . .   6
-   7.  Example . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
+   7.  An Example  . . . . . . . . . . . . . . . . . . . . . . . . .   7
    8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   7
-     8.1.  VPN tunnel  . . . . . . . . . . . . . . . . . . . . . . .   7
    9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   8
    10. Security Considerations . . . . . . . . . . . . . . . . . . .   8
    11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .   8
-     13.2.  Informative References . . . . . . . . . . . . . . . . .   9
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
+   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     13.1.  Normative References . . . . . . . . . . . . . . . . . .   9
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  10
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  12
 
 1.  Introduction
 
    [RFC7626] discusses DNS privacy considerations in both "on the wire"
    (Section 2.4 of [RFC7626]) and "in the server" (Section 2.5 of
-   [RFC7626]) contexts.  In recent years there has also been an increase
-   in the availability of "public resolvers" [RFC8499] which DNS clients
-   may be pre-configured to use instead of the default network resolver
-   for a variety of reasons (e.g., offer a good reachability, support an
-   encrypted transport, provide a strong privacy policy, (lack of)
+   [RFC7626]) contexts.  Also, there has been an increase in the
+   availability of "public resolvers" [RFC8499] which DNS clients may be
+   perconfigured to use instead of the default network resolver for a
+   variety of reasons (e.g., offer a good reachability, support an
+   encrypted transport, provide a claimed privacy policy, (lack of)
    filtering).
 
-   If public (DoT) [RFC7858] or DNS-over-HTTPS (DoH) [RFC8484] servers
-   are used instead of using local DNS servers, it can adversely impact
-   Enterprise network-based security.  Various network security services
-   are provided by Enterprise networks to protect endpoints (e.g.,
-   laptops, printers, IoT devices), and to enforce enterprise policies.
+   If public encrypted DNS servers (e.g., DNS-over-TLS (DoT) [RFC7858]
+   or DNS-over-HTTPS (DoH) [RFC8484]) are used instead of using local
+   DNS servers, it can adversely impact Enterprise network-based
+   security features.  Indeed, various network security services are
+   provided by Enterprise networks to protect endpoints (e.g., laptops,
+   printers, IoT devices) and to enforce enterprise-specific policies.
    These policies may be necessary to protect employees, customers, or
-   citizens.  They are not the subject of this memo.  Enterprise DNS
-   servers in place for these purpose act on DNS requests originating
-   from endpoints.  However, if an endpoint uses public DoT or DoH
-   servers, the desired enterprise protection and enforcement can be
-   bypassed.
-
-   In order to act on DNS requests from endpoints, network security
-   services can block DoT traffic by dropping outgoing packets to
-   destination port 853.  Identifying DoH traffic is far more
-   challenging than DoT traffic.  Network security services may try to
-   identify the well-known DoH resolvers by their domain name, and DNS-
+   enterprise network.  It is out of the scope of this memo to
+   characterize such policies nor assess that they used to achieved the
+   claimed intent.  Nevertheless, Enterprise DNS servers in place for
+   these purposes act on DNS messages involving endpoints connected to
+   the Enterprise network to enforce these policies.  Therefore, if an
+   endpoint uses a public encrypted DNS server, the desired enterprise
+   protection level and enforcement will be bypassed and thus nullified.
 
 
 
-Reddy                    Expires August 6, 2021                 [Page 2]
+
+Reddy                    Expires August 8, 2021                 [Page 2]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
-   over-HTTPS traffic can be blocked by dropping outgoing packets to
-   these domains.  However, DoH traffic can not be fully identified
-   without acting as a TLS proxy.
+   In order to act on DNS messages involving endpoints connected to an
+   Enterprise network, network security services can be configured to
+   block DoT traffic by dropping outgoing packets to destination port
+   number 853.  Identifying DoH traffic is far more challenging than DoT
+   traffic.  Network security services may try to identify the well-
+   known DoH resolvers by their domain name and DoH traffic can be
+   blocked by dropping outgoing packets to these domains.  However, DoH
+   traffic can not be fully identified without acting as a TLS proxy.
 
-   If a network security service blocks access to the public DoH/DoT
+   If a network security service blocks access to a public encrypted DNS
    server, there are incompatibilities with the privacy profiles
    discussed in [RFC8310]:
 
@@ -129,14 +134,15 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
       (Section 5 of [RFC8310]), the endpoint will either fallback to an
       encrypted connection without authenticating the DNS server
       provided by the local network or fallback to clear text DNS, and
-      cannot exchange encrypted DNS messages.  The fallback adversely
-      impacts security and privacy as internal attacks are possible in
-      Enterprise networks.  For example, an internal attacker can modify
-      the DNS responses to re-direct the client to malicious servers or
-      pervasively monitor the DNS traffic.  The reader may refer to
-      Section 3.2.1 of [I-D.arkko-farrell-arch-model-t] for a discussion
-      on the need for more awareness about attacks from within closed
-      domains.
+      cannot exchange encrypted DNS messages.
+
+      The fallback adversely impacts security and privacy as internal
+      attacks are possible within Enterprise networks.  For example, an
+      internal attacker can modify the DNS responses to re-direct a
+      client to malicious servers or pervasively monitor the DNS
+      traffic.  The reader may refer to Section 3.2.1 of
+      [I-D.arkko-farrell-arch-model-t] for a discussion on the need for
+      more awareness about attacks from within closed domains.
 
    To overcome the above threats, this document specifies a mechanism to
    convey internal-only DNS names to endpoints connected to an
@@ -144,104 +150,109 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
    split-horizon DNS.  DNS clients can discover and authenticate
    encrypted DNS servers provided by the Enterprise network, for example
    using the techniques proposed in [I-D.btw-add-home] and
-   [I-D.pauly-add-deer].
+   [I-D.pauly-add-deer].  Discovery of encrypted DNS server for roamed
+   enterprise endpoints is discussed in [I-D.btw-add-ipsecme-ike] (see
+   Section 8).
 
-   Provisioning Domains (PvDs) are defined in [RFC7556] as consistent
-   sets of network configuration information.  [RFC8801] defines a
-   mechanism for discovering multiple Explicit PvDs on a single network
-   and their Additional Information by means of an HTTP-over-TLS query
-   using a URI derived from the PvD ID.  This document defines two PvD
-   Keys (1) The InternalDNSDomains PvD Key which is used to convey that
-   the specified DNS domains must be resolved using the Enterprise DNS
-   server (2) The SplitDNSAllowed PvD Key to determine if the Enterprise
-   network allows split-horizon DNS.
+   Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
+   network configuration information.  [RFC8801] defines a mechanism for
+   discovering multiple Explicit PvDs on a single network and their
+   Additional Information by means of an HTTP-over-TLS query using an
+   URI derived from the PvD ID.  This document defines two PvD Keys:
+
+
+
+
+
+
+Reddy                    Expires August 8, 2021                 [Page 3]
+
+Internet-Draft   Split DNS config in Enterprise Networks   February 2021
+
+
+   The InternalDNSDomains PvD Key:  which is used to convey that the
+      specified DNS domains must be resolved using the Enterprise DNS
+      server
+
+   The SplitDNSAllowed PvD Key:  which is used to determine if the
+      Enterprise network allows split-horizon DNS.
 
 2.  Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
    "OPTIONAL" in this document are to be interpreted as described in BCP
-
-
-
-
-Reddy                    Expires August 6, 2021                 [Page 3]
-
-Internet-Draft   Split DNS config in Enterprise Networks   February 2021
-
-
    14 [RFC2119][RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-   This document makes use of the terms defined in [RFC8499] and
-   [I-D.ietf-dnsop-terminology-ter].
+   This document makes use of the terms defined in [RFC8499].
 
    'Encrypted DNS' refers to a DNS protocol that provides an encrypted
    channel between a DNS client and server (e.g., DoT, DoH, or DoQ).
 
    DNS resolution servers accessible only to devices attached to the
-   Enterprise network will be referred to as "Internal DNS servers", and
+   Enterprise network will be referred to as "Internal DNS servers";
    other DNS servers will be referred to as "external DNS servers".
 
 3.  Scope of the Document
 
    If a device is managed by an enterprise's IT department, the device
-   can be configured to use Enterprise-provided DoH/DoT servers.  This
-   configuration might be manual or rely upon whatever deployed device
-   management tool in an Enterprise.  For example, customizing Firefox
-   using Group Policy to use the Enterprise DoH server is discussed in
-   [Firefox-Policy] for Windows and MacOS, and setting Chrome policies
-   is discussed in [Chrome-Policy] and [Chrome-DoH].
+   can be configured to use Enterprise-provided encrypted DNS servers.
+   This configuration may be manual or rely upon whatever deployed
+   device management tool in an Enterprise network.  For example,
+   customizing Firefox using Group Policy to use the Enterprise DoH
+   server is discussed in [Firefox-Policy] for Windows and MacOS, and
+   setting Chrome policies is discussed in [Chrome-Policy] and
+   [Chrome-DoH].
 
    If mobile device management (MDM) (e.g., [MDM-Apple]) is used to
-   secure BYOD, MDM can be used to configure OS/browser with the
-   Enterprise provided DoH/DoT server.  If an endpoint is on-boarded,
-   for example, using Over-The-Air (OTA) enrollment [OTA] to provision
-   the device with a certificate and configuration profile, the
-   configuration profile can include the authentication domain name
-   (ADN) of the DoH/DoT server.  The OS/Browser can use the
-   configuration profile to use the Enterprise provided DoH/DoT server.
-   In this case, MDM is not installed on the device.
+   secure BYOD (Bring Your Own Device), MDM can be used to configure OS/
+   browser with the Enterprise provided DoH/DoT server.  If an endpoint
+   is on-boarded, for example, using Over-The-Air (OTA) enrollment [OTA]
+   to provision the device with a certificate and configuration profile,
+   the configuration profile can include the authentication domain name
+   (ADN) of the encrypted DNS server.  The OS/Browser can use the
+   configuration profile to use the Enterprise provided encrypted DNS
+   server.  In this case, MDM is not installed on the device.
 
    Provisioning IT-managed devices, BYOD devices with MDM or
    configuration profile with the Split DNS configuration is out side
    the scope of this document.
 
-   Typically, Enterprise networks do not assume that all devices in
-   their network are managed by the IT team or Mobile Device Management
-   (MDM), especially in the quite common BYOD (Bring Your Own Device)
-   scenario.  The endpoint can use the discovered Enterprise Encrypted
-   DNS server to only access internal-only DNS names and use another
-   public DNS server for public domains OR use the discovered Enterprise
-   Encrypted DNS server to access both internal-only DNS names and
-   public domains.  The scope of this document is restricted to
-   unmanaged BYOD devices without a configuration profile.  The
-   unmanaged BYOD devices use the credentials (username and password)
-   provided by the IT admin to mutually authenticate to the Enterprise
 
 
-
-Reddy                    Expires August 6, 2021                 [Page 4]
+Reddy                    Expires August 8, 2021                 [Page 4]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
-   WiFi Access Point (e.g., PEAP-MSCHAPv2 [PEAP], EAP-pwd [RFC8146],
-   EAP-PSK [RFC4764]).
+   Typically, Enterprise networks do not assume that all devices in
+   their network are managed by the IT team or MDM, especially in the
+   quite common BYOD scenario.  The endpoint can use the discovered
+   Enterprise Encrypted DNS server to only access internal-only DNS
+   names and use another public DNS server for public domains or use the
+   discovered Enterprise Encrypted DNS server to access both internal-
+   only DNS names and public domains.
 
-   Note: Many users have privacy and personal data sovereignty concerns
-   with employers installing MDM on their personal devices; they are
-   concerned that admin can glean personal information and could control
-   how they use their devices.  When users do not install MDM on their
-   devices, IT admins do not get visibility into the security posture of
-   those devices.  To overcome this problem, a host agent can
-   cryptographically attest the security status associated with device,
-   such as minimum passcode length, biometric login enabled, OS version
-   etc.  This approach is fast gaining traction especially with the
-   advent of closed OS like Windows 10 in S mode [win10s] or Chromebook
-   [Chromebook], where applications are sandboxed (e.g., ransomware
-   attack is not possbile) and applications can only be installed via
-   the OS store.
+   The scope of this document is restricted to unmanaged BYOD devices
+   without a configuration profile.  The unmanaged BYOD devices use the
+   credentials (user name and password) provided by the IT admin to
+   mutually authenticate to the Enterprise WLAN Access Point (e.g.,
+   PEAP-MSCHAPv2 [PEAP], EAP-pwd [RFC8146], EAP-PSK [RFC4764]).
+
+   Note:   Many users have privacy and personal data sovereignty
+      concerns with employers installing MDM on their personal devices;
+      they are concerned that admin can glean personal information and
+      could control how they use their devices.  When users do not
+      install MDM on their devices, IT admins do not get visibility into
+      the security posture of those devices.  To overcome this problem,
+      a host agent can cryptographically attest the security status
+      associated with device, such as minimum pass code length,
+      biometric login enabled, OS version etc.  This approach is fast
+      gaining traction especially with the advent of closed OS like
+      Windows 10 in S mode [win10s] or Chromebook [Chromebook], where
+      applications are sandboxed (e.g., ransomware attack is not
+      possible) and applications can only be installed via the OS store.
 
 4.  Split DNS
 
@@ -249,19 +260,28 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
    own private name spaces" but notes that if private networks "wish to
    make use of names uniquely defined for the global Internet, they have
    to fetch that information from the global DNS naming hierarchy".
+
    There are various DNS deployments outside of the global public DNS,
    including "split horizon" deployments and DNS usages on private (or
    virtual private) networks.  In a split horizon, an authoritative
-   server gives different responses to queries from the public Internet
-   than they do to internal DNS servers; while some deployments
-   differentiate internal queries from public queries by the source IP
-   address, the concerns in Section 3.1.1 of [RFC6950] relating to
-   trusting source IP addresses apply to such deployments.
+   server gives different responses to queries from the Internet than
+   they do to internal DNS servers; while some deployments differentiate
+   internal queries from public queries by the source IP address, the
+   concerns in Section 3.1.1 of [RFC6950] relating to trusting source IP
+   addresses apply to such deployments.
 
    When the internal address space range is private [RFC1918], this
    makes it both easier for the server to discriminate public from
    private and harder for public entities to impersonate nodes in the
    private network.  The use cases that motivate split-horizon DNS
+
+
+
+Reddy                    Expires August 8, 2021                 [Page 5]
+
+Internet-Draft   Split DNS config in Enterprise Networks   February 2021
+
+
    typically involve restricting access to some network services --
    intranet resources such as internal web sites, development servers,
    or directories, for example -- while preserving the ease of use
@@ -274,14 +294,6 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
    the internal-only domain names are and what the IP addresses of the
    internal DNS servers are.  An enterprise can also run a different
    version of its public domain on its internal network.  In that case,
-
-
-
-Reddy                    Expires August 6, 2021                 [Page 5]
-
-Internet-Draft   Split DNS config in Enterprise Networks   February 2021
-
-
    the client is instructed to send DNS queries for the enterprise
    public domain (e.g., "example.com") to the internal DNS servers.  A
    configuration for this deployment scenario is referred to as a Split
@@ -289,54 +301,58 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 5.  PvD InternalDNSDomains Key
 
-   The Enterprise internal resources tend to have internal-only DNS
-   names and require the use of special internal-only DNS servers to get
-   resolved.  The PvD Key InternalDNSDomains adds support for private
-   (internal-only) DNS domains.  These domains are intended to be
-   resolved using non-public DNS servers that are only reachable to the
-   devices attached to the Enterprise network.  DNS resolution for other
-   domains remains unchanged.
+   As discussed in Section 4, the Enterprise internal resources tend to
+   have internal-only DNS names and require the use of special internal-
+   only DNS servers to get resolved.
+
+   The PvD Key InternalDNSDomains adds support for private (internal-
+   only) DNS domains.  These domains are intended to be resolved using
+   non-public DNS servers that are only reachable to the devices
+   attached to the Enterprise network.  DNS resolution for other domains
+   remains unchanged.
 
    The InternalDnsDomains PvD Key is used to convey that the specified
-   DNS domains MUST be resolved using the Enterprise DNS server.
-   Clients should take care to identify internal or managed domains.
-   The DNS root zone (".") MUST be ignored if it appears in
-   InternalDNSDomains.  Other generic or public domains, such as Top-
-   Level Domains (TLDs), similarly MUST be ignored if they appear in
-   InternalDNSDomains.
+   DNS domains must be resolved using an Enterprise DNS server.  Clients
+   have to identify internal or managed domains.  The DNS root zone
+   (".") MUST be ignored if it appears in InternalDNSDomains.  Other
+   generic or public domains, such as Top-Level Domains (TLDs),
+   similarly MUST be ignored if they appear in InternalDNSDomains.
 
    For each SplitDNSAllowed entry, the client MUST use the Enterprise
    provided DNS servers as the only resolvers for the listed domains and
-   its subdomains, and it MUST NOT attempt to resolve the provided DNS
-   domains using external DNS servers.  Other domain names can possibly
-   be resolved using some other external DNS resolver(s) that are
+   its subdomains and it MUST NOT attempt to resolve the provided DNS
+   domains using external DNS servers.  Other domain names may be
+   resolved using some other external DNS resolver(s) that are
    configured independently.
 
 6.  PvD SplitDNSAllowed Key
 
-   If the Enterprise restricts all the DNS queries to be sent to the
-   Internal DNS server, SplitDNSAllowed will be set to false.  Split DNS
-   configurations may be preferable to sending all DNS queries to the
-   Enterprise DNS server in some deployments.  This allows the endpoint
-   to only send DNS queries for the enterprise to the internal DNS
-   servers.  The Enterprise remains unaware of all non-enterprise (DNS)
-   activity of the user.  It also allows the Enterprise DNS servers to
-   only be configured for the enterprise DNS domains, which removes the
-   legal and technical responsibility of the enterprise to resolve every
-   DNS domain potentially asked for by the endpoints.  For example, if
-   the SplitDNSAllowed key specifies "example.test" and SplitDNSAllowed
-   is set to true, then "example.test", "www.example.test", and
-   "mail.eng.example.test" MUST be resolved using the internal DNS
-   resolver(s), but "otherexample.test" and "ple.test" can be resolved
-   using the system's external DNS resolver(s).
+   If an Enterprise network restricts all the DNS queries to be sent to
+   the Internal DNS server, SplitDNSAllowed will be set to false.
 
 
 
 
-Reddy                    Expires August 6, 2021                 [Page 6]
+Reddy                    Expires August 8, 2021                 [Page 6]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
+
+   Split DNS configurations may be preferable to sending all DNS queries
+   to an Enterprise DNS server in some deployments.  This allows an
+   endpoint to only send DNS queries for the enterprise to the internal
+   DNS servers.  The Enterprise remains unaware of all non-enterprise
+   (DNS) activity of the user.
+
+   It also allows the Enterprise DNS servers to only be configured for
+   the enterprise DNS domains, which removes the legal and technical
+   responsibility of the enterprise to resolve every DNS domain
+   potentially asked for by the endpoints.  For example, if the
+   SplitDNSAllowed key specifies "example.test" and SplitDNSAllowed is
+   set to true, then "example.test", "www.example.test", and
+   "mail.eng.example.test" must be resolved using the internal DNS
+   resolver(s), but "otherexample.test" and "ple.test" can be resolved
+   using the system's external DNS resolver(s).
 
    If SplitDNSAllowed is set to false, the client should not trust the
    SplitDNSAllowed key in case of connecting to unknown or untrusted
@@ -344,25 +360,23 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
    SplitDNSAllowed is set to false, client can choose to use a alternate
    network to resolve the external domain names.
 
-7.  Example
+7.  An Example
 
-   The following example show how the JSON keys defined in this document
-   can be used:
+   The following example shows how the JSON keys defined in this
+   document can be used:
 
       {
         "identifier": "cafe.example.com.",
         "expires": "2020-05-23T06:00:00Z",
         "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
         "SplitDNSAllowed": True,
-        "InternalDNSDomains:": ["city.other.test", "example.com"],
+        "InternalDNSDomains:": ["city.other.test", "example.com"]
       }
 
-   The JSON keys "identifier", "expires" and "prefixes" are defined in
+   The JSON keys "identifier", "expires", and "prefixes" are defined in
    [RFC8801].
 
 8.  Roaming Enterprise Users
-
-8.1.  VPN tunnel
 
    In this Enterprise scenario (Section 1.1.3 of [RFC7296]), a roaming
    user connects to the Enterprise network through an VPN tunnel (e.g.,
@@ -373,48 +387,47 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
    contrast, a non-split- tunnel VPN configuration causes all traffic to
    traverse the tunnel into the Enterprise.
 
-   When the VPN tunnel is IPsec, the DoH/DoT server hosted by the
-   Enterprise network can be securely discovered by the endpoint using
-   the INTERNAL_ENC_DNS IKEv2 Configuration Payload Attribute Type
-   defined in [I-D.btw-add-ipsecme-ike].  For split-tunnel VPN
-   configurations, the endpoint uses the Enterprise-provided DoT/DoH
-   server to resolve internal-only domain names.  For non-split-tunnel
-   VPN configurations, the endpoint uses the Enterprise-provided DoT/DoH
-   server to resolve both internal and external domain names.
-
-   Other VPN tunnel types have similar configuration capabilities, not
-   detailed here.
 
 
-
-
-
-Reddy                    Expires August 6, 2021                 [Page 7]
+Reddy                    Expires August 8, 2021                 [Page 7]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
+   When the VPN tunnel is IPsec, the encrypted server hosted by the
+   Enterprise network can be securely discovered by the endpoint using
+   the ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types defined
+   in [I-D.btw-add-ipsecme-ike].  For split-tunnel VPN configurations,
+   the endpoint uses the Enterprise-provided encrypted DNS server to
+   resolve internal-only domain names.  For non-split-tunnel VPN
+   configurations, the endpoint uses the Enterprise-provided encrypted
+   DNS server to resolve both internal and external domain names.
+
+   Other VPN tunnel types have similar configuration capabilities, not
+   detailed here.
+
 9.  Upstream Encryption
 
-   If the Enterprise network is using the local DoH/DoT server
-   configured as a Forwarding DNS server [RFC8499] relying on the
+   If an Enterprise network is using a local encrypted DNS server
+   configured as a Forwarding DNS server [RFC8499] relying upon the
    upstream resolver (e.g., at an ISP) to perform recursive DNS lookups,
-   DNS messages exchanged between the local DoH/DoT server and recursive
-   resolver MUST be encrypted.  If the Enterprise network is using the
-   local DoH/DoT server configured as a recursive DNS server, DNS
-   messages exchanges between the recursive resolver and authoritative
-   servers SHOULD be encrypted to conform to the requirements discussed
-   in [I-D.ietf-dprive-phase2-requirements].
+   DNS messages exchanged between the local encrypted DNS server and the
+   recursive resolver MUST be encrypted.
+
+   If the Enterprise network is using the local encrypted DNS server
+   configured as a recursive DNS server, DNS messages exchanges between
+   the recursive resolver and authoritative servers SHOULD be encrypted
+   to conform to the requirements discussed in
+   [I-D.ietf-dprive-phase2-requirements].
 
 10.  Security Considerations
 
-   Clients MAY want to pre-configure external domains for Top-Level
-   Domains (TLDs) and Second-Level Domains (SLDs) to prevent malicious
-   DNS redirections for well-known domains.  This prevents users from
-   unknowingly giving DNS queries to third parties.  This is even more
-   important if those well-known domains are not deploying DNSSEC, as
-   the Enterprise network could then even modify the DNS answers without
-   detection.
+   Clients may want to preconfigure external domains for TLDs and
+   Second-Level Domains (SLDs) to prevent malicious DNS redirections for
+   well-known domains.  This prevents users from unknowingly giving DNS
+   queries to third parties.  This is even more important if those well-
+   known domains are not deploying DNSSEC, as the Enterprise network
+   could then even modify the DNS answers without detection.
 
    The content of InternalDnsDomains and SplitDNSAllowed may be passed
    to another (DNS) program for processing.  As with any network input,
@@ -426,7 +439,16 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
    IANA is requested to add InternalDNSDomains and SplitDNSAllowed PvD
    Keys to the Additional Information PvD Keys registry
-   https://www.iana.org/assignments/pvds/pvds.xhtml.
+   (https://www.iana.org/assignments/pvds/pvds.xhtml).
+
+
+
+
+
+Reddy                    Expires August 8, 2021                 [Page 8]
+
+Internet-Draft   Split DNS config in Enterprise Networks   February 2021
+
 
 12.  Acknowledgements
 
@@ -440,15 +462,6 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
               and E. Lear, "Address Allocation for Private Internets",
               BCP 5, RFC 1918, DOI 10.17487/RFC1918, February 1996,
               <https://www.rfc-editor.org/info/rfc1918>.
-
-
-
-
-
-Reddy                    Expires August 6, 2021                 [Page 8]
-
-Internet-Draft   Split DNS config in Enterprise Networks   February 2021
-
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -482,6 +495,17 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
               RFC 8801, DOI 10.17487/RFC8801, July 2020,
               <https://www.rfc-editor.org/info/rfc8801>.
 
+
+
+
+
+
+
+Reddy                    Expires August 8, 2021                 [Page 9]
+
+Internet-Draft   Split DNS config in Enterprise Networks   February 2021
+
+
 13.2.  Informative References
 
    [Chrome-DoH]
@@ -497,14 +521,6 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
               Microsoft, "Chromebook security",
               <https://support.google.com/chromebook/
               answer/3438631?hl=en>.
-
-
-
-
-Reddy                    Expires August 6, 2021                 [Page 9]
-
-Internet-Draft   Split DNS config in Enterprise Networks   February 2021
-
 
    [Firefox-Policy]
               "Policy templates for Firefox",
@@ -539,6 +555,13 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
               Resolvers and Authoritative Servers", draft-ietf-dprive-
               phase2-requirements-02 (work in progress), November 2020.
 
+
+
+Reddy                    Expires August 8, 2021                [Page 10]
+
+Internet-Draft   Split DNS config in Enterprise Networks   February 2021
+
+
    [I-D.pauly-add-deer]
               Pauly, T., Kinnear, E., Wood, C., McManus, P., and T.
               Jensen, "Discovery of Equivalent Encrypted Resolvers",
@@ -553,14 +576,6 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
               developer.apple.com/library/archive/documentation/Networki
               ngInternet/Conceptual/iPhoneOTAConfiguration/OTASecurity/
               OTASecurity.html>.
-
-
-
-
-Reddy                    Expires August 6, 2021                [Page 10]
-
-Internet-Draft   Split DNS config in Enterprise Networks   February 2021
-
 
    [PEAP]     Microsoft, "[MS-PEAP]: Protected Extensible Authentication
               Protocol (PEAP)", <https://docs.microsoft.com/en-
@@ -594,6 +609,15 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
               to EAP-pwd", RFC 8146, DOI 10.17487/RFC8146, April 2017,
               <https://www.rfc-editor.org/info/rfc8146>.
 
+
+
+
+
+Reddy                    Expires August 8, 2021                [Page 11]
+
+Internet-Draft   Split DNS config in Enterprise Networks   February 2021
+
+
    [RFC8499]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", BCP 219, RFC 8499, DOI 10.17487/RFC8499,
               January 2019, <https://www.rfc-editor.org/info/rfc8499>.
@@ -605,18 +629,6 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
    [win10s]   Microsoft, "Windows 10 in S mode",
               <https://www.microsoft.com/en-us/windows/s-mode>.
-
-
-
-
-
-
-
-
-Reddy                    Expires August 6, 2021                [Page 11]
-
-Internet-Draft   Split DNS config in Enterprise Networks   February 2021
-
 
 Author's Address
 
@@ -657,16 +669,4 @@ Author's Address
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-Reddy                    Expires August 6, 2021                [Page 12]
+Reddy                    Expires August 8, 2021                [Page 12]
