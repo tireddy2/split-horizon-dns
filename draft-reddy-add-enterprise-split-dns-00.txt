@@ -4,8 +4,8 @@
 
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
-Intended status: Standards Track                        February 4, 2021
-Expires: August 8, 2021
+Intended status: Standards Track                        February 5, 2021
+Expires: August 9, 2021
 
 
 Split DNS Configuration in Enterprise Networks: Focus on Unmanaged BYOD
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 8, 2021.
+   This Internet-Draft will expire on August 9, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy                    Expires August 8, 2021                 [Page 1]
+Reddy                    Expires August 9, 2021                 [Page 1]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy                    Expires August 8, 2021                 [Page 2]
+Reddy                    Expires August 9, 2021                 [Page 2]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -165,7 +165,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
 
-Reddy                    Expires August 8, 2021                 [Page 3]
+Reddy                    Expires August 9, 2021                 [Page 3]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -221,7 +221,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
 
-Reddy                    Expires August 8, 2021                 [Page 4]
+Reddy                    Expires August 9, 2021                 [Page 4]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -277,7 +277,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
 
-Reddy                    Expires August 8, 2021                 [Page 5]
+Reddy                    Expires August 9, 2021                 [Page 5]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -312,10 +312,9 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
    remains unchanged.
 
    The InternalDnsDomains PvD Key is used to convey that the specified
-   DNS domains must be resolved using an Enterprise DNS server.  Clients
-   have to identify internal or managed domains.  The DNS root zone
-   (".") MUST be ignored if it appears in InternalDNSDomains.  Other
-   generic or public domains, such as Top-Level Domains (TLDs),
+   DNS domains must be resolved using an Enterprise DNS server.  The DNS
+   root zone (".") MUST be ignored if it appears in InternalDNSDomains.
+   Other generic or public domains, such as Top-Level Domains (TLDs),
    similarly MUST be ignored if they appear in InternalDNSDomains.
 
    For each SplitDNSAllowed entry, the client MUST use the Enterprise
@@ -333,7 +332,8 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
 
-Reddy                    Expires August 8, 2021                 [Page 6]
+
+Reddy                    Expires August 9, 2021                 [Page 6]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -389,7 +389,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
 
-Reddy                    Expires August 8, 2021                 [Page 7]
+Reddy                    Expires August 9, 2021                 [Page 7]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -445,7 +445,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
 
-Reddy                    Expires August 8, 2021                 [Page 8]
+Reddy                    Expires August 9, 2021                 [Page 8]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -501,7 +501,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
 
-Reddy                    Expires August 8, 2021                 [Page 9]
+Reddy                    Expires August 9, 2021                 [Page 9]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -557,7 +557,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
 
-Reddy                    Expires August 8, 2021                [Page 10]
+Reddy                    Expires August 9, 2021                [Page 10]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -613,7 +613,7 @@ Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
 
 
-Reddy                    Expires August 8, 2021                [Page 11]
+Reddy                    Expires August 9, 2021                [Page 11]
 
 Internet-Draft   Split DNS config in Enterprise Networks   February 2021
 
@@ -669,4 +669,4 @@ Author's Address
 
 
 
-Reddy                    Expires August 8, 2021                [Page 12]
+Reddy                    Expires August 9, 2021                [Page 12]

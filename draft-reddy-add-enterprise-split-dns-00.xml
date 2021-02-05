@@ -282,11 +282,10 @@
       remains unchanged.</t>
 
       <t>The InternalDnsDomains PvD Key is used to convey that the specified
-      DNS domains must be resolved using an Enterprise DNS server. Clients
-      have to identify internal or managed domains. The DNS root zone (".")
-      MUST be ignored if it appears in InternalDNSDomains. Other generic or
-      public domains, such as Top-Level Domains (TLDs), similarly MUST be
-      ignored if they appear in InternalDNSDomains.</t>
+      DNS domains must be resolved using an Enterprise DNS server. The DNS
+      root zone (".") MUST be ignored if it appears in InternalDNSDomains.
+      Other generic or public domains, such as Top-Level Domains (TLDs),
+      similarly MUST be ignored if they appear in InternalDNSDomains.</t>
 
       <t>For each SplitDNSAllowed entry, the client MUST use the Enterprise
       provided DNS servers as the only resolvers for the listed domains and
