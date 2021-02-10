@@ -57,29 +57,51 @@
       </address>
     </author>
 
+    <author fullname="Dan Wing" initials="D." surname="Wing">
+      <organization abbrev="Citrix">Citrix Systems, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>4988 Great America Pkwy</street>
+
+          <city>Santa Clara</city>
+
+          <region>CA</region>
+
+          <code>95054</code>
+
+          <country>USA</country>
+        </postal>
+
+        <email>danwing@gmail.com</email>
+      </address>
+    </author>
+
     <date />
 
     <workgroup>ADD</workgroup>
 
     <abstract>
-      <t>When split-horizon DNS is deployed by an enterprise, certain enterprise domains are
-      only resolvable by querying the enterprise's nameserver.  DNS clients which
-      use non-enterprise nameservers need to route those DNS domain queries 
-      to the enterprise's nameserver.  This document informs DNS clients of split-horizon
-      DNS, their DNS domains, and is compatible with encrypted DNS.</t>
+      <t>When split-horizon DNS is deployed by an enterprise, certain
+      enterprise domains are only resolvable by querying the enterprise's DNS
+      server. DNS clients which use non-enterprise DNS servers need to route
+      those DNS domain queries to the enterprise's DNS server. This document
+      informs DNS clients of split-horizon DNS, their DNS domains, and is
+      compatible with encrypted DNS.</t>
     </abstract>
   </front>
 
   <middle>
     <section anchor="intro" title="Introduction">
-      <t>Historically, an endpoint would utilize indicated DNS servers upon
-      joininga network (e.g., DHCP offer, IPv6 Router Advertisement).  While it has long been
-      possible to configure endpoints to ignore the network's suggestions and
-      use a (public) DNS server on the Internet, this was seldom used because some networks
-      block UDP/53 (in order to enforce their own DNS policies).  With the advent of
-      DoT and DoH, such network blocking is more difficult, but the endpoint is
-      unable to (properly) resolve split-horizon DNS domains which must query
-      the enterprise's DNS server.</t>
+      <t>Historically, an endpoint would utilize network-provided DNS servers
+      upon joining a network (e.g., DHCP OFFER, IPv6 Router Advertisement).
+      While it has long been possible to configure endpoints to ignore the
+      network's suggestions and use a (public) DNS server on the Internet,
+      this was seldom used because some networks block UDP/53 (in order to
+      enforce their own DNS policies). With the advent of DoT and DoH, such
+      network blocking is more difficult, but the endpoint is unable to
+      (properly) resolve split-horizon DNS domains which must query the
+      enterprise's DNS server.</t>
 
       <t><xref target="RFC7626"></xref> discusses DNS privacy considerations
       in both "on the wire" (Section 2.4 of <xref target="RFC7626"></xref>)
@@ -110,9 +132,9 @@
       <t>In order to act on DNS messages involving endpoints connected to an
       Enterprise network, network security services can be configured to block
       DoT traffic by dropping outgoing packets to destination port number 853.
-      Identifying DoH traffic is far more challenging than identifying DoT traffic.
-      Network security services may try to identify the well-known DoH
-      resolvers by their domain name and DoH traffic can be blocked by
+      Identifying DoH traffic is far more challenging than identifying DoT
+      traffic. Network security services may try to identify the well-known
+      DoH resolvers by their domain name and DoH traffic can be blocked by
       dropping outgoing packets to these domains. However, DoH traffic can not
       be fully identified without acting as a TLS proxy.</t>
 
@@ -456,7 +478,7 @@
 
       <?rfc include='reference.I-D.btw-add-home'?>
 
-<!--      <?rfc include='reference.I-D.ietf-dnsop-terminology-ter'?> -->
+      <!--      <?rfc include='reference.I-D.ietf-dnsop-terminology-ter'?> -->
 
       <?rfc include='reference.I-D.arkko-farrell-arch-model-t'?>
 

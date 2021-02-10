@@ -4,8 +4,9 @@
 
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
-Intended status: Standards Track                        February 8, 2021
-Expires: August 12, 2021
+Intended status: Standards Track                                 D. Wing
+Expires: August 14, 2021                                          Citrix
+                                                       February 10, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -15,8 +16,8 @@ Abstract
 
    When split-horizon DNS is deployed by an enterprise, certain
    enterprise domains are only resolvable by querying the enterprise's
-   nameserver.  DNS clients which use non-enterprise nameservers need to
-   route those DNS domain queries to the enterprise's nameserver.  This
+   DNS server.  DNS clients which use non-enterprise DNS servers need to
+   route those DNS domain queries to the enterprise's DNS server.  This
    document informs DNS clients of split-horizon DNS, their DNS domains,
    and is compatible with encrypted DNS.
 
@@ -35,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 12, 2021.
+   This Internet-Draft will expire on August 14, 2021.
 
 Copyright Notice
 
@@ -52,8 +53,7 @@ Copyright Notice
 
 
 
-
-Reddy                    Expires August 12, 2021                [Page 1]
+Reddy & Wing             Expires August 14, 2021                [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -78,12 +78,12 @@ Table of Contents
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      13.1.  Normative References . . . . . . . . . . . . . . . . . .   9
      13.2.  Informative References . . . . . . . . . . . . . . . . .  10
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  12
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
 
 1.  Introduction
 
-   Historically, an endpoint would utilize indicated DNS servers upon
-   joininga network (e.g., DHCP offer, IPv6 Router Advertisement).
+   Historically, an endpoint would utilize network-provided DNS servers
+   upon joining a network (e.g., DHCP OFFER, IPv6 Router Advertisement).
    While it has long been possible to configure endpoints to ignore the
    network's suggestions and use a (public) DNS server on the Internet,
    this was seldom used because some networks block UDP/53 (in order to
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy                    Expires August 12, 2021                [Page 2]
+Reddy & Wing             Expires August 14, 2021                [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy                    Expires August 12, 2021                [Page 3]
+Reddy & Wing             Expires August 14, 2021                [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy                    Expires August 12, 2021                [Page 4]
+Reddy & Wing             Expires August 14, 2021                [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy                    Expires August 12, 2021                [Page 5]
+Reddy & Wing             Expires August 14, 2021                [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy                    Expires August 12, 2021                [Page 6]
+Reddy & Wing             Expires August 14, 2021                [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -389,7 +389,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy                    Expires August 12, 2021                [Page 7]
+Reddy & Wing             Expires August 14, 2021                [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -445,7 +445,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy                    Expires August 12, 2021                [Page 8]
+Reddy & Wing             Expires August 14, 2021                [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -501,7 +501,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy                    Expires August 12, 2021                [Page 9]
+Reddy & Wing             Expires August 14, 2021                [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -557,7 +557,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy                    Expires August 12, 2021               [Page 10]
+Reddy & Wing             Expires August 14, 2021               [Page 10]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -613,7 +613,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy                    Expires August 12, 2021               [Page 11]
+Reddy & Wing             Expires August 14, 2021               [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -634,7 +634,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    [win10s]   Microsoft, "Windows 10 in S mode",
               <https://www.microsoft.com/en-us/windows/s-mode>.
 
-Author's Address
+Authors' Addresses
 
    Tirumaleswar Reddy
    McAfee, Inc.
@@ -645,6 +645,13 @@ Author's Address
    Email: kondtir@gmail.com
 
 
+   Dan Wing
+   Citrix Systems, Inc.
+   4988 Great America Pkwy
+   Santa Clara, CA  95054
+   USA
+
+   Email: danwing@gmail.com
 
 
 
@@ -662,11 +669,4 @@ Author's Address
 
 
 
-
-
-
-
-
-
-
-Reddy                    Expires August 12, 2021               [Page 12]
+Reddy & Wing             Expires August 14, 2021               [Page 12]
