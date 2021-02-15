@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: August 14, 2021                                          Citrix
-                                                       February 10, 2021
+Expires: August 19, 2021                                          Citrix
+                                                       February 15, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 14, 2021.
+   This Internet-Draft will expire on August 19, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy & Wing             Expires August 14, 2021                [Page 1]
+Reddy & Wing             Expires August 19, 2021                [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -96,7 +96,7 @@ Table of Contents
    (Section 2.4 of [RFC7626]) and "in the server" (Section 2.5 of
    [RFC7626]) contexts.  Also, there has been an increase in the
    availability of "public resolvers" [RFC8499] which DNS clients may be
-   perconfigured to use instead of the default network resolver for a
+   pre-configured to use instead of the default network resolver for a
    variety of reasons (e.g., offer a good reachability, support an
    encrypted transport, provide a claimed privacy policy, (lack of)
    filtering).
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy & Wing             Expires August 14, 2021                [Page 2]
+Reddy & Wing             Expires August 19, 2021                [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy & Wing             Expires August 14, 2021                [Page 3]
+Reddy & Wing             Expires August 19, 2021                [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy & Wing             Expires August 14, 2021                [Page 4]
+Reddy & Wing             Expires August 19, 2021                [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy & Wing             Expires August 14, 2021                [Page 5]
+Reddy & Wing             Expires August 19, 2021                [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy & Wing             Expires August 14, 2021                [Page 6]
+Reddy & Wing             Expires August 19, 2021                [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -389,7 +389,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy & Wing             Expires August 14, 2021                [Page 7]
+Reddy & Wing             Expires August 19, 2021                [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -445,7 +445,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy & Wing             Expires August 14, 2021                [Page 8]
+Reddy & Wing             Expires August 19, 2021                [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -501,7 +501,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy & Wing             Expires August 14, 2021                [Page 9]
+Reddy & Wing             Expires August 19, 2021                [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -557,7 +557,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy & Wing             Expires August 14, 2021               [Page 10]
+Reddy & Wing             Expires August 19, 2021               [Page 10]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -613,7 +613,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
 
-Reddy & Wing             Expires August 14, 2021               [Page 11]
+Reddy & Wing             Expires August 19, 2021               [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -669,4 +669,4 @@ Authors' Addresses
 
 
 
-Reddy & Wing             Expires August 14, 2021               [Page 12]
+Reddy & Wing             Expires August 19, 2021               [Page 12]

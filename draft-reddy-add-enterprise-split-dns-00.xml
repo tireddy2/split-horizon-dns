@@ -108,7 +108,7 @@
       and "in the server" (Section 2.5 of <xref target="RFC7626"></xref>)
       contexts. Also, there has been an increase in the availability of
       "public resolvers" <xref target="RFC8499"></xref> which DNS clients may
-      be perconfigured to use instead of the default network resolver for a
+      be pre-configured to use instead of the default network resolver for a
       variety of reasons (e.g., offer a good reachability, support an
       encrypted transport, provide a claimed privacy policy, (lack of)
       filtering).</t>
