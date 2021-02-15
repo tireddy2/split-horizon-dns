@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+     which is available here: http://xml.resource.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+     There has to be one entity for each item to be referenced. 
+     An alternate method (rfc include) is described in the references. -->
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs), 
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space 
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc category="std" docName="draft-reddy-add-intarea-enterprise-split-dns-00"
+     ipr="trust200902">
+  <front>
+    <title abbrev="Split-Horizon DNS Configuration">Split-Horizon DNS
+    Configuration in Enterprise Networks</title>
+
+    <author fullname="Tirumaleswar Reddy" initials="T." surname="Reddy">
+      <organization abbrev="McAfee">McAfee, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>Embassy Golf Link Business Park</street>
+
+          <city>Bangalore</city>
+
+          <region>Karnataka</region>
+
+          <code>560071</code>
+
+          <country>India</country>
+        </postal>
+
+        <email>kondtir@gmail.com</email>
+      </address>
+    </author>
+
+    <author fullname="Dan Wing" initials="D." surname="Wing">
+      <organization abbrev="Citrix">Citrix Systems, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>4988 Great America Pkwy</street>
+
+          <city>Santa Clara</city>
+
+          <region>CA</region>
+
+          <code>95054</code>
+
+          <country>USA</country>
+        </postal>
+
+        <email>danwing@gmail.com</email>
+      </address>
+    </author>
+
+    <date />
+
+    <workgroup>ADD </workgroup>
+
+    <abstract>
+      <t>When split-horizon DNS is deployed by an enterprise, certain
+      enterprise domains are only resolvable by querying the enterprise's DNS
+      server. DNS clients which use non-enterprise DNS servers need to route
+      those DNS domain queries to the enterprise's DNS server. This document
+      informs DNS clients of split-horizon DNS, their DNS domains, and is
+      compatible with encrypted DNS.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>Historically, an endpoint would utilize network-provided DNS servers
+      upon joining a network (e.g., DHCP OFFER, IPv6 Router Advertisement).
+      While it has long been possible to configure endpoints to ignore the
+      network's suggestions and use a (public) DNS server on the Internet,
+      this was seldom used because some networks block UDP/53 (in order to
+      enforce their own DNS policies). With the advent of DoT and DoH, such
+      network blocking is more difficult, but the endpoint is unable to
+      (properly) resolve split-horizon DNS domains which must query the
+      enterprise's DNS server.</t>
+
+      <t><xref target="RFC7626"></xref> discusses DNS privacy considerations
+      in both "on the wire" (Section 2.4 of <xref target="RFC7626"></xref>)
+      and "in the server" (Section 2.5 of <xref target="RFC7626"></xref>)
+      contexts. Also, there has been an increase in the availability of
+      "public resolvers" <xref target="RFC8499"></xref> which DNS clients may
+      be pre-configured to use instead of the default network resolver for a
+      variety of reasons (e.g., offer a good reachability, support an
+      encrypted transport, provide a claimed privacy policy, (lack of)
+      filtering).</t>
+
+      <t>If public encrypted DNS servers (e.g., DNS-over-TLS (DoT) <xref
+      target="RFC7858"></xref> or DNS-over-HTTPS (DoH) <xref
+      target="RFC8484"></xref>) are used instead of using local DNS servers,
+      it can adversely impact Enterprise network-based security features.
+      Indeed, various network security services are provided by Enterprise
+      networks to protect endpoints (e.g., laptops, printers, IoT devices) and
+      to enforce enterprise-specific policies. These policies may be necessary
+      to protect employees, customers, or enterprise network. It is out of the
+      scope of this memo to characterize such policies nor assess that they
+      used to achieved the claimed intent. Nevertheless, Enterprise DNS
+      servers in place for these purposes act on DNS messages involving
+      endpoints connected to the Enterprise network to enforce these policies.
+      Therefore, if an endpoint uses a public encrypted DNS server, the
+      desired enterprise protection level and enforcement will be bypassed and
+      thus nullified.</t>
+
+      <t>In order to act on DNS messages involving endpoints connected to an
+      Enterprise network, network security services can be configured to block
+      DoT traffic by dropping outgoing packets to destination port number 853.
+      Identifying DoH traffic is far more challenging than identifying DoT
+      traffic. Network security services may try to identify the well-known
+      DoH resolvers by their domain name and DoH traffic can be blocked by
+      dropping outgoing packets to these domains. However, DoH traffic can not
+      be fully identified without acting as a TLS proxy.</t>
+
+      <t>If a network security service blocks access to a public encrypted DNS
+      server, there are incompatibilities with the privacy profiles discussed
+      in <xref target="RFC8310"></xref>: <list style="symbols">
+          <t>If an endpoint has enabled strict privacy profile (Section 5 of
+          <xref target="RFC8310"></xref>), the endpoint cannot resolve DNS
+          names.</t>
+
+          <t>If an endpoint has enabled opportunistic privacy profile (Section
+          5 of <xref target="RFC8310"></xref>), the endpoint will either
+          fallback to an encrypted connection without authenticating the DNS
+          server provided by the local network or fallback to clear text DNS,
+          and cannot exchange encrypted DNS messages. <vspace
+          blankLines="1" />The fallback adversely impacts security and privacy
+          as internal attacks are possible within Enterprise networks. For
+          example, an internal attacker can modify the DNS responses to
+          re-direct a client to malicious servers or pervasively monitor the
+          DNS traffic. The reader may refer to Section 3.2.1 of <xref
+          target="I-D.arkko-farrell-arch-model-t"></xref> for a discussion on
+          the need for more awareness about attacks from within closed
+          domains.</t>
+        </list></t>
+
+      <t>To overcome the above threats, this document specifies a mechanism to
+      convey internal-only DNS names to endpoints connected to an Enterprise
+      network and to determine if the Enterprise networks allows split-horizon
+      DNS. DNS clients can discover and authenticate encrypted DNS servers
+      provided by the Enterprise network, for example using the techniques
+      proposed in <xref target="I-D.btw-add-home"></xref> and <xref
+      target="I-D.pauly-add-deer"></xref>. Discovery of encrypted DNS server
+      for roaming enterprise endpoints is discussed in <xref
+      target="I-D.btw-add-ipsecme-ike"></xref> (see <xref
+      target="VPN"></xref>).</t>
+
+      <t>Provisioning Domains (PvDs) are defined in <xref
+      target="RFC7556"></xref> as sets of network configuration information.
+      <xref target="RFC8801"></xref> defines a mechanism for discovering
+      multiple Explicit PvDs on a single network and their Additional
+      Information by means of an HTTP-over-TLS query using an URI derived from
+      the PvD ID. This document defines two PvD Keys:<list style="hanging">
+          <t hangText="The InternalDNSDomains PvD Key:">which is used to
+          convey that the specified DNS domains must be resolved using the
+          Enterprise DNS server</t>
+
+          <t hangText="The SplitDNSAllowed PvD Key:">which is used to
+          determine if the Enterprise network allows split-horizon DNS.</t>
+        </list></t>
+    </section>
+
+    <section anchor="notation" title="Terminology">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+      "OPTIONAL" in this document are to be interpreted as described in BCP 14
+      <xref target="RFC2119"></xref><xref target="RFC8174"></xref> when, and
+      only when, they appear in all capitals, as shown here.</t>
+
+      <t>This document makes use of the terms defined in <xref
+      target="RFC8499"></xref>.</t>
+
+      <t>'Encrypted DNS' refers to a DNS protocol that provides an encrypted
+      channel between a DNS client and server (e.g., DoT, DoH, or DoQ).</t>
+
+      <t>DNS resolution servers accessible only to devices attached to the
+      Enterprise network will be referred to as "Internal DNS servers"; other
+      DNS servers will be referred to as "external DNS servers".</t>
+    </section>
+
+    <section anchor="Scope" title="Scope of the Document">
+      <t>If a device is managed by an enterprise's IT department, the device
+      can be configured to use Enterprise-provided encrypted DNS servers. This
+      configuration may be manual or rely upon whatever deployed device
+      management tool in an Enterprise network. For example, customizing
+      Firefox using Group Policy to use the Enterprise DoH server is discussed
+      in <xref target="Firefox-Policy"></xref> for Windows and MacOS, and
+      setting Chrome policies is discussed in <xref
+      target="Chrome-Policy"></xref> and <xref
+      target="Chrome-DoH"></xref>.</t>
+
+      <t>If mobile device management (MDM) (e.g., <xref
+      target="MDM-Apple"></xref>) is used to secure BYOD (Bring Your Own
+      Device), MDM can be used to configure OS/browser with the Enterprise
+      provided DoH/DoT server. If an endpoint is on-boarded, for example,
+      using Over-The-Air (OTA) enrollment <xref target="OTA"></xref> to
+      provision the device with a certificate and configuration profile, the
+      configuration profile can include the authentication domain name (ADN)
+      of the encrypted DNS server. The OS/Browser can use the configuration
+      profile to use the Enterprise provided encrypted DNS server. In this
+      case, MDM is not installed on the device.</t>
+
+      <t>Provisioning IT-managed devices, BYOD devices with MDM or
+      configuration profile with the Split DNS configuration is out side the
+      scope of this document.</t>
+
+      <t>Typically, Enterprise networks do not assume that all devices in
+      their network are managed by the IT team or MDM, especially in the quite
+      common BYOD scenario. The endpoint can use the discovered Enterprise
+      Encrypted DNS server to only access internal-only DNS names and use
+      another public DNS server for public domains or use the discovered
+      Enterprise Encrypted DNS server to access both internal-only DNS names
+      and public domains.</t>
+
+      <t>The scope of this document is restricted to unmanaged BYOD devices
+      without a configuration profile. The unmanaged BYOD devices use the
+      credentials (user name and password) provided by the IT admin to
+      mutually authenticate to the Enterprise WLAN Access Point (e.g.,
+      PEAP-MSCHAPv2 <xref target="PEAP"></xref>, EAP-pwd <xref
+      target="RFC8146"></xref>, EAP-PSK <xref target="RFC4764"></xref>).</t>
+
+      <t><list style="hanging">
+          <t hangText="Note: ">Many users have privacy and personal data
+          sovereignty concerns with employers installing MDM on their personal
+          devices; they are concerned that admin can glean personal
+          information and could control how they use their devices. When users
+          do not install MDM on their devices, IT admins do not get visibility
+          into the security posture of those devices. To overcome this
+          problem, a host agent can cryptographically attest the security
+          status associated with device, such as minimum pass code length,
+          biometric login enabled, OS version etc. This approach is fast
+          gaining traction especially with the advent of closed OS like <xref
+          target="win10s">Windows 10 in S mode</xref> or <xref
+          target="Chromebook">Chromebook</xref>, where applications are
+          sandboxed (e.g., ransomware attack is not possible) and applications
+          can only be installed via the OS store.</t>
+        </list></t>
+    </section>
+
+    <section anchor="split-horizon" title="Split DNS ">
+      <t><xref target="RFC2826"></xref> "does not preclude private networks
+      from operating their own private name spaces" but notes that if private
+      networks "wish to make use of names uniquely defined for the global
+      Internet, they have to fetch that information from the global DNS naming
+      hierarchy".</t>
+
+      <t>There are various DNS deployments outside of the global public DNS,
+      including "split horizon" deployments and DNS usages on private (or
+      virtual private) networks. In a split horizon, an authoritative server
+      gives different responses to queries from the Internet than they do to
+      internal DNS servers; while some deployments differentiate internal
+      queries from public queries by the source IP address, the concerns in
+      Section 3.1.1 of <xref target="RFC6950"></xref> relating to trusting
+      source IP addresses apply to such deployments.</t>
+
+      <t>When the internal address space range is private <xref
+      target="RFC1918"></xref>, this makes it both easier for the server to
+      discriminate public from private and harder for public entities to
+      impersonate nodes in the private network. The use cases that motivate
+      split-horizon DNS typically involve restricting access to some network
+      services -- intranet resources such as internal web sites, development
+      servers, or directories, for example -- while preserving the ease of use
+      offered by domain names for internal users.</t>
+
+      <t>An Enterprise can require one or more DNS domains to be resolved via
+      internal DNS servers. This can be a special domain, such as
+      "corp.example.com" for an enterprise that is publicly known to use
+      "example.com". In this case, the endpoint needs to be informed what the
+      internal-only domain names are and what the IP addresses of the internal
+      DNS servers are. An enterprise can also run a different version of its
+      public domain on its internal network. In that case, the client is
+      instructed to send DNS queries for the enterprise public domain (e.g.,
+      "example.com") to the internal DNS servers. A configuration for this
+      deployment scenario is referred to as a Split DNS configuration.</t>
+    </section>
+
+    <section anchor="InternalDNSDomains" title="PvD InternalDNSDomains Key">
+      <t>As discussed in <xref target="split-horizon"></xref>, the Enterprise
+      internal resources tend to have internal-only DNS names and require the
+      use of special internal-only DNS servers to get resolved.</t>
+
+      <t>The PvD Key InternalDNSDomains adds support for private
+      (internal-only) DNS domains. These domains are intended to be resolved
+      using non-public DNS servers that are only reachable to the devices
+      attached to the Enterprise network. DNS resolution for other domains
+      remains unchanged.</t>
+
+      <t>The InternalDnsDomains PvD Key is used to convey that the specified
+      DNS domains must be resolved using an Enterprise DNS server. The DNS
+      root zone (".") MUST be ignored if it appears in InternalDNSDomains.
+      Other generic or public domains, such as Top-Level Domains (TLDs),
+      similarly MUST be ignored if they appear in InternalDNSDomains.</t>
+
+      <t>For each SplitDNSAllowed entry, the client MUST use the Enterprise
+      provided DNS servers as the only resolvers for the listed domains and
+      its subdomains and it MUST NOT attempt to resolve the provided DNS
+      domains using external DNS servers. Other domain names may be resolved
+      using some other external DNS resolver(s) that are configured
+      independently.</t>
+    </section>
+
+    <section anchor="SplitDNSAllowed" title="PvD SplitDNSAllowed Key">
+      <t>If an Enterprise network restricts all the DNS queries to be sent to
+      the Internal DNS server, SplitDNSAllowed will be set to false.</t>
+
+      <t>Split DNS configurations may be preferable to sending all DNS queries
+      to an Enterprise DNS server in some deployments. This allows an endpoint
+      to only send DNS queries for the enterprise to the internal DNS servers.
+      The Enterprise remains unaware of all non-enterprise (DNS) activity of
+      the user.</t>
+
+      <t>It also allows the Enterprise DNS servers to only be configured for
+      the enterprise DNS domains, which removes the legal and technical
+      responsibility of the enterprise to resolve every DNS domain potentially
+      asked for by the endpoints. For example, if the SplitDNSAllowed key
+      specifies "example.test" and SplitDNSAllowed is set to true, then
+      "example.test", "www.example.test", and "mail.eng.example.test" must be
+      resolved using the internal DNS resolver(s), but "otherexample.test" and
+      "ple.test" can be resolved using the system's external DNS
+      resolver(s).</t>
+
+      <t>If SplitDNSAllowed is set to false, the client should not trust the
+      SplitDNSAllowed key in case of connecting to unknown or untrusted
+      networks (e.g., coffee shops or hotel networks). For example, if
+      SplitDNSAllowed is set to false, client can choose to use a alternate
+      network to resolve the external domain names.</t>
+    </section>
+
+    <section title="An Example">
+      <t>The following example shows how the JSON keys defined in this
+      document can be used:</t>
+
+      <t><figure>
+          <artwork><![CDATA[   {
+     "identifier": "cafe.example.com.",
+     "expires": "2020-05-23T06:00:00Z",
+     "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
+     "SplitDNSAllowed": True,
+     "InternalDNSDomains:": ["city.other.test", "example.com"]
+   }]]></artwork>
+        </figure></t>
+
+      <t>The JSON keys "identifier", "expires", and "prefixes" are defined in
+      <xref target="RFC8801"></xref>.</t>
+    </section>
+
+    <section anchor="VPN" title="Roaming Enterprise Users">
+      <t>In this Enterprise scenario (Section 1.1.3 of <xref
+      target="RFC7296"></xref>), a roaming user connects to the Enterprise
+      network through an VPN tunnel (e.g., IPsec, SSL, Wireguard). The
+      split-tunnel Virtual Private Network (VPN) configuration allows the
+      endpoint to access hosts that reside in the Enterprise network <xref
+      target="RFC8598"></xref> using that tunnel; other traffic not destined
+      to the Enterprise does not traverse the tunnel. In contrast, a
+      non-split- tunnel VPN configuration causes all traffic to traverse the
+      tunnel into the Enterprise.</t>
+
+      <t>When the VPN tunnel is IPsec, the encrypted server hosted by the
+      Enterprise network can be securely discovered by the endpoint using the
+      ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types defined in
+      <xref target="I-D.btw-add-ipsecme-ike"></xref>. For split-tunnel VPN
+      configurations, the endpoint uses the Enterprise-provided encrypted DNS
+      server to resolve internal-only domain names. For non-split-tunnel VPN
+      configurations, the endpoint uses the Enterprise-provided encrypted DNS
+      server to resolve both internal and external domain names.</t>
+
+      <t>Other VPN tunnel types have similar configuration capabilities, not
+      detailed here.</t>
+    </section>
+
+    <section title="Upstream Encryption">
+      <t>If an Enterprise network is using a local encrypted DNS server
+      configured as a Forwarding DNS server <xref target="RFC8499"></xref>
+      relying upon the upstream resolver (e.g., at an ISP) to perform
+      recursive DNS lookups, DNS messages exchanged between the local
+      encrypted DNS server and the recursive resolver MUST be encrypted.</t>
+
+      <t>If the Enterprise network is using the local encrypted DNS server
+      configured as a recursive DNS server, DNS messages exchanges between the
+      recursive resolver and authoritative servers SHOULD be encrypted to
+      conform to the requirements discussed in <xref
+      target="I-D.ietf-dprive-phase2-requirements"></xref>.</t>
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t>Clients may want to preconfigure external domains for TLDs and
+      Second-Level Domains (SLDs) to prevent malicious DNS redirections for
+      well-known domains. This prevents users from unknowingly giving DNS
+      queries to third parties. This is even more important if those
+      well-known domains are not deploying DNSSEC, as the Enterprise network
+      could then even modify the DNS answers without detection.</t>
+
+      <t>The content of InternalDnsDomains and SplitDNSAllowed may be passed
+      to another (DNS) program for processing. As with any network input, the
+      content SHOULD be considered untrusted and handled accordingly. The
+      split DNS configuration assigned by an anonymous or unknown network
+      (e.g., coffee shops) MUST be ignored by the client.</t>
+    </section>
+
+    <section anchor="IANA" title="IANA Considerations">
+      <t>IANA is requested to add InternalDNSDomains and SplitDNSAllowed PvD
+      Keys to the Additional Information PvD Keys registry
+      (https://www.iana.org/assignments/pvds/pvds.xhtml).</t>
+    </section>
+
+    <section title="Acknowledgements">
+      <t>Thanks to Mohamed Boucadair for the discussion and comments.</t>
+    </section>
+  </middle>
+
+  <!--  *****BACK MATTER ***** -->
+
+  <back>
+    <references title="Normative References">
+      <?rfc include='reference.RFC.2119'?>
+
+      <?rfc include='reference.RFC.8174'?>
+
+      <?rfc include='reference.RFC.8484'?>
+
+      <?rfc include='reference.RFC.7858'?>
+
+      <?rfc include='reference.RFC.8310'?>
+
+      <?rfc include='reference.RFC.8801'?>
+
+      <?rfc include='reference.RFC.2826'?>
+
+      <?rfc include='reference.RFC.1918'?>
+    </references>
+
+    <references title="Informative References">
+      <?rfc include='reference.RFC.8499'?>
+
+      <?rfc include='reference.RFC.8598'?>
+
+      <?rfc include='reference.RFC.7626' ?>
+
+      <?rfc include='reference.RFC.7296' ?>
+
+      <?rfc include='reference.RFC.8146' ?>
+
+      <?rfc include='reference.RFC.4764' ?>
+
+      <?rfc include='reference.RFC.6950' ?>
+
+      <?rfc include='reference.RFC.7556' ?>
+
+      <?rfc include='reference.I-D.ietf-dprive-phase2-requirements'?>
+
+      <?rfc include='reference.I-D.btw-add-ipsecme-ike'?>
+
+      <?rfc include='reference.I-D.btw-add-home'?>
+
+      <!--      <?rfc include='reference.I-D.ietf-dnsop-terminology-ter'?> -->
+
+      <?rfc include='reference.I-D.arkko-farrell-arch-model-t'?>
+
+      <?rfc include='reference.I-D.pauly-add-deer'?>
+
+      <reference anchor="Firefox-Policy"
+                 target="https://github.com/mozilla/policy-templates/blob/master/README.md#dnsoverhttps">
+        <front>
+          <title>Policy templates for Firefox</title>
+
+          <author></author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="Chrome-Policy"
+                 target="https://support.google.com/chrome/a/answer/2657289?hl=en">
+        <front>
+          <title>Chrome policies for users or browsers</title>
+
+          <author>
+            <organization>The Unicode Consortium</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="Chrome-DoH"
+                 target="https://www.chromium.org/developers/dns-over-https">
+        <front>
+          <title>Chrome DNS over HTTPS (aka DoH)</title>
+
+          <author>
+            <organization>The Unicode Consortium</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="win10s"
+                 target="https://www.microsoft.com/en-us/windows/s-mode">
+        <front>
+          <title>Windows 10 in S mode</title>
+
+          <author>
+            <organization>Microsoft</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="Chromebook"
+                 target="https://support.google.com/chromebook/answer/3438631?hl=en">
+        <front>
+          <title>Chromebook security</title>
+
+          <author>
+            <organization>Microsoft</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="MDM-Apple"
+                 target="https://developer.apple.com/documentation/devicemanagement">
+        <front>
+          <title>Mobile Device Management</title>
+
+          <author>
+            <organization>Apple</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="OTA"
+                 target="https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/iPhoneOTAConfiguration/OTASecurity/OTASecurity.html">
+        <front>
+          <title>Over-the-Air Profile Delivery Concepts</title>
+
+          <author>
+            <organization>Apple</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="PEAP"
+                 target="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-beec-fb367325c0f9">
+        <front>
+          <title>[MS-PEAP]: Protected Extensible Authentication Protocol
+          (PEAP)</title>
+
+          <author>
+            <organization>Microsoft</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <!---->
+    </references>
+  </back>
+</rfc>
