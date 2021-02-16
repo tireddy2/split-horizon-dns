@@ -165,9 +165,9 @@
       network and to determine if the Enterprise networks allows split-horizon
       DNS. DNS clients can discover and authenticate encrypted DNS servers
       provided by the Enterprise network, for example using the techniques
-      proposed in <xref target="I-D.btw-add-home"></xref> and <xref
-      target="I-D.pauly-add-deer"></xref>. Discovery of encrypted DNS server
-      for roaming enterprise endpoints is discussed in <xref
+      proposed in <xref target="I-D.btw-add-home"></xref> and
+      [I-D.ietf-add-ddr]. Discovery of encrypted DNS server for roaming
+      enterprise endpoints is discussed in <xref
       target="I-D.btw-add-ipsecme-ike"></xref> (see <xref
       target="VPN"></xref>).</t>
 
@@ -481,8 +481,6 @@
       <!--      <?rfc include='reference.I-D.ietf-dnsop-terminology-ter'?> -->
 
       <?rfc include='reference.I-D.arkko-farrell-arch-model-t'?>
-
-      <?rfc include='reference.I-D.pauly-add-deer'?>
 
       <reference anchor="Firefox-Policy"
                  target="https://github.com/mozilla/policy-templates/blob/master/README.md#dnsoverhttps">

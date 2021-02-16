@@ -160,8 +160,8 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    Enterprise network and to determine if the Enterprise networks allows
    split-horizon DNS.  DNS clients can discover and authenticate
    encrypted DNS servers provided by the Enterprise network, for example
-   using the techniques proposed in [I-D.btw-add-home] and
-   [I-D.pauly-add-deer].  Discovery of encrypted DNS server for roaming
+   using the techniques proposed in [I-D.btw-add-home] and [I-D.ietf-
+
 
 
 
@@ -170,8 +170,8 @@ Reddy & Wing             Expires August 19, 2021                [Page 3]
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
-   enterprise endpoints is discussed in [I-D.btw-add-ipsecme-ike] (see
-   Section 8).
+   add-ddr].  Discovery of encrypted DNS server for roaming enterprise
+   endpoints is discussed in [I-D.btw-add-ipsecme-ike] (see Section 8).
 
    Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
    network configuration information.  [RFC8801] defines a mechanism for
@@ -568,11 +568,6 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
               Resolvers and Authoritative Servers", draft-ietf-dprive-
               phase2-requirements-02 (work in progress), November 2020.
 
-   [I-D.pauly-add-deer]
-              Pauly, T., Kinnear, E., Wood, C., McManus, P., and T.
-              Jensen, "Discovery of Equivalent Encrypted Resolvers",
-              draft-pauly-add-deer-00 (work in progress), November 2020.
-
    [MDM-Apple]
               Apple, "Mobile Device Management",
               <https://developer.apple.com/documentation/
@@ -611,16 +606,17 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
               DOI 10.17487/RFC7626, August 2015,
               <https://www.rfc-editor.org/info/rfc7626>.
 
+   [RFC8146]  Harkins, D., "Adding Support for Salted Password Databases
+              to EAP-pwd", RFC 8146, DOI 10.17487/RFC8146, April 2017,
+              <https://www.rfc-editor.org/info/rfc8146>.
+
+
 
 
 Reddy & Wing             Expires August 19, 2021               [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
-
-   [RFC8146]  Harkins, D., "Adding Support for Salted Password Databases
-              to EAP-pwd", RFC 8146, DOI 10.17487/RFC8146, April 2017,
-              <https://www.rfc-editor.org/info/rfc8146>.
 
    [RFC8499]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", BCP 219, RFC 8499, DOI 10.17487/RFC8499,
@@ -652,6 +648,10 @@ Authors' Addresses
    USA
 
    Email: danwing@gmail.com
+
+
+
+
 
 
 
