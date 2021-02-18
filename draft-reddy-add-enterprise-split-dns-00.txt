@@ -238,7 +238,7 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    quite common BYOD scenario.  The endpoint can use the discovered
    Enterprise Encrypted DNS server to only access DNS names for which
    the Enterprise network claims authority and use another public DNS
-   server for public domains or use the discovered Enterprise Encrypted
+   server for global domains or use the discovered Enterprise Encrypted
    DNS server to access both private domains and global domains.
 
    The scope of this document is restricted to unmanaged BYOD devices

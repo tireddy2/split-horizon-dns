@@ -230,7 +230,7 @@
       their network are managed by the IT team or MDM, especially in the quite
       common BYOD scenario. The endpoint can use the discovered Enterprise
       Encrypted DNS server to only access DNS names for which the Enterprise
-      network claims authority and use another public DNS server for public
+      network claims authority and use another public DNS server for global
       domains or use the discovered Enterprise Encrypted DNS server to access
       both private domains and global domains.</t>
 
