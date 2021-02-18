@@ -122,7 +122,7 @@
       to enforce enterprise-specific policies. These policies may be necessary
       to protect employees, customers, or enterprise network. It is out of the
       scope of this memo to characterize such policies nor assess that they
-      used to achieved the claimed intent. Nevertheless, Enterprise DNS
+      achieve the claimed intent.  Nevertheless, Enterprise DNS
       servers in place for these purposes act on DNS messages involving
       endpoints connected to the Enterprise network to enforce these policies.
       Therefore, if an endpoint uses a public encrypted DNS server, the
@@ -161,8 +161,7 @@
         </list></t>
 
       <t>To overcome the above threats, this document specifies a mechanism to
-      convey the DNS names over which an Enterprise network claims authority
-      and to determine if the Enterprise networks allows split-horizon DNS.
+      indicate which DNS zones are used for split-horizon DNS.
       DNS clients can discover and authenticate encrypted DNS servers provided
       by the Enterprise network, for example using the techniques proposed in
       <xref target="I-D.btw-add-home"></xref> and [I-D.ietf-add-ddr].
@@ -176,13 +175,13 @@
       resolution and proxy configuration. <xref target="RFC8801"></xref>
       defines a mechanism for discovering multiple Explicit PvDs on a single
       network and their Additional Information by means of an HTTP-over-TLS
-      query using an URI derived from the PvD ID. This set of additional
-      configuration information is referred to as a Web Provisioning Domain,
-      or a Web PvD. </t>
+      query using a URI derived from the PvD ID. This set of additional
+      configuration information is referred to as a Web Provisioning Domain
+      (Web PvD). </t>
 
       <t>This document defines one PvD Key:<list style="hanging">
-          <t hangText="The SplitDNSAllowed PvD Key:">which is used to
-          determine if the Enterprise network allows split-horizon DNS.</t>
+          <t hangText="The SplitDNSAllowed PvD Key:">which 
+          determines if the Enterprise network allows split-horizon DNS.</t>
         </list></t>
     </section>
 
@@ -212,8 +211,8 @@
       target="Chrome-DoH"></xref>.</t>
 
       <t>If mobile device management (MDM) (e.g., <xref
-      target="MDM-Apple"></xref>) is used to secure BYOD (Bring Your Own
-      Device), MDM can be used to configure OS/browser with the Enterprise
+      target="MDM-Apple"></xref>) secures a device,
+      MDM can configure OS/browser with the Enterprise
       provided DoH/DoT server. If an endpoint is on-boarded, for example,
       using Over-The-Air (OTA) enrollment <xref target="OTA"></xref> to
       provision the device with a certificate and configuration profile, the
@@ -223,7 +222,7 @@
       case, MDM is not installed on the device.</t>
 
       <t>Provisioning IT-managed devices, BYOD devices with MDM or
-      configuration profile with the Split DNS configuration is out side the
+      configuration profile with the Split DNS configuration is outside the
       scope of this document.</t>
 
       <t>Typically, Enterprise networks do not assume that all devices in
@@ -259,7 +258,7 @@
         </list></t>
     </section>
 
-    <section anchor="split-horizon" title="Split DNS ">
+    <section anchor="split-horizon" title="Split DNS">
       <t><xref target="RFC2826"></xref> "does not preclude private networks
       from operating their own private name spaces" but notes that if private
       networks "wish to make use of names uniquely defined for the global
@@ -318,7 +317,7 @@
       the devices attached to the Enterprise network. DNS resolution for other
       domains remains unchanged.</t>
 
-      <t>The dnsZones PvD Key is used to convey that the specified DNS domains
+      <t>The dnsZones PvD Key conveys the specified DNS domains
       must be resolved using an Enterprise DNS server. The DNS root zone (".")
       MUST be ignored if it appears in dnsZones. Other generic or global
       domains, such as Top-Level Domains (TLDs), similarly MUST be ignored if
