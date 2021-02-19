@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: August 22, 2021                                          Citrix
-                                                       February 18, 2021
+Expires: August 23, 2021                                          Citrix
+                                                       February 19, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -15,11 +15,11 @@ Expires: August 22, 2021                                          Citrix
 Abstract
 
    When split-horizon DNS is deployed by an enterprise, certain
-   enterprise domains are only resolvable by querying the enterprise's
-   DNS server.  DNS clients which use non-enterprise DNS servers need to
-   route those DNS domain queries to the enterprise's DNS server.  This
-   document informs DNS clients of split-horizon DNS, their DNS domains,
-   and is compatible with encrypted DNS.
+   enterprise domains are only resolvable by querying the network-
+   provided DNS server.  DNS clients which use DNS servers not provided
+   by the network need to route those DNS domain queries to the network-
+   provided DNS server.  This document informs DNS clients of split-
+   horizon DNS, their DNS domains, and is compatible with encrypted DNS.
 
 Status of This Memo
 
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 22, 2021.
+   This Internet-Draft will expire on August 23, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy & Wing             Expires August 22, 2021                [Page 1]
+Reddy & Wing             Expires August 23, 2021                [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -72,7 +72,7 @@ Table of Contents
    7.  An Example  . . . . . . . . . . . . . . . . . . . . . . . . .   7
    8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   8
    9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   8
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .   8
    11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
@@ -90,7 +90,7 @@ Table of Contents
    enforce their own DNS policies).  With the advent of DoT and DoH,
    such network blocking is more difficult, but the endpoint is unable
    to (properly) resolve split-horizon DNS domains which must query the
-   enterprise's DNS server.
+   network-provided DNS server.
 
    [RFC7626] discusses DNS privacy considerations in both "on the wire"
    (Section 2.4 of [RFC7626]) and "in the server" (Section 2.5 of
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy & Wing             Expires August 22, 2021                [Page 2]
+Reddy & Wing             Expires August 23, 2021                [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
@@ -117,8 +117,8 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    printers, IoT devices) and to enforce enterprise-specific policies.
    These policies may be necessary to protect employees, customers, or
    enterprise network.  It is out of the scope of this memo to
-   characterize such policies nor assess that they used to achieved the
-   claimed intent.  Nevertheless, Enterprise DNS servers in place for
+   characterize such policies nor assess that they achieve the claimed
+   intent.  Nevertheless, network-provided DNS servers in place for
    these purposes act on DNS messages involving endpoints connected to
    the Enterprise network to enforce these policies.  Therefore, if an
    endpoint uses a public encrypted DNS server, the desired enterprise
@@ -155,37 +155,34 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
       [I-D.arkko-farrell-arch-model-t] for a discussion on the need for
       more awareness about attacks from within closed domains.
 
-   To overcome the above threats, this document specifies a mechanism to
-   convey the DNS names over which an Enterprise network claims
-   authority and to determine if the Enterprise networks allows split-
-   horizon DNS.  DNS clients can discover and authenticate encrypted DNS
-   servers provided by the Enterprise network, for example using the
-   techniques proposed in [I-D.btw-add-home] and [I-D.ietf-add-ddr].
+   This document specifies a mechanism to indicate which DNS zones are
+   used for split-horizon DNS.  DNS clients can discover and
+   authenticate encrypted DNS servers provided by the Enterprise
+   network, for example using the techniques proposed in
+   [I-D.btw-add-home] and [I-D.ietf-add-ddr].  Discovery of encrypted
+   DNS server for roaming enterprise endpoints is discussed in
+   [I-D.btw-add-ipsecme-ike] (see Section 8).
 
 
 
-
-Reddy & Wing             Expires August 22, 2021                [Page 3]
+Reddy & Wing             Expires August 23, 2021                [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
-
-   Discovery of encrypted DNS server for roaming enterprise endpoints is
-   discussed in [I-D.btw-add-ipsecme-ike] (see Section 8).
 
    Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
    network configuration information that clients can use to access
    networks, including rules for DNS resolution and proxy configuration.
    [RFC8801] defines a mechanism for discovering multiple Explicit PvDs
    on a single network and their Additional Information by means of an
-   HTTP-over-TLS query using an URI derived from the PvD ID.  This set
-   of additional configuration information is referred to as a Web
-   Provisioning Domain, or a Web PvD.
+   HTTP-over-TLS query using a URI derived from the PvD ID.  This set of
+   additional configuration information is referred to as a Web
+   Provisioning Domain (Web PvD).
 
    This document defines one PvD Key:
 
-   The SplitDNSAllowed PvD Key:  which is used to determine if the
-      Enterprise network allows split-horizon DNS.
+   The SplitDNSAllowed PvD Key:  which determines if the Enterprise
+      network allows split-horizon DNS.
 
 2.  Terminology
 
@@ -195,7 +192,8 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    14 [RFC2119][RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-   This document makes use of the terms defined in [RFC8499].
+   This document makes use of the terms defined in [RFC8499].  The terms
+   "Private DNS", "Global DNS" and "Split DNS" are defined in [RFC8499].
 
    'Encrypted DNS' refers to a DNS protocol that provides an encrypted
    channel between a DNS client and server (e.g., DoT, DoH, or DoQ).
@@ -203,43 +201,42 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
 3.  Scope of the Document
 
    If a device is managed by an enterprise's IT department, the device
-   can be configured to use Enterprise-provided encrypted DNS servers.
-   This configuration may be manual or rely upon whatever deployed
-   device management tool in an Enterprise network.  For example,
-   customizing Firefox using Group Policy to use the Enterprise DoH
-   server is discussed in [Firefox-Policy] for Windows and MacOS, and
-   setting Chrome policies is discussed in [Chrome-Policy] and
-   [Chrome-DoH].
+   can be configured to use a specific encrypted DNS server.  This
+   configuration may be manual or rely upon whatever deployed device
+   management tool in an Enterprise network.  For example, customizing
+   Firefox using Group Policy to use the Enterprise DoH server is
+   discussed in [Firefox-Policy] for Windows and MacOS, and setting
+   Chrome policies is discussed in [Chrome-Policy] and [Chrome-DoH].
 
-   If mobile device management (MDM) (e.g., [MDM-Apple]) is used to
-   secure BYOD (Bring Your Own Device), MDM can be used to configure OS/
-   browser with the Enterprise provided DoH/DoT server.  If an endpoint
-   is on-boarded, for example, using Over-The-Air (OTA) enrollment [OTA]
-   to provision the device with a certificate and configuration profile,
-   the configuration profile can include the authentication domain name
-   (ADN) of the encrypted DNS server.  The OS/Browser can use the
+   If mobile device management (MDM) (e.g., [MDM-Apple]) secures a
+   device, MDM can configure OS/browser with a specific encrypted DNS
+   server.  If an endpoint is on-boarded, for example, using Over-The-
+   Air (OTA) enrollment [OTA] to provision the device with a certificate
+   and configuration profile, the configuration profile can include the
+   authentication domain name (ADN) of the encrypted DNS server.  The
+   OS/Browser can use the configuration profile to use a specific
+   encrypted DNS server.  In this case, MDM is not installed on the
+   device.
 
 
 
-Reddy & Wing             Expires August 22, 2021                [Page 4]
+
+Reddy & Wing             Expires August 23, 2021                [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
 
-   configuration profile to use the Enterprise provided encrypted DNS
-   server.  In this case, MDM is not installed on the device.
-
    Provisioning IT-managed devices, BYOD devices with MDM or
-   configuration profile with the Split DNS configuration is out side
-   the scope of this document.
+   configuration profile with the Split DNS configuration is outside the
+   scope of this document.
 
    Typically, Enterprise networks do not assume that all devices in
    their network are managed by the IT team or MDM, especially in the
    quite common BYOD scenario.  The endpoint can use the discovered
-   Enterprise Encrypted DNS server to only access DNS names for which
-   the Enterprise network claims authority and use another public DNS
-   server for global domains or use the discovered Enterprise Encrypted
-   DNS server to access both private domains and global domains.
+   network-provided DNS server to only access DNS names for which the
+   Enterprise network claims authority and use another public DNS server
+   for global domains or use the discovered network-provided DNS server
+   to access both private domains and global domains.
 
    The scope of this document is restricted to unmanaged BYOD devices
    without a configuration profile.  The unmanaged BYOD devices use the
@@ -274,16 +271,16 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    server gives different responses to queries from the Internet than
    they do to network-provided DNS servers; while some deployments
    differentiate internal queries from public queries by the source IP
+   address, the concerns in Section 3.1.1 of [RFC6950] relating to
+   trusting source IP addresses apply to such deployments.
 
 
 
-Reddy & Wing             Expires August 22, 2021                [Page 5]
+
+Reddy & Wing             Expires August 23, 2021                [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
-
-   address, the concerns in Section 3.1.1 of [RFC6950] relating to
-   trusting source IP addresses apply to such deployments.
 
    When the internal address space range is private [RFC1918], this
    makes it both easier for the server to discriminate public from
@@ -327,19 +324,19 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    to the Enterprise network.  DNS resolution for other domains remains
    unchanged.
 
-   The dnsZones PvD Key is used to convey that the specified DNS domains
-   must be resolved using an Enterprise DNS server.  The DNS root zone
+   The dnsZones PvD Key conveys the specified DNS domains must be
+   resolved using an network-provided DNS server.  The DNS root zone
    (".") MUST be ignored if it appears in dnsZones.  Other generic or
+   global domains, such as Top-Level Domains (TLDs), similarly MUST be
+   ignored if they appear in dnsZones.
 
 
 
-Reddy & Wing             Expires August 22, 2021                [Page 6]
+
+Reddy & Wing             Expires August 23, 2021                [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration       February 2021
 
-
-   global domains, such as Top-Level Domains (TLDs), similarly MUST be
-   ignored if they appear in dnsZones.
 
    For each dnsZones entry, the client MUST use the network-provided DNS
    servers as the only resolvers for the listed domains and its
@@ -354,13 +351,13 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    false.
 
    Split DNS configurations may be preferable to sending all DNS queries
-   to an Enterprise DNS server in some deployments.  This allows an
-   endpoint to only send DNS queries for the enterprise to the network-
-   provided DNS servers.  The Enterprise remains unaware of all non-
-   enterprise (DNS) activity of the user.
+   to an network-provided DNS server in some deployments.  This allows
+   an endpoint to only send DNS queries for the enterprise to the
+   network-provided DNS servers.  The Enterprise remains unaware of all
+   non-enterprise (DNS) activity of the user.
 
-   It also allows the Enterprise DNS servers to only be configured for
-   the enterprise DNS domains, which removes the legal and technical
+   It also allows the network-provided DNS servers to only be configured
+   for the enterprise DNS domains, which removes the legal and technical
    responsibility of the enterprise to resolve every DNS domain
    potentially asked for by the endpoints.  For example, if the
    SplitDNSAllowed key specifies "example.test" and SplitDNSAllowed is
@@ -380,20 +377,6 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    The following example shows how the JSON keys defined in this
    document can be used:
 
-
-
-
-
-
-
-
-
-
-Reddy & Wing             Expires August 22, 2021                [Page 7]
-
-Internet-Draft       Split-Horizon DNS Configuration       February 2021
-
-
       {
         "identifier": "cafe.example.com.",
         "expires": "2020-05-23T06:00:00Z",
@@ -401,6 +384,15 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
         "SplitDNSAllowed": True,
         "dnsZones:": ["city.other.test", "example.com"]
       }
+
+
+
+
+
+Reddy & Wing             Expires August 23, 2021                [Page 7]
+
+Internet-Draft       Split-Horizon DNS Configuration       February 2021
+
 
    The JSON keys "identifier", "expires", and "prefixes" are defined in
    [RFC8801].
@@ -420,11 +412,10 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    Enterprise network can be securely discovered by the endpoint using
    the ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types defined
    in [I-D.btw-add-ipsecme-ike].  For split-tunnel VPN configurations,
-   the endpoint uses the Enterprise-provided encrypted DNS server to
-   resolve domain names for which the Enterprise network claims
-   authority.  For non-split-tunnel VPN configurations, the endpoint
-   uses the Enterprise-provided encrypted DNS server to resolve both
-   global and private domain names.
+   the endpoint uses the discovered encrypted DNS server to resolve
+   domain names for which the Enterprise network claims authority.  For
+   non-split-tunnel VPN configurations, the endpoint uses the discovered
+   encrypted DNS server to resolve both global and private domain names.
 
    Other VPN tunnel types have similar configuration capabilities, not
    detailed here.
@@ -443,13 +434,6 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    to conform to the requirements discussed in
    [I-D.ietf-dprive-phase2-requirements].
 
-
-
-Reddy & Wing             Expires August 22, 2021                [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration       February 2021
-
-
 10.  Security Considerations
 
    Clients may want to preconfigure global domains for TLDs and Second-
@@ -458,6 +442,13 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    queries to third parties.  This is even more important if those well-
    known domains are not deploying DNSSEC, as the Enterprise network
    could then even modify the DNS answers without detection.
+
+
+
+Reddy & Wing             Expires August 23, 2021                [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration       February 2021
+
 
    The content of dnsZones and SplitDNSAllowed may be passed to another
    (DNS) program for processing.  As with any network input, the content
@@ -499,13 +490,6 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
               Layer Security (TLS)", RFC 7858, DOI 10.17487/RFC7858, May
               2016, <https://www.rfc-editor.org/info/rfc7858>.
 
-
-
-Reddy & Wing             Expires August 22, 2021                [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration       February 2021
-
-
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
@@ -514,6 +498,13 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
               for DNS over TLS and DNS over DTLS", RFC 8310,
               DOI 10.17487/RFC8310, March 2018,
               <https://www.rfc-editor.org/info/rfc8310>.
+
+
+
+Reddy & Wing             Expires August 23, 2021                [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration       February 2021
+
 
    [RFC8484]  Hoffman, P. and P. McManus, "DNS Queries over HTTPS
               (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
@@ -550,18 +541,6 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
               Internet Threat Model", draft-arkko-farrell-arch-model-
               t-04 (work in progress), July 2020.
 
-
-
-
-
-
-
-
-Reddy & Wing             Expires August 22, 2021               [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration       February 2021
-
-
    [I-D.btw-add-home]
               Boucadair, M., Reddy.K, T., Wing, D., Cook, N., and T.
               Jensen, "DHCP and Router Advertisement Options for
@@ -573,6 +552,15 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
               "Internet Key Exchange Protocol Version 2 (IKEv2)
               Configuration for Encrypted DNS", draft-btw-add-ipsecme-
               ike-01 (work in progress), September 2020.
+
+
+
+
+
+Reddy & Wing             Expires August 23, 2021               [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration       February 2021
+
 
    [I-D.ietf-dprive-phase2-requirements]
               Livingood, J., Mayrhofer, A., and B. Overeinder, "DNS
@@ -610,14 +598,6 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
               (IKEv2)", STD 79, RFC 7296, DOI 10.17487/RFC7296, October
               2014, <https://www.rfc-editor.org/info/rfc7296>.
 
-
-
-
-Reddy & Wing             Expires August 22, 2021               [Page 11]
-
-Internet-Draft       Split-Horizon DNS Configuration       February 2021
-
-
    [RFC7556]  Anipko, D., Ed., "Multiple Provisioning Domain
               Architecture", RFC 7556, DOI 10.17487/RFC7556, June 2015,
               <https://www.rfc-editor.org/info/rfc7556>.
@@ -629,6 +609,14 @@ Internet-Draft       Split-Horizon DNS Configuration       February 2021
    [RFC8146]  Harkins, D., "Adding Support for Salted Password Databases
               to EAP-pwd", RFC 8146, DOI 10.17487/RFC8146, April 2017,
               <https://www.rfc-editor.org/info/rfc8146>.
+
+
+
+
+Reddy & Wing             Expires August 23, 2021               [Page 11]
+
+Internet-Draft       Split-Horizon DNS Configuration       February 2021
+
 
    [RFC8499]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", BCP 219, RFC 8499, DOI 10.17487/RFC8499,
@@ -669,4 +657,16 @@ Authors' Addresses
 
 
 
-Reddy & Wing             Expires August 22, 2021               [Page 12]
+
+
+
+
+
+
+
+
+
+
+
+
+Reddy & Wing             Expires August 23, 2021               [Page 12]

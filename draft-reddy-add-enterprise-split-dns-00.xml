@@ -83,11 +83,11 @@
 
     <abstract>
       <t>When split-horizon DNS is deployed by an enterprise, certain
-      enterprise domains are only resolvable by querying the enterprise's DNS
-      server. DNS clients which use non-enterprise DNS servers need to route
-      those DNS domain queries to the enterprise's DNS server. This document
-      informs DNS clients of split-horizon DNS, their DNS domains, and is
-      compatible with encrypted DNS.</t>
+      enterprise domains are only resolvable by querying the network-provided
+      DNS server. DNS clients which use DNS servers not provided by the
+      network need to route those DNS domain queries to the network-provided
+      DNS server. This document informs DNS clients of split-horizon DNS,
+      their DNS domains, and is compatible with encrypted DNS.</t>
     </abstract>
   </front>
 
@@ -101,7 +101,7 @@
       enforce their own DNS policies). With the advent of DoT and DoH, such
       network blocking is more difficult, but the endpoint is unable to
       (properly) resolve split-horizon DNS domains which must query the
-      enterprise's DNS server.</t>
+      network-provided DNS server.</t>
 
       <t><xref target="RFC7626"></xref> discusses DNS privacy considerations
       in both "on the wire" (Section 2.4 of <xref target="RFC7626"></xref>)
@@ -122,9 +122,9 @@
       to enforce enterprise-specific policies. These policies may be necessary
       to protect employees, customers, or enterprise network. It is out of the
       scope of this memo to characterize such policies nor assess that they
-      achieve the claimed intent.  Nevertheless, Enterprise DNS
-      servers in place for these purposes act on DNS messages involving
-      endpoints connected to the Enterprise network to enforce these policies.
+      achieve the claimed intent. Nevertheless, network-provided DNS servers
+      in place for these purposes act on DNS messages involving endpoints
+      connected to the Enterprise network to enforce these policies.
       Therefore, if an endpoint uses a public encrypted DNS server, the
       desired enterprise protection level and enforcement will be bypassed and
       thus nullified.</t>
@@ -160,13 +160,13 @@
           domains.</t>
         </list></t>
 
-      <t>To overcome the above threats, this document specifies a mechanism to
-      indicate which DNS zones are used for split-horizon DNS.
-      DNS clients can discover and authenticate encrypted DNS servers provided
-      by the Enterprise network, for example using the techniques proposed in
-      <xref target="I-D.btw-add-home"></xref> and [I-D.ietf-add-ddr].
-      Discovery of encrypted DNS server for roaming enterprise endpoints is
-      discussed in <xref target="I-D.btw-add-ipsecme-ike"></xref> (see <xref
+      <t>This document specifies a mechanism to indicate which DNS zones are
+      used for split-horizon DNS. DNS clients can discover and authenticate
+      encrypted DNS servers provided by the Enterprise network, for example
+      using the techniques proposed in <xref target="I-D.btw-add-home"></xref>
+      and [I-D.ietf-add-ddr]. Discovery of encrypted DNS server for roaming
+      enterprise endpoints is discussed in <xref
+      target="I-D.btw-add-ipsecme-ike"></xref> (see <xref
       target="VPN"></xref>).</t>
 
       <t>Provisioning Domains (PvDs) are defined in <xref
@@ -177,11 +177,11 @@
       network and their Additional Information by means of an HTTP-over-TLS
       query using a URI derived from the PvD ID. This set of additional
       configuration information is referred to as a Web Provisioning Domain
-      (Web PvD). </t>
+      (Web PvD).</t>
 
       <t>This document defines one PvD Key:<list style="hanging">
-          <t hangText="The SplitDNSAllowed PvD Key:">which 
-          determines if the Enterprise network allows split-horizon DNS.</t>
+          <t hangText="The SplitDNSAllowed PvD Key:">which determines if the
+          Enterprise network allows split-horizon DNS.</t>
         </list></t>
     </section>
 
@@ -193,7 +193,8 @@
       only when, they appear in all capitals, as shown here.</t>
 
       <t>This document makes use of the terms defined in <xref
-      target="RFC8499"></xref>.</t>
+      target="RFC8499"></xref>. The terms "Private DNS", "Global DNS" and
+      "Split DNS" are defined in <xref target="RFC8499"></xref>. </t>
 
       <t>'Encrypted DNS' refers to a DNS protocol that provides an encrypted
       channel between a DNS client and server (e.g., DoT, DoH, or DoQ).</t>
@@ -201,7 +202,7 @@
 
     <section anchor="Scope" title="Scope of the Document">
       <t>If a device is managed by an enterprise's IT department, the device
-      can be configured to use Enterprise-provided encrypted DNS servers. This
+      can be configured to use a specific encrypted DNS server. This
       configuration may be manual or rely upon whatever deployed device
       management tool in an Enterprise network. For example, customizing
       Firefox using Group Policy to use the Enterprise DoH server is discussed
@@ -211,15 +212,14 @@
       target="Chrome-DoH"></xref>.</t>
 
       <t>If mobile device management (MDM) (e.g., <xref
-      target="MDM-Apple"></xref>) secures a device,
-      MDM can configure OS/browser with the Enterprise
-      provided DoH/DoT server. If an endpoint is on-boarded, for example,
-      using Over-The-Air (OTA) enrollment <xref target="OTA"></xref> to
-      provision the device with a certificate and configuration profile, the
-      configuration profile can include the authentication domain name (ADN)
-      of the encrypted DNS server. The OS/Browser can use the configuration
-      profile to use the Enterprise provided encrypted DNS server. In this
-      case, MDM is not installed on the device.</t>
+      target="MDM-Apple"></xref>) secures a device, MDM can configure
+      OS/browser with a specific encrypted DNS server. If an endpoint is
+      on-boarded, for example, using Over-The-Air (OTA) enrollment <xref
+      target="OTA"></xref> to provision the device with a certificate and
+      configuration profile, the configuration profile can include the
+      authentication domain name (ADN) of the encrypted DNS server. The
+      OS/Browser can use the configuration profile to use a specific encrypted
+      DNS server. In this case, MDM is not installed on the device.</t>
 
       <t>Provisioning IT-managed devices, BYOD devices with MDM or
       configuration profile with the Split DNS configuration is outside the
@@ -227,11 +227,11 @@
 
       <t>Typically, Enterprise networks do not assume that all devices in
       their network are managed by the IT team or MDM, especially in the quite
-      common BYOD scenario. The endpoint can use the discovered Enterprise
-      Encrypted DNS server to only access DNS names for which the Enterprise
-      network claims authority and use another public DNS server for global
-      domains or use the discovered Enterprise Encrypted DNS server to access
-      both private domains and global domains.</t>
+      common BYOD scenario. The endpoint can use the discovered
+      network-provided DNS server to only access DNS names for which the
+      Enterprise network claims authority and use another public DNS server
+      for global domains or use the discovered network-provided DNS server to
+      access both private domains and global domains.</t>
 
       <t>The scope of this document is restricted to unmanaged BYOD devices
       without a configuration profile. The unmanaged BYOD devices use the
@@ -300,7 +300,7 @@
       This Additional Information JSON object SHOULD include both the
       "dnsZones" and "SplitDNSAllowed" keys to define the DNS domains for
       which the Enterprise network claims authority and to indicate if the
-      Enterprise network allows split-horizon DNS. </t>
+      Enterprise network allows split-horizon DNS.</t>
     </section>
 
     <section anchor="dnsZones" title="PvD dnsZones">
@@ -308,7 +308,7 @@
       internal resources tend to have private DNS names, an enterprise can
       also run a different version of its global domain on its internal
       network, and require the use of network-provided DNS servers to get
-      resolved. </t>
+      resolved.</t>
 
       <t>The PvD Key dnsZones is defined in <xref target="RFC8801"></xref>.
       The PvD Key dnsZones adds support for DNS domains for which the
@@ -317,8 +317,8 @@
       the devices attached to the Enterprise network. DNS resolution for other
       domains remains unchanged.</t>
 
-      <t>The dnsZones PvD Key conveys the specified DNS domains
-      must be resolved using an Enterprise DNS server. The DNS root zone (".")
+      <t>The dnsZones PvD Key conveys the specified DNS domains must be
+      resolved using an network-provided DNS server. The DNS root zone (".")
       MUST be ignored if it appears in dnsZones. Other generic or global
       domains, such as Top-Level Domains (TLDs), similarly MUST be ignored if
       they appear in dnsZones.</t>
@@ -336,13 +336,13 @@
       false.</t>
 
       <t>Split DNS configurations may be preferable to sending all DNS queries
-      to an Enterprise DNS server in some deployments. This allows an endpoint
-      to only send DNS queries for the enterprise to the network-provided DNS
-      servers. The Enterprise remains unaware of all non-enterprise (DNS)
-      activity of the user.</t>
+      to an network-provided DNS server in some deployments. This allows an
+      endpoint to only send DNS queries for the enterprise to the
+      network-provided DNS servers. The Enterprise remains unaware of all
+      non-enterprise (DNS) activity of the user.</t>
 
-      <t>It also allows the Enterprise DNS servers to only be configured for
-      the enterprise DNS domains, which removes the legal and technical
+      <t>It also allows the network-provided DNS servers to only be configured
+      for the enterprise DNS domains, which removes the legal and technical
       responsibility of the enterprise to resolve every DNS domain potentially
       asked for by the endpoints. For example, if the SplitDNSAllowed key
       specifies "example.test" and SplitDNSAllowed is set to true, then
@@ -391,11 +391,11 @@
       Enterprise network can be securely discovered by the endpoint using the
       ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types defined in
       <xref target="I-D.btw-add-ipsecme-ike"></xref>. For split-tunnel VPN
-      configurations, the endpoint uses the Enterprise-provided encrypted DNS
-      server to resolve domain names for which the Enterprise network claims
-      authority. For non-split-tunnel VPN configurations, the endpoint uses
-      the Enterprise-provided encrypted DNS server to resolve both global and
-      private domain names.</t>
+      configurations, the endpoint uses the discovered encrypted DNS server to
+      resolve domain names for which the Enterprise network claims authority.
+      For non-split-tunnel VPN configurations, the endpoint uses the
+      discovered encrypted DNS server to resolve both global and private
+      domain names.</t>
 
       <t>Other VPN tunnel types have similar configuration capabilities, not
       detailed here.</t>
