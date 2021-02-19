@@ -198,6 +198,12 @@
 
       <t>'Encrypted DNS' refers to a DNS protocol that provides an encrypted
       channel between a DNS client and server (e.g., DoT, DoH, or DoQ).</t>
+
+      <t>The term "enterprise network" in this document extends to a wide
+      variety of deployment scenarios. For example, an "enterprise" can be a
+      Small Office, Home Office or Corporation. The clients that connect to a
+      enterprise network can securely authenticate that network and the client
+      is sure that it has connected to the network it was expecting. </t>
     </section>
 
     <section anchor="Scope" title="Scope of the Document">
@@ -437,8 +443,8 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>Thanks to Mohamed Boucadair and Vinny Parla for the discussion and
-      comments.</t>
+      <t>Thanks to Mohamed Boucadair, Jim Reid and Vinny Parla for the
+      discussion and comments.</t>
     </section>
   </middle>
 
