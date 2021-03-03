@@ -388,24 +388,31 @@
       configuration assigned by an anonymous or unknown network (e.g., coffee
       shops) MUST be ignored by the client.</t>
 
-      <t>The client can query a public resolver to identify if the domains
+         <t>To comply with <xref target="RFC2826"></xref> the split-horizon
+              DNS zone must either not exist in the global DNS hierarchy or
+              must be authoritatively delegated to the split-horizon DNS server
+              to answer.  To determine if the zone does not exist, the client can query a public resolver to identify if the domains
       specified in the dnsZones Key do not exist in the global DNS.
       Authenticated denial of existence using NSEC3 or NSEC records can be
       used by a client to validate that a certain domain name does not exist
       in the global DNS. <xref target="RFC7149"></xref> recommends validation
-      of responses using NSEC3. Alternatively, if the client does not want to
-      leak the private domain names to a public resolver, it can store the top
-      well-known domain names and TLDs (e.g., <xref target="TOP"></xref>)
-      locally (e.g., using Bloom filters) to determine the domains specified
-      in the dnsZones Key indeed do not exist in the global DNS. The local
-      database of well-known domain names and TLDs needs to be updated
-      periodically. </t>
+              of responses using NSEC3.</t>    
 
       <t>An enterprise can run a different version of its public domain on its
       internal network. If the domains specified in the dnsZones Key exist in
       the global DNS, an implementation can interactively ask the user to
       whitelist the domains. Any updates to this whitelist of domain names can
-      happen via explicit end-user interaction.</t>
+      happen via explicit end-user interaction.  To avoid such user interaction,
+      another approach is a work-in-progress [I-D.wing].</t>
+              
+              <t>Note both mechanisms query the public
+              DNS with the split-horizon domain name, which some 
+      operators might wish to remain private.  To avoid this problem, the DNS client can store the top
+      well-known domain names and TLDs (e.g., <xref target="TOP"></xref>)
+      locally (e.g., using Bloom filters) to determine the domains specified
+      in the dnsZones Key indeed do not exist in the global DNS. The local
+      database of well-known domain names and TLDs needs to be updated
+      periodically.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
