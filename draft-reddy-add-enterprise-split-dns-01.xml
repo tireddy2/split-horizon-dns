@@ -406,13 +406,8 @@
       another approach is a work-in-progress [I-D.wing].</t>
               
               <t>Note both mechanisms query the public
-              DNS with the split-horizon domain name, which some 
-      operators might wish to remain private.  To avoid this problem, the DNS client can store the top
-      well-known domain names and TLDs (e.g., <xref target="TOP"></xref>)
-      locally (e.g., using Bloom filters) to determine the domains specified
-      in the dnsZones Key indeed do not exist in the global DNS. The local
-      database of well-known domain names and TLDs needs to be updated
-      periodically.</t>
+              DNS with the split-horizon domain name (but not host-identifying FQDNs) and
+                   some operators might wish that domain name to remain private.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
