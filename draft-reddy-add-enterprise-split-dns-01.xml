@@ -188,7 +188,10 @@
       access both private domains and global domains.</t>
 
       <t>The scope of this document is restricted to unmanaged BYOD devices
-      without a configuration profile. The unmanaged BYOD devices use the
+      without a configuration profile and split DNS configuation on explicitly
+      trusted networks. It is similar to the way users explictly disable VPN
+      connection in specific networks and VPN connection is enabled by default
+      in other networks for privacy. The unmanaged BYOD devices use the
       credentials (user name and password) provided by the IT admin to
       mutually authenticate to the Enterprise WLAN Access Point (e.g.,
       PEAP-MSCHAPv2 <xref target="PEAP"></xref>, EAP-pwd <xref
@@ -279,7 +282,11 @@
       <t>For each dnsZones entry, the client can use the network-provided DNS
       servers to resolve the the listed domains and its subdomains. Other
       domain names may be resolved using some other public resolvers that are
-      configured independently.</t>
+      configured independently. For example, if the dnsZones key specifies
+      "example.test", then "example.test", "www.example.test", and
+      "mail.eng.example.test" can be resolved using the network-provided DNS
+      resolver(s), but "otherexample.test" and "ple.test" can be resolved
+      using the system's public resolver(s).</t>
     </section>
 
     <section title="An Example">
@@ -354,15 +361,22 @@
 
       <t>The client can query a public resolver to identify if the domains
       specified in the dnsZones Key do not exist in the global DNS.
-      Authenticated denial of existence using NSEC3 or NSEC records allows a
-      client to validate that a certain domain name does not exist in the
-      global DNS. <xref target="RFC7149"></xref> recommends validation of
-      responses using NSEC3. Alternatively, if the client does not want to
-      leak the private domain names to a public resolver, it can store the
-      well-known domain names locally (e.g., using Bloom filters) to determine
-      the domains specified in the dnsZones Key do not exist in the global
-      DNS. The local database of well-known domain names can be updated
+      Authenticated denial of existence using NSEC3 or NSEC records can be
+      used by a client to validate that a certain domain name does not exist
+      in the global DNS. <xref target="RFC7149"></xref> recommends validation
+      of responses using NSEC3. Alternatively, if the client does not want to
+      leak the private domain names to a public resolver, it can store the top
+      well-known domain names and TLDs (e.g., <xref target="TOP"></xref>)
+      locally (e.g., using Bloom filters) to determine the domains specified
+      in the dnsZones Key indeed do not exist in the global DNS. The local
+      database of well-known domain names and TLDs can be updated
       periodically. </t>
+
+      <t>However, an enterprise can run a different version of its public
+      domain on its internal network. If the domains specified in the dnsZones
+      Key exist in the global DNS, an implementation can interactively ask the
+      user to whitelist the domains. Any updates to this whitelist of domain
+      names can happen via explicit end-user interaction.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
@@ -382,12 +396,6 @@
       <?rfc include='reference.RFC.2119'?>
 
       <?rfc include='reference.RFC.8174'?>
-
-      <?rfc include='reference.RFC.8484'?>
-
-      <?rfc include='reference.RFC.7858'?>
-
-      <?rfc include='reference.RFC.8310'?>
 
       <?rfc include='reference.RFC.8801'?>
 
@@ -418,8 +426,6 @@
       <?rfc include='reference.I-D.ietf-dprive-phase2-requirements'?>
 
       <?rfc include='reference.I-D.btw-add-ipsecme-ike'?>
-
-      <?rfc include='reference.I-D.arkko-farrell-arch-model-t'?>
 
       <reference anchor="Firefox-Policy"
                  target="https://github.com/mozilla/policy-templates/blob/master/README.md#dnsoverhttps">
@@ -515,6 +521,19 @@
         <front>
           <title>[MS-PEAP]: Protected Extensible Authentication Protocol
           (PEAP)</title>
+
+          <author>
+            <organization>Microsoft</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="TOP"
+                 target="http://s3-us-west-1.amazonaws.com/umbrella-static/index.html">
+        <front>
+          <title>Top 1 million domains and TLDs</title>
 
           <author>
             <organization>Microsoft</organization>
