@@ -131,6 +131,11 @@
       query using a URI derived from the PvD ID. This set of additional
       configuration information is referred to as a Web Provisioning Domain
       (Web PvD).</t>
+
+      <t>This document defines one PvD Key:<list style="hanging">
+          <t hangText="The SplitDNSAllowed PvD Key:">which determines if the
+          Enterprise network allows split-horizon DNS.</t>
+        </list></t>
     </section>
 
     <section anchor="notation" title="Terminology">
@@ -254,9 +259,10 @@
 
       <t>The PvD RA option defined in <xref target="RFC8801"></xref> SHOULD
       set the H-flag to indicate that Additional Information is available.
-      This Additional Information JSON object SHOULD include the "dnsZones"
-      key to define the DNS domains for which the Enterprise network claims
-      authority.</t>
+      This Additional Information JSON object SHOULD include both the
+      "dnsZones" and "SplitDNSAllowed" keys to define the DNS domains for
+      which the Enterprise network claims authority and to indicate if the
+      Enterprise network allows split-horizon DNS.</t>
     </section>
 
     <section anchor="dnsZones" title="PvD dnsZones">
@@ -289,6 +295,28 @@
       using the system's public resolver(s).</t>
     </section>
 
+    <section anchor="SplitDNSAllowed" title="PvD SplitDNSAllowed Key">
+      <t>If an Enterprise network restricts all the DNS queries to be sent to
+      the network-provided DNS server, SplitDNSAllowed will be set to
+      false.</t>
+
+      <t>Split DNS configurations may be preferable to sending all DNS queries
+      to an network-provided DNS server in some deployments. This allows an
+      endpoint to only send DNS queries for the enterprise to the
+      network-provided DNS servers. The Enterprise remains unaware of all
+      non-enterprise (DNS) activity of the user. It also allows the
+      network-provided DNS servers to only be configured for the enterprise
+      DNS domains, which removes the legal and technical responsibility of the
+      enterprise to resolve every DNS domain potentially asked for by the
+      endpoints. </t>
+
+      <t>If SplitDNSAllowed is set to false, the client should not trust the
+      SplitDNSAllowed key in case of connecting to unknown or untrusted
+      networks (e.g., coffee shops or hotel networks). For example, if
+      SplitDNSAllowed is set to false, client can choose to use a alternate
+      network to resolve the global domain names.</t>
+    </section>
+
     <section title="An Example">
       <t>The following example shows how the JSON keys defined in this
       document can be used:</t>
@@ -298,6 +326,7 @@
      "identifier": "cafe.example.com.",
      "expires": "2020-05-23T06:00:00Z",
      "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
+     "SplitDNSAllowed": True, 
      "dnsZones:": ["city.other.test", "example.com"]
    }]]></artwork>
         </figure></t>
@@ -353,11 +382,11 @@
       well-known domains are not deploying DNSSEC, as the Enterprise network
       could then even modify the DNS answers without detection.</t>
 
-      <t>The content of dnsZones may be passed to another (DNS) program for
-      processing. As with any network input, the content SHOULD be considered
-      untrusted and handled accordingly. The split DNS configuration assigned
-      by an anonymous or unknown network (e.g., coffee shops) MUST be ignored
-      by the client.</t>
+      <t>The content of dnsZones and SplitDNSAllowed may be passed to another
+      (DNS) program for processing. As with any network input, the content
+      SHOULD be considered untrusted and handled accordingly. The split DNS
+      configuration assigned by an anonymous or unknown network (e.g., coffee
+      shops) MUST be ignored by the client.</t>
 
       <t>The client can query a public resolver to identify if the domains
       specified in the dnsZones Key do not exist in the global DNS.
@@ -369,18 +398,20 @@
       well-known domain names and TLDs (e.g., <xref target="TOP"></xref>)
       locally (e.g., using Bloom filters) to determine the domains specified
       in the dnsZones Key indeed do not exist in the global DNS. The local
-      database of well-known domain names and TLDs can be updated
+      database of well-known domain names and TLDs needs to be updated
       periodically. </t>
 
-      <t>However, an enterprise can run a different version of its public
-      domain on its internal network. If the domains specified in the dnsZones
-      Key exist in the global DNS, an implementation can interactively ask the
-      user to whitelist the domains. Any updates to this whitelist of domain
-      names can happen via explicit end-user interaction.</t>
+      <t>An enterprise can run a different version of its public domain on its
+      internal network. If the domains specified in the dnsZones Key exist in
+      the global DNS, an implementation can interactively ask the user to
+      whitelist the domains. Any updates to this whitelist of domain names can
+      happen via explicit end-user interaction.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
-      <t>This document has no IANA actions. </t>
+      <t>IANA is requested to add SplitDNSAllowed PvD Key to the Additional
+      Information PvD Keys registry
+      (https://www.iana.org/assignments/pvds/pvds.xhtml).</t>
     </section>
 
     <section title="Acknowledgements">
