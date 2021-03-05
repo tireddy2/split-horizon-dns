@@ -193,13 +193,13 @@
       access both private domains and global domains.</t>
 
       <t>The scope of this document is restricted to unmanaged BYOD devices
-      without a configuration profile and split DNS configuation on explicitly
-      trusted networks. It is similar to the way users explictly disable VPN
-      connection in specific networks and VPN connection is enabled by default
-      in other networks for privacy. The unmanaged BYOD devices use the
-      credentials (user name and password) provided by the IT admin to
-      mutually authenticate to the Enterprise WLAN Access Point (e.g.,
-      PEAP-MSCHAPv2 <xref target="PEAP"></xref>, EAP-pwd <xref
+      without a configuration profile and split DNS configuration on
+      explicitly trusted networks. It is similar to the way users explicitly
+      disable VPN connection in specific networks and VPN connection is
+      enabled by default in other networks for privacy. The unmanaged BYOD
+      devices use the credentials (user name and password) provided by the IT
+      admin to mutually authenticate to the Enterprise WLAN Access Point
+      (e.g., PEAP-MSCHAPv2 <xref target="PEAP"></xref>, EAP-pwd <xref
       target="RFC8146"></xref>, EAP-PSK <xref target="RFC4764"></xref>).</t>
 
       <t><list style="hanging">
@@ -281,15 +281,15 @@
 
       <t>The dnsZones PvD Key conveys the specified DNS domains that need to
       be resolved using an network-provided DNS server. The private-only PvD
-      Key conveys whether the domain is private or global with a different
+      Key conveys whether the domain is private or global but with a different
       version to the devices attached to the network. The DNS root zone (".")
       MUST be ignored if it appears in dnsZones. Other generic or global
       domains, such as Top-Level Domains (TLDs), similarly MUST be ignored if
       they appear in dnsZones.</t>
 
       <t>For each dnsZones entry, the client can use the network-provided DNS
-      servers to resolve the the listed domains and its subdomains. Other
-      domain names may be resolved using some other public resolvers that are
+      servers to resolve the listed domains and its subdomains. Other domain
+      names may be resolved using some other public resolvers that are
       configured independently. For example, if the dnsZones key specifies
       "example.test", then "example.test", "www.example.test", and
       "mail.eng.example.test" can be resolved using the network-provided DNS
@@ -414,12 +414,12 @@
 
       <t>An enterprise can run a different version of its public domain on its
       internal network. If the domain specified in the dnsZones Key exists in
-      the global DNS, the client needs to identify if any one of the the
+      the global DNS, the client needs to identify if any one of the
       network-provided encrypted resolvers [I-D.ietf-add-dnr] is authoritative
       of the domain. The client can trigger a NS query of the domain and if
       the NS RRset matches the ADN of any one of the discovered
       network-provided encrypted DNS resolvers, the client can identify the
-      network-provided resolver whose ADN matches the NS ersponse is
+      network-provided resolver whose ADN matches the NS response is
       authoritative for that domain. The client can then establish a secure
       connection to authenticate the network-provided resolver and
       subsequently resolve the domains in the subtree using the

@@ -193,9 +193,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    to access both private domains and global domains.
 
    The scope of this document is restricted to unmanaged BYOD devices
-   without a configuration profile and split DNS configuation on
+   without a configuration profile and split DNS configuration on
    explicitly trusted networks.  It is similar to the way users
-   explictly disable VPN connection in specific networks and VPN
+   explicitly disable VPN connection in specific networks and VPN
    connection is enabled by default in other networks for privacy.  The
    unmanaged BYOD devices use the credentials (user name and password)
    provided by the IT admin to mutually authenticate to the Enterprise
@@ -305,7 +305,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    similarly MUST be ignored if they appear in dnsZones.
 
    For each dnsZones entry, the client can use the network-provided DNS
-   servers to resolve the the listed domains and its subdomains.  Other
+   servers to resolve the listed domains and its subdomains.  Other
    domain names may be resolved using some other public resolvers that
    are configured independently.  For example, if the dnsZones key
    specifies "example.test", then "example.test", "www.example.test",
@@ -452,13 +452,13 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
    An enterprise can run a different version of its public domain on its
    internal network.  If the domain specified in the dnsZones Key exists
-   in the global DNS, the client needs to identify if any one of the the
+   in the global DNS, the client needs to identify if any one of the
    network-provided encrypted resolvers [I-D.ietf-add-dnr] is
    authoritative of the domain.  The client can trigger a NS query of
    the domain and if the NS RRset matches the ADN of any one of the
    discovered network-provided encrypted DNS resolvers, the client can
    identify the network-provided resolver whose ADN matches the NS
-   ersponse is authoritative for that domain.  The client can then
+   response is authoritative for that domain.  The client can then
    establish a secure connection to authenticate the network-provided
    resolver and subsequently resolve the domains in the subtree using
    the network-provided resolver.
