@@ -280,8 +280,10 @@
       domains remains unchanged.</t>
 
       <t>The dnsZones PvD Key conveys the specified DNS domains that need to
-      be resolved using an network-provided DNS server. The DNS root zone
-      (".") MUST be ignored if it appears in dnsZones. Other generic or global
+      be resolved using an network-provided DNS server. The private-only PvD
+      Key conveys whether the domain is private or global with a different
+      version to the devices attached to the network. The DNS root zone (".")
+      MUST be ignored if it appears in dnsZones. Other generic or global
       domains, such as Top-Level Domains (TLDs), similarly MUST be ignored if
       they appear in dnsZones.</t>
 
@@ -292,7 +294,7 @@
       "example.test", then "example.test", "www.example.test", and
       "mail.eng.example.test" can be resolved using the network-provided DNS
       resolver(s), but "otherexample.test" and "ple.test" can be resolved
-      using the system's public resolver(s).</t>
+      using the system's public resolver(s). </t>
     </section>
 
     <section anchor="SplitDNSAllowed" title="PvD SplitDNSAllowed Key">
@@ -327,7 +329,13 @@
      "expires": "2020-05-23T06:00:00Z",
      "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
      "SplitDNSAllowed": True, 
-     "dnsZones:": ["city.other.test", "example.com"]
+      "dnsZones:": [{
+          "name": "city.other.test",
+          "private-only": true
+      },{
+          "name": "example.com",
+          "private-only": false
+      }]
    }]]></artwork>
         </figure></t>
 
@@ -396,14 +404,26 @@
       exist in the global DNS. Authenticated denial of existence using NSEC3
       or NSEC records can be used by a client to validate that a certain
       domain name does not exist in the global DNS. <xref
-      target="RFC7149"></xref> recommends validation of responses using
-      NSEC3.</t>
+      target="RFC7149"></xref> recommends validation of responses using NSEC3.
+      To handle scenario where the public resolver is not reachable (e.g.,
+      resolver is down or blocked by the network), the client can store the
+      top well-known domain names and TLDs (e.g., <xref target="TOP"></xref>)
+      locally (e.g., using Bloom filters) to determine if the entries in the
+      dnsZones Key do not exist in the global DNS. The local database of
+      well-known domain names and TLDs needs to be updated periodically.</t>
 
       <t>An enterprise can run a different version of its public domain on its
-      internal network. If the domains specified in the dnsZones Key exist in
-      the global DNS, an implementation can interactively ask the user to
-      whitelist the domains. Any updates to this whitelist of domain names can
-      happen via explicit end-user interaction. </t>
+      internal network. If the domain specified in the dnsZones Key exists in
+      the global DNS, the client needs to identify if any one of the the
+      network-provided encrypted resolvers [I-D.ietf-add-dnr] is authoritative
+      of the domain. The client can trigger a NS query of the domain and if
+      the NS RRset matches the ADN of any one of the discovered
+      network-provided encrypted DNS resolvers, the client can identify the
+      network-provided resolver whose ADN matches the NS ersponse is
+      authoritative for that domain. The client can then establish a secure
+      connection to authenticate the network-provided resolver and
+      subsequently resolve the domains in the subtree using the
+      network-provided resolver. </t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
@@ -414,7 +434,8 @@
 
     <section title="Acknowledgements">
       <t>Thanks to Mohamed Boucadair, Jim Reid, Ben Schwartz and Vinny Parla
-      for the discussion and comments.</t>
+      for the discussion and comments. The authors would like to give special
+      thanks to Ben Schwartz for his help.</t>
     </section>
   </middle>
 

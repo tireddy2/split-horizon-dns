@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: September 5, 2021                                        Citrix
-                                                           March 4, 2021
+Expires: September 6, 2021                                        Citrix
+                                                           March 5, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on September 5, 2021.
+   This Internet-Draft will expire on September 6, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy & Wing            Expires September 5, 2021               [Page 1]
+Reddy & Wing            Expires September 6, 2021               [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -71,14 +71,14 @@ Table of Contents
    6.  PvD SplitDNSAllowed Key . . . . . . . . . . . . . . . . . . .   6
    7.  An Example  . . . . . . . . . . . . . . . . . . . . . . . . .   7
    8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   7
-   9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   7
+   9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   8
    10. Security Considerations . . . . . . . . . . . . . . . . . . .   8
-   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      13.1.  Normative References . . . . . . . . . . . . . . . . . .   9
-     13.2.  Informative References . . . . . . . . . . . . . . . . .   9
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  10
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
 
 1.  Introduction
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy & Wing            Expires September 5, 2021               [Page 2]
+Reddy & Wing            Expires September 6, 2021               [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 5, 2021               [Page 3]
+Reddy & Wing            Expires September 6, 2021               [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 5, 2021               [Page 4]
+Reddy & Wing            Expires September 6, 2021               [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 5, 2021               [Page 5]
+Reddy & Wing            Expires September 6, 2021               [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -297,10 +297,12 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    unchanged.
 
    The dnsZones PvD Key conveys the specified DNS domains that need to
-   be resolved using an network-provided DNS server.  The DNS root zone
-   (".") MUST be ignored if it appears in dnsZones.  Other generic or
-   global domains, such as Top-Level Domains (TLDs), similarly MUST be
-   ignored if they appear in dnsZones.
+   be resolved using an network-provided DNS server.  The private-only
+   PvD Key conveys whether the domain is private or global with a
+   different version to the devices attached to the network.  The DNS
+   root zone (".") MUST be ignored if it appears in dnsZones.  Other
+   generic or global domains, such as Top-Level Domains (TLDs),
+   similarly MUST be ignored if they appear in dnsZones.
 
    For each dnsZones entry, the client can use the network-provided DNS
    servers to resolve the the listed domains and its subdomains.  Other
@@ -327,17 +329,18 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    the enterprise to resolve every DNS domain potentially asked for by
    the endpoints.
 
-   If SplitDNSAllowed is set to false, the client should not trust the
-   SplitDNSAllowed key in case of connecting to unknown or untrusted
-   networks (e.g., coffee shops or hotel networks).  For example, if
 
 
 
-Reddy & Wing            Expires September 5, 2021               [Page 6]
+
+Reddy & Wing            Expires September 6, 2021               [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
+   If SplitDNSAllowed is set to false, the client should not trust the
+   SplitDNSAllowed key in case of connecting to unknown or untrusted
+   networks (e.g., coffee shops or hotel networks).  For example, if
    SplitDNSAllowed is set to false, client can choose to use a alternate
    network to resolve the global domain names.
 
@@ -351,7 +354,13 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
         "expires": "2020-05-23T06:00:00Z",
         "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
         "SplitDNSAllowed": True,
-        "dnsZones:": ["city.other.test", "example.com"]
+         "dnsZones:": [{
+             "name": "city.other.test",
+             "private-only": true
+         },{
+             "name": "example.com",
+             "private-only": false
+         }]
       }
 
    The JSON keys "identifier", "expires", and "prefixes" are defined in
@@ -377,6 +386,14 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    non-split-tunnel VPN configurations, the endpoint uses the discovered
    encrypted DNS server to resolve both global and private domain names.
 
+
+
+
+Reddy & Wing            Expires September 6, 2021               [Page 7]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    Other VPN tunnel types have similar configuration capabilities, not
    detailed here.
 
@@ -385,15 +402,6 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    If an Enterprise network is using a local encrypted DNS server
    configured as a Forwarding DNS server [RFC8499] relying upon the
    upstream resolver (e.g., at an ISP) to perform recursive DNS lookups,
-
-
-
-
-Reddy & Wing            Expires September 5, 2021               [Page 7]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
-
    DNS messages exchanged between the local encrypted DNS server and the
    recursive resolver MUST be encrypted.
 
@@ -426,13 +434,34 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    the global DNS.  Authenticated denial of existence using NSEC3 or
    NSEC records can be used by a client to validate that a certain
    domain name does not exist in the global DNS.  [RFC7149] recommends
-   validation of responses using NSEC3.
+   validation of responses using NSEC3.  To handle scenario where the
+   public resolver is not reachable (e.g., resolver is down or blocked
+   by the network), the client can store the top well-known domain names
+   and TLDs (e.g., [TOP]) locally (e.g., using Bloom filters) to
+   determine if the entries in the dnsZones Key do not exist in the
+   global DNS.  The local database of well-known domain names and TLDs
+   needs to be updated periodically.
+
+
+
+
+Reddy & Wing            Expires September 6, 2021               [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
 
    An enterprise can run a different version of its public domain on its
-   internal network.  If the domains specified in the dnsZones Key exist
-   in the global DNS, an implementation can interactively ask the user
-   to whitelist the domains.  Any updates to this whitelist of domain
-   names can happen via explicit end-user interaction.
+   internal network.  If the domain specified in the dnsZones Key exists
+   in the global DNS, the client needs to identify if any one of the the
+   network-provided encrypted resolvers [I-D.ietf-add-dnr] is
+   authoritative of the domain.  The client can trigger a NS query of
+   the domain and if the NS RRset matches the ADN of any one of the
+   discovered network-provided encrypted DNS resolvers, the client can
+   identify the network-provided resolver whose ADN matches the NS
+   ersponse is authoritative for that domain.  The client can then
+   establish a secure connection to authenticate the network-provided
+   resolver and subsequently resolve the domains in the subtree using
+   the network-provided resolver.
 
 11.  IANA Considerations
 
@@ -440,20 +469,11 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    Information PvD Keys registry (https://www.iana.org/assignments/pvds/
    pvds.xhtml).
 
-
-
-
-
-
-Reddy & Wing            Expires September 5, 2021               [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
-
 12.  Acknowledgements
 
    Thanks to Mohamed Boucadair, Jim Reid, Ben Schwartz and Vinny Parla
-   for the discussion and comments.
+   for the discussion and comments.  The authors would like to give
+   special thanks to Ben Schwartz for his help.
 
 13.  References
 
@@ -477,6 +497,15 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
+
+
+
+
+Reddy & Wing            Expires September 6, 2021               [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    [RFC8801]  Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
               Shao, "Discovering Provisioning Domain Names and Data",
               RFC 8801, DOI 10.17487/RFC8801, July 2020,
@@ -497,14 +526,6 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
               Microsoft, "Chromebook security",
               <https://support.google.com/chromebook/
               answer/3438631?hl=en>.
-
-
-
-
-Reddy & Wing            Expires September 5, 2021               [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
 
    [Firefox-Policy]
               "Policy templates for Firefox",
@@ -533,6 +554,14 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
               ngInternet/Conceptual/iPhoneOTAConfiguration/OTASecurity/
               OTASecurity.html>.
 
+
+
+
+Reddy & Wing            Expires September 6, 2021              [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    [PEAP]     Microsoft, "[MS-PEAP]: Protected Extensible Authentication
               Protocol (PEAP)", <https://docs.microsoft.com/en-
               us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-
@@ -552,15 +581,6 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
               Networking: A Perspective from within a Service Provider
               Environment", RFC 7149, DOI 10.17487/RFC7149, March 2014,
               <https://www.rfc-editor.org/info/rfc7149>.
-
-
-
-
-
-Reddy & Wing            Expires September 5, 2021              [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
 
    [RFC7296]  Kaufman, C., Hoffman, P., Nir, Y., Eronen, P., and T.
               Kivinen, "Internet Key Exchange Protocol Version 2
@@ -591,6 +611,13 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    [TOP]      Microsoft, "Top 1 million domains and TLDs", <http://s3-
               us-west-1.amazonaws.com/umbrella-static/index.html>.
 
+
+
+Reddy & Wing            Expires September 6, 2021              [Page 11]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    [win10s]   Microsoft, "Windows 10 in S mode",
               <https://www.microsoft.com/en-us/windows/s-mode>.
 
@@ -603,19 +630,6 @@ Authors' Addresses
    India
 
    Email: kondtir@gmail.com
-
-
-
-
-
-
-
-
-
-
-Reddy & Wing            Expires September 5, 2021              [Page 11]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
    Dan Wing
@@ -655,18 +669,4 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Reddy & Wing            Expires September 5, 2021              [Page 12]
+Reddy & Wing            Expires September 6, 2021              [Page 12]
