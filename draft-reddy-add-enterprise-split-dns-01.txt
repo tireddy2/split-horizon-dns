@@ -298,7 +298,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
    The dnsZones PvD Key conveys the specified DNS domains that need to
    be resolved using an network-provided DNS server.  The private-only
-   PvD Key conveys whether the domain is private or global with a
+   PvD Key conveys whether the domain is private or global but with a
    different version to the devices attached to the network.  The DNS
    root zone (".") MUST be ignored if it appears in dnsZones.  Other
    generic or global domains, such as Top-Level Domains (TLDs),
@@ -457,7 +457,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    authoritative of the domain.  The client can trigger a NS query of
    the domain and if the NS RRset matches the ADN of any one of the
    discovered network-provided encrypted DNS resolvers, the client can
-   identify the network-provided resolver whose ADN matches the NS
+   identify that the network-provided resolver whose ADN matches the NS
    response is authoritative for that domain.  The client can then
    establish a secure connection to authenticate the network-provided
    resolver and subsequently resolve the domains in the subtree using

@@ -294,7 +294,7 @@
       "example.test", then "example.test", "www.example.test", and
       "mail.eng.example.test" can be resolved using the network-provided DNS
       resolver(s), but "otherexample.test" and "ple.test" can be resolved
-      using the system's public resolver(s). </t>
+      using the system's public resolver(s).</t>
     </section>
 
     <section anchor="SplitDNSAllowed" title="PvD SplitDNSAllowed Key">
@@ -418,12 +418,12 @@
       network-provided encrypted resolvers [I-D.ietf-add-dnr] is authoritative
       of the domain. The client can trigger a NS query of the domain and if
       the NS RRset matches the ADN of any one of the discovered
-      network-provided encrypted DNS resolvers, the client can identify the
-      network-provided resolver whose ADN matches the NS response is
+      network-provided encrypted DNS resolvers, the client can identify that
+      the network-provided resolver whose ADN matches the NS response is
       authoritative for that domain. The client can then establish a secure
       connection to authenticate the network-provided resolver and
       subsequently resolve the domains in the subtree using the
-      network-provided resolver. </t>
+      network-provided resolver.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
