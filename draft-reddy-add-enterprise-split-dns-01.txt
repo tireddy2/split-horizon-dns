@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: September 6, 2021                                        Citrix
-                                                           March 5, 2021
+Expires: September 8, 2021                                        Citrix
+                                                           March 7, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on September 6, 2021.
+   This Internet-Draft will expire on September 8, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy & Wing            Expires September 6, 2021               [Page 1]
+Reddy & Wing            Expires September 8, 2021               [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy & Wing            Expires September 6, 2021               [Page 2]
+Reddy & Wing            Expires September 8, 2021               [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 6, 2021               [Page 3]
+Reddy & Wing            Expires September 8, 2021               [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -196,8 +196,10 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    without a configuration profile and split DNS configuration on
    explicitly trusted networks.  It is similar to the way users
    explicitly disable VPN connection in specific networks and VPN
-   connection is enabled by default in other networks for privacy.  The
-   unmanaged BYOD devices use the credentials (user name and password)
+   connection is enabled by default in other networks for privacy.  In
+   this use case, the the user has authorized the client to override
+   local DNS settings for a specific network.  The unmanaged BYOD
+   devices typically use the credentials (user name and password)
    provided by the IT admin to mutually authenticate to the Enterprise
    WLAN Access Point (e.g., PEAP-MSCHAPv2 [PEAP], EAP-pwd [RFC8146],
    EAP-PSK [RFC4764]).
@@ -219,9 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-
-
-Reddy & Wing            Expires September 6, 2021               [Page 4]
+Reddy & Wing            Expires September 8, 2021               [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 6, 2021               [Page 5]
+Reddy & Wing            Expires September 8, 2021               [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 6, 2021               [Page 6]
+Reddy & Wing            Expires September 8, 2021               [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -389,7 +389,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 6, 2021               [Page 7]
+Reddy & Wing            Expires September 8, 2021               [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -445,7 +445,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 6, 2021               [Page 8]
+Reddy & Wing            Expires September 8, 2021               [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -501,7 +501,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 6, 2021               [Page 9]
+Reddy & Wing            Expires September 8, 2021               [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -557,7 +557,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 6, 2021              [Page 10]
+Reddy & Wing            Expires September 8, 2021              [Page 10]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -613,7 +613,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing            Expires September 6, 2021              [Page 11]
+Reddy & Wing            Expires September 8, 2021              [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -669,4 +669,4 @@ Authors' Addresses
 
 
 
-Reddy & Wing            Expires September 6, 2021              [Page 12]
+Reddy & Wing            Expires September 8, 2021              [Page 12]
