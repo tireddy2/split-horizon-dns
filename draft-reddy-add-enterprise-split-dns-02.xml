@@ -291,22 +291,24 @@
 
       <t>For each dnsZones entry, the client can use the network-provided DNS
       servers to resolve the listed domains and its subdomains. Other domain
-      names may be resolved using some other public resolvers that are
-      configured independently. For example, if the dnsZones key specifies
+      names may be resolved using some other DNS servers that are configured
+      independently. For example, if the dnsZones key specifies
       "example.test", then "example.test", "www.example.test", and
       "mail.eng.example.test" can be resolved using the network-provided DNS
       resolver(s), but "otherexample.test" and "ple.test" can be resolved
       using the system's public resolver(s).</t>
     </section>
 
-    <section anchor="SplitDNSAllowed" title="PvD SplitDNSAllowed Key">
+    <section anchor="SplitDNSAllowed"
+             title="PvD SplitDNSAllowed and ErrorSplitDNSBlocked Keys">
       <t>If an Enterprise network restricts all the DNS queries to be sent to
       the network-provided DNS server, SplitDNSAllowed will be set to false.
       If SplitDNSAllowed is set to false, it implies the network will try to
-      block DNS queries to public resolvers. If SplitDNSAllowed is set to
-      false, errorURL key conveys an URL that points to a human-friendly
-      description of the reasons why the network blocked access to public
-      resolvers.</t>
+      block DNS queries to DNS servers not provided by the network. If
+      SplitDNSAllowed is set to false, ErrorSplitDNSBlocked key will hold
+      human-friendly description of the reasons why the network blocked access
+      to DNS servers not provided by the network. This information is intended
+      for human consumption (not automated parsing).</t>
 
       <t>Split DNS configurations may be preferable to sending all DNS queries
       to an network-provided DNS server in some deployments. This allows an
@@ -318,13 +320,14 @@
       enterprise to resolve every DNS domain potentially asked for by the
       endpoints.</t>
 
-      <t>The SplitDNSAllowed key is a internal security policy expression by
-      the operator of the network but is not a policy prescription to the
-      endpoints to disable use of public resolvers. If SplitDNSAllowed is set
-      to false, the client should not trust the SplitDNSAllowed key in case of
-      connecting to unknown or untrusted networks (e.g., coffee shops or hotel
-      networks). Most importantly, the endpoint can choose to use a alternate
-      network to resolve the global domain names. </t>
+      <t>The SplitDNSAllowed key value set to false is a internal security
+      policy expression by the operator of the network but is not a policy
+      prescription to the endpoints to disable use of DNS servers not provided
+      by the network. If SplitDNSAllowed is set to false, the client should
+      not trust the SplitDNSAllowed key in case of connecting to unknown or
+      untrusted networks (e.g., coffee shops or hotel networks). Most
+      importantly, the endpoint can choose to use a alternate network to
+      resolve the global domain names.</t>
     </section>
 
     <section title="An Example">
@@ -392,7 +395,7 @@
       well-known domains are not deploying DNSSEC, as the Enterprise network
       could then even modify the DNS answers without detection. It is similar
       to the mechanism discussed in Section 8 of <xref
-      target="RFC8598"></xref>. </t>
+      target="RFC8598"></xref>.</t>
 
       <t>The content of dnsZones and SplitDNSAllowed may be passed to another
       (DNS) program for processing. As with any network input, the content
@@ -407,7 +410,7 @@
       listed in the DnsZones PvD Key. To acheive this client needs to identify
       if the network-provided encrypted resolvers discovered using the
       mechanisms discussed in [I-D.ietf-add-dnr] are authoritative of the
-      domains. </t>
+      domains.</t>
 
       <t><list style="symbols">
           <t>The client can trigger a NS query of the domain and if the NS
@@ -417,7 +420,7 @@
           response is authoritative for that domain. The client can then
           establish a secure connection to authenticate the network-provided
           resolver and subsequently resolve the domains in the subtree using
-          the network-provided resolver. </t>
+          the network-provided resolver.</t>
 
           <t>If the NS RRset does not match the ADN of any one of the
           discovered network-provided encrypted DNS resolvers or secure
@@ -429,7 +432,7 @@
           above validation for domains reserved for special use <xref
           target="RFC6761"></xref>. For example, the client need not perform
           the validation for a FQDN (e.g., "example.home.arpa") that is a
-          subdomain of 'home.arpa.' special-use domain name. </t>
+          subdomain of 'home.arpa.' special-use domain name.</t>
         </list></t>
 
       <t>For example, if in an network the private domain names are defined
@@ -437,15 +440,15 @@
       that "*.internal.corp1.example.com" are private domain names. The client
       can trigger a NS query of ""internal.corp1.example.com" and the NS RRset
       returns that the nameserver is "ns1.corp2.example.com". The client would
-      then connect to the locally discovered resolver whose name is
+      then connect to the locally discovered encrypted resolver whose name is
       "ns.corp2.example", authenticate it using server certificate validation
       in TLS handshake, and use it for resolving the domains in the
       subtree.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
-      <t>IANA is requested to add SplitDNSAllowed and errorURL PvD Keys to the
-      Additional Information PvD Keys registry
+      <t>IANA is requested to add SplitDNSAllowed and ErrorSplitDNSBlocked PvD
+      Keys to the Additional Information PvD Keys registry
       (https://www.iana.org/assignments/pvds/pvds.xhtml).</t>
     </section>
 
