@@ -269,7 +269,7 @@
 
     <section anchor="dnsZones" title="PvD dnsZones">
       <t>As discussed in <xref target="split-horizon"></xref>, the Enterprise
-      internal resources tend to have private DNS names, an enterprise can
+      internal resources tend to have private DNS names.  An enterprise can
       also run a different version of its global domain on its internal
       network, and require the use of network-provided DNS servers to get
       resolved.</t>
@@ -278,9 +278,9 @@
       The PvD Key dnsZones adds support for DNS domains for which the
       Enterprise network claims authority. The private domains specified in
       the dnsZones key are intended to be resolved using network-provided DNS
-      servers that are only reachable to the devices attached to the
-      Enterprise network. The global domains specified in the dnsZones key
-      have a different version in the internal network. DNS resolution for
+      servers. The global domains specified in the dnsZones key
+      have a different version in the internal network. In both cases, those indicated dnsZones are only reachable by devices authenticated or attached to the
+      Enterprise network.  DNS resolution for
       other domains remains unchanged.</t>
 
       <t>The dnsZones PvD Key conveys the specified DNS domains that need to
@@ -304,10 +304,9 @@
       <t>If an Enterprise network restricts all the DNS queries to be sent to
       the network-provided DNS server, SplitDNSAllowed will be set to false.
       If SplitDNSAllowed is set to false, it implies the network will try to
-      block DNS queries to DNS servers not provided by the network. If
-      SplitDNSAllowed is set to false, ErrorSplitDNSBlocked key will hold
-      human-friendly description of the reasons why the network blocked access
-      to DNS servers not provided by the network. This information is intended
+      block DNS queries to DNS servers not provided by the network and the
+      ErrorSplitDNSBlocked key SHOULD contain a
+      human-friendly description for this block.  This information is intended
       for human consumption (not automated parsing).</t>
 
       <t>Split DNS configurations may be preferable to sending all DNS queries
@@ -323,8 +322,8 @@
       <t>The SplitDNSAllowed key value set to false is a internal security
       policy expression by the operator of the network but is not a policy
       prescription to the endpoints to disable use of DNS servers not provided
-      by the network. If SplitDNSAllowed is set to false, the client should
-      not trust the SplitDNSAllowed key in case of connecting to unknown or
+      by the network. If SplitDNSAllowed is set to false, the client SHOULD
+      NOT trust the SplitDNSAllowed key in case of connecting to unknown or
       untrusted networks (e.g., coffee shops or hotel networks). Most
       importantly, the endpoint can choose to use a alternate network to
       resolve the global domain names.</t>
@@ -406,34 +405,35 @@
       <t>To comply with <xref target="RFC2826"></xref> the split-horizon DNS
       zone must either not exist in the global DNS hierarchy or must be
       authoritatively delegated to the split-horizon DNS server to answer. The
-      client needs to determine if the network is authoritative of the domains
-      listed in the DnsZones PvD Key. To acheive this client needs to identify
-      if the network-provided encrypted resolvers discovered using the
-      mechanisms discussed in [I-D.ietf-add-dnr] are authoritative of the
-      domains.</t>
-
+      client needs to check if the network-provided encrypted resolvers are
+      authoritative over the DnsZones domains by using the mechanism described
+      [I-D.ietf-add-dnr].</t>
+         
       <t><list style="symbols">
-          <t>The client can trigger a NS query of the domain and if the NS
+           <t>The client sends an NS query for the domain.</t>
+           <t>If the NS
           RRset matches the Authentication Domain Name (ADN) of any one of the
-          discovered network-provided encrypted DNS resolvers, the client can
-          identify that the network-provided resolver whose ADN matches the NS
-          response is authoritative for that domain. The client can then
-          establish a secure connection to authenticate the network-provided
-          resolver and subsequently resolve the domains in the subtree using
-          the network-provided resolver.</t>
+          discovered network-provided encrypted DNS resolvers, the client has
+          determined that network-provided resolver is authoritative for that 
+          domain. The client can then
+          establish a secure connection to that network-provided
+          resolver, validate its certificate, and subsequently resolve the 
+          domains in that subtree using that network-provided resolver.</t>
 
           <t>If the NS RRset does not match the ADN of any one of the
-          discovered network-provided encrypted DNS resolvers or secure
-          connection cannot be established to to authenticate the
-          network-provided resolver, the client can identify the network is
-          lying and can take appropriate action.</t>
-
+          discovered network-provided encrypted DNS resolvers, or a secure
+          connection cannot be established to authenticate the
+          network-provided resolver, or the certificate does not validate,
+          the client can determine the network is not authoritative for
+          the indicated domain.  It might log an error, reject the network
+               entirely (because the network lied about its authority over
+               a domain) or other action.</t>
+           
           <t>As an exception to this rule, the client need not perform the
           above validation for domains reserved for special use <xref
-          target="RFC6761"></xref>. For example, the client need not perform
-          the validation for a FQDN (e.g., "example.home.arpa") that is a
-          subdomain of 'home.arpa.' special-use domain name.</t>
-        </list></t>
+          target="RFC6761"></xref> or <xref target="RFC6762"></xref> such as
+               ".home.arpa" or ".local".</t>
+      </list></t>
 
       <t>For example, if in an network the private domain names are defined
       under "internal.corp1.example.com". The DnsZones PvD Key would indicate
@@ -474,6 +474,8 @@
       <?rfc include='reference.RFC.1918'?>
 
       <?rfc include='reference.RFC.6761'?>
+         
+      <?rfc include='reference.RFC.6762'?>
     </references>
 
     <references title="Informative References">
@@ -496,6 +498,9 @@
       <?rfc include='reference.I-D.ietf-dprive-phase2-requirements'?>
 
       <?rfc include='reference.I-D.btw-add-ipsecme-ike'?>
+         
+<!-- not yet in XML library           <?rfc include='reference.I-D.ietf-add-ddr'?> 
+           <?rfc include='reference.I-D.ietf-add-dnr'?> -->
 
       <reference anchor="Firefox-Policy"
                  target="https://github.com/mozilla/policy-templates/blob/master/README.md#dnsoverhttps">
