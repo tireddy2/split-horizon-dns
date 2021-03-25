@@ -413,20 +413,24 @@
 
       <t><list style="symbols">
           <t>The client can use the mechanism described in [I-D.ietf-add-dnr]
-          to discover the network-designated resolvers.</t>
+          to discover the network-designated resolvers. </t>
 
           <t>The client sends an NS query for the domain in DnsZones.</t>
 
           <t>If the NS RRset matches the Authentication Domain Name (ADN) of
-          any one of the discovered network-designated encrypted DNS
-          resolvers, the client has determined that network-designated
-          resolver is authoritative for that domain. The client can then
-          establish a secure connection to that network-designated resolver,
-          validate its certificate, and subsequently resolve the domains in
-          that subtree using that network-designated resolver.</t>
+          any one of the discovered network-designated encrypted DNS resolvers
+          or the ADN of any one of the discovered network-designated encrypted
+          DNS resolvers is a subdomain of the name servers in the NS RRset,
+          the client has determined that network-designated resolver is
+          authoritative for that domain. The client can then establish a
+          secure connection to that network-designated resolver, validate its
+          certificate, and subsequently resolve the domains in that subtree
+          using that network-designated resolver.</t>
 
           <t>If the NS RRset does not match the ADN of any one of the
-          discovered network-designated encrypted DNS resolvers, or a secure
+          discovered network-designated encrypted DNS resolvers or the ADN of
+          any one of the discovered network-designated encrypted DNS resolvers
+          is not a subdomain of the name servers in the NS RRset, or a secure
           connection cannot be established to the network-designated resolver,
           or the server certificate does not validate, the client can
           determine the network is not authoritative for the indicated domain.
