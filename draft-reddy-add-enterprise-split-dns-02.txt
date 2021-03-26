@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: September 26, 2021                                       Citrix
-                                                          March 25, 2021
+Expires: September 27, 2021                                       Citrix
+                                                          March 26, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on September 26, 2021.
+   This Internet-Draft will expire on September 27, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy & Wing           Expires September 26, 2021               [Page 1]
+Reddy & Wing           Expires September 27, 2021               [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy & Wing           Expires September 26, 2021               [Page 2]
+Reddy & Wing           Expires September 27, 2021               [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 26, 2021               [Page 3]
+Reddy & Wing           Expires September 27, 2021               [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 26, 2021               [Page 4]
+Reddy & Wing           Expires September 27, 2021               [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 26, 2021               [Page 5]
+Reddy & Wing           Expires September 27, 2021               [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 26, 2021               [Page 6]
+Reddy & Wing           Expires September 27, 2021               [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -389,7 +389,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 26, 2021               [Page 7]
+Reddy & Wing           Expires September 27, 2021               [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -429,48 +429,49 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
    To comply with [RFC2826] the split-horizon DNS zone must either not
    exist in the global DNS hierarchy or must be authoritatively
-   delegated to the split-horizon DNS server to answer.  The client
-   needs to check if the network-designated encrypted resolvers are
-   authoritative over the domains in DnsZones by using the following
-   steps:
+   delegated to the split-horizon DNS server to answer.  The client can
+   use the mechanism described in [I-D.ietf-add-dnr] to discover the
+   network-designated resolvers.  To determine if the network-designated
+   encrypted resolvers are authoritative over the domains in DnsZones,
+   the client performs the following steps for each domain in DnsZones:
 
-   o  The client can use the mechanism described in [I-D.ietf-add-dnr]
-      to discover the network-designated resolvers.
+   1.  The client sends an NS query for the domain in DnsZones.
 
-   o  The client sends an NS query for the domain in DnsZones.
-
-   o  If the NS RRset matches the Authentication Domain Name (ADN) of
-      any one of the discovered network-designated encrypted DNS
-      resolvers or the ADN of any one of the discovered network-
+   2.  The client checks that the NS RRset matches, or is a subdomain
+       of, any one of the ADN of the discovered network-designated
+       encrypted DNS resolvers.
 
 
 
-Reddy & Wing           Expires September 26, 2021               [Page 8]
+
+
+Reddy & Wing           Expires September 27, 2021               [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
-      designated encrypted DNS resolvers is a subdomain of the name
-      servers in the NS RRset, the client has determined that network-
-      designated resolver is authoritative for that domain.  The client
-      can then establish a secure connection to that network-designated
-      resolver, validate its certificate, and subsequently resolve the
-      domains in that subtree using that network-designated resolver.
+       A.  If the match fails, the client determines the network is not
+           authoritative for the indicated domain.  It might log an
+           error, reject the network entirely (because the network lied
+           about its authority over a domain) or other action.
 
-   o  If the NS RRset does not match the ADN of any one of the
-      discovered network-designated encrypted DNS resolvers or the ADN
-      of any one of the discovered network-designated encrypted DNS
-      resolvers is not a subdomain of the name servers in the NS RRset,
-      or a secure connection cannot be established to the network-
-      designated resolver, or the server certificate does not validate,
-      the client can determine the network is not authoritative for the
-      indicated domain.  It might log an error, reject the network
-      entirely (because the network lied about its authority over a
-      domain) or other action.
+       B.  If the match succeeds, the client can then establish a secure
+           connection to that network-designated resolver and validate
+           its certificate.
 
-   o  As an exception to this rule, the client need not perform the
-      above validation for domains reserved for special use [RFC6761] or
-      [RFC6762] such as ".home.arpa" or ".local".
+           +  If the server certificate does not validate and a secure
+              connection cannot be established to the network designated
+              resolver, the client can action as discussed in step 3
+              (A).
+
+           +  If the server certificate validation is successful and a
+              secure connection is established, the client can
+              subsequently resolve the domains in that subtree using the
+              network-designated resolver.
+
+   3.  As an exception to this rule, the client need not perform the
+       above validation for domains reserved for special use [RFC6761]
+       or [RFC6762] such as ".home.arpa" or ".local".
 
    For example, if in an network the private domain names are defined
    under "internal.corp1.example.com".  The DnsZones PvD Key would
@@ -481,7 +482,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    to the network-designated encrypted resolver whose name is
    "ns1.corp2.example.com", authenticate it using server certificate
    validation in TLS handshake, and use it for resolving the domains in
-   the subtree.
+   the subtree of "*.internal.corp1.example.com".
 
 11.  IANA Considerations
 
@@ -500,8 +501,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-
-Reddy & Wing           Expires September 26, 2021               [Page 9]
+Reddy & Wing           Expires September 27, 2021               [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -557,7 +557,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 26, 2021              [Page 10]
+Reddy & Wing           Expires September 27, 2021              [Page 10]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -613,7 +613,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 26, 2021              [Page 11]
+Reddy & Wing           Expires September 27, 2021              [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -669,4 +669,4 @@ Authors' Addresses
 
 
 
-Reddy & Wing           Expires September 26, 2021              [Page 12]
+Reddy & Wing           Expires September 27, 2021              [Page 12]
