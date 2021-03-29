@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: September 27, 2021                                       Citrix
-                                                          March 26, 2021
+Expires: September 29, 2021                                       Citrix
+                                                          March 28, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on September 27, 2021.
+   This Internet-Draft will expire on September 29, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy & Wing           Expires September 27, 2021               [Page 1]
+Reddy & Wing           Expires September 29, 2021               [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -75,7 +75,7 @@ Table of Contents
    9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   8
    10. Security Considerations . . . . . . . . . . . . . . . . . . .   8
    11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
+   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  10
      13.2.  Informative References . . . . . . . . . . . . . . . . .  10
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy & Wing           Expires September 27, 2021               [Page 2]
+Reddy & Wing           Expires September 29, 2021               [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 27, 2021               [Page 3]
+Reddy & Wing           Expires September 29, 2021               [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 27, 2021               [Page 4]
+Reddy & Wing           Expires September 29, 2021               [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 27, 2021               [Page 5]
+Reddy & Wing           Expires September 29, 2021               [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 27, 2021               [Page 6]
+Reddy & Wing           Expires September 29, 2021               [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -389,7 +389,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 27, 2021               [Page 7]
+Reddy & Wing           Expires September 29, 2021               [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -435,20 +435,24 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    encrypted resolvers are authoritative over the domains in DnsZones,
    the client performs the following steps for each domain in DnsZones:
 
-   1.  The client sends an NS query for the domain in DnsZones.
+   1.  The client sends an NS query for the domain in DnsZones.  This
+       query MUST only be sent over encrypted DNS session to a public
+       resolver that is configured independently or to a network-
+       designated resolver whose response will be validated using DNSSEC
+       as described in [RFC6698].
+
+
+
+
+
+Reddy & Wing           Expires September 29, 2021               [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
 
    2.  The client checks that the NS RRset matches, or is a subdomain
        of, any one of the ADN of the discovered network-designated
        encrypted DNS resolvers.
-
-
-
-
-
-Reddy & Wing           Expires September 27, 2021               [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
 
        A.  If the match fails, the client determines the network is not
            authoritative for the indicated domain.  It might log an
@@ -490,21 +494,24 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    Keys to the Additional Information PvD Keys registry
    (https://www.iana.org/assignments/pvds/pvds.xhtml).
 
+
+
+
+
+
+
+
+Reddy & Wing           Expires September 29, 2021               [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
 12.  Acknowledgements
 
    Thanks to Mohamed Boucadair, Jim Reid, Ben Schwartz, Tommy Pauly,
    Paul Vixie and Vinny Parla for the discussion and comments.  The
    authors would like to give special thanks to Ben Schwartz for his
    help.
-
-
-
-
-
-Reddy & Wing           Expires September 27, 2021               [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
 
 13.  References
 
@@ -547,20 +554,18 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
               The Unicode Consortium, "Chrome DNS over HTTPS (aka DoH)",
               <https://www.chromium.org/developers/dns-over-https>.
 
+
+
+
+Reddy & Wing           Expires September 29, 2021              [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    [Chrome-Policy]
               The Unicode Consortium, "Chrome policies for users or
               browsers", <https://support.google.com/chrome/a/
               answer/2657289?hl=en>.
-
-
-
-
-
-
-Reddy & Wing           Expires September 27, 2021              [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
 
    [Chromebook]
               Microsoft, "Chromebook security",
@@ -604,19 +609,24 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
               Method", RFC 4764, DOI 10.17487/RFC4764, January 2007,
               <https://www.rfc-editor.org/info/rfc4764>.
 
+
+
+
+
+Reddy & Wing           Expires September 29, 2021              [Page 11]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
+   [RFC6698]  Hoffman, P. and J. Schlyter, "The DNS-Based Authentication
+              of Named Entities (DANE) Transport Layer Security (TLS)
+              Protocol: TLSA", RFC 6698, DOI 10.17487/RFC6698, August
+              2012, <https://www.rfc-editor.org/info/rfc6698>.
+
    [RFC6950]  Peterson, J., Kolkman, O., Tschofenig, H., and B. Aboba,
               "Architectural Considerations on Application Features in
               the DNS", RFC 6950, DOI 10.17487/RFC6950, October 2013,
               <https://www.rfc-editor.org/info/rfc6950>.
-
-
-
-
-
-Reddy & Wing           Expires September 27, 2021              [Page 11]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
 
    [RFC7296]  Kaufman, C., Hoffman, P., Nir, Y., Eronen, P., and T.
               Kivinen, "Internet Key Exchange Protocol Version 2
@@ -658,6 +668,12 @@ Authors' Addresses
    Email: kondtir@gmail.com
 
 
+
+Reddy & Wing           Expires September 29, 2021              [Page 12]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    Dan Wing
    Citrix Systems, Inc.
    4988 Great America Pkwy
@@ -669,4 +685,44 @@ Authors' Addresses
 
 
 
-Reddy & Wing           Expires September 27, 2021              [Page 12]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reddy & Wing           Expires September 29, 2021              [Page 13]

@@ -413,7 +413,11 @@
       client performs the following steps for each domain in DnsZones:</t>
 
       <t><list style="numbers">
-          <t>The client sends an NS query for the domain in DnsZones.</t>
+          <t>The client sends an NS query for the domain in DnsZones. This
+          query MUST only be sent over encrypted DNS session to a public
+          resolver that is configured independently or to a network-designated
+          resolver whose response will be validated using DNSSEC as described
+          in <xref target="RFC6698"></xref>. </t>
 
           <t>The client checks that the NS RRset matches, or is a subdomain
           of, any one of the ADN of the discovered network-designated
@@ -503,6 +507,8 @@
       <?rfc include='reference.RFC.6950' ?>
 
       <?rfc include='reference.RFC.7556' ?>
+
+      <?rfc include='reference.RFC.6698'?>
 
       <?rfc include='reference.I-D.ietf-dprive-phase2-requirements'?>
 
