@@ -282,8 +282,8 @@
       DNS servers. The private domains in dnsZones are only reachable by
       devices authenticated or attached to the Enterprise network. The global
       domains specified in the dnsZones key have a different version in the
-      internal network. DNS resolution for other domains remains unchanged.
-      </t>
+      internal network. DNS resolution for other domains remains
+      unchanged.</t>
 
       <t>The dnsZones PvD Key conveys the specified DNS domains that need to
       be resolved using an network-designated DNS server. The DNS root zone
@@ -349,7 +349,7 @@
         <t>For example, if in an network the private domain names are defined
         under "internal.corp1.example.com". The DnsZones PvD Key would
         indicate that "*.internal.corp1.example.com" are private domain names.
-        The client can trigger a NS query of ""internal.corp1.example.com" and
+        The client can trigger a NS query of "internal.corp1.example.com" and
         the NS RRset returns that the nameserver is "ns1.corp2.example.com".
         The client would then connect to the network-designated encrypted
         resolver whose name is "ns1.corp2.example.com", authenticate it using
@@ -371,10 +371,13 @@
       client does not use DNS lookup to reach the DNS servers not provided by
       the network. For example, the client can be pre-configured with both the
       domain name and IP addresses of the DNS server not provided by the
-      network (see Section 7.1 in <xref target="RFC8310"></xref>). In this
-      case, the extended error code "Blocked" defined in <xref
-      target="RFC8914"></xref> cannot be returned to the client to provide
-      additional information about the cause for the block.</t>
+      network (Section 7.1 in <xref target="RFC8310"></xref>) or the client
+      can be pre-configured with the IP address of the resolver, and it uses
+      IP address in the certificate as identifier (see <xref
+      target="RFC8738"></xref>). In this case, the extended error code
+      "Blocked" defined in <xref target="RFC8914"></xref> cannot be returned
+      to the client to provide additional information about the cause for the
+      block.</t>
 
       <t>Split DNS configurations may be preferable to sending all DNS queries
       to an network-designated DNS server in some deployments. This allows an
@@ -524,6 +527,8 @@
       <?rfc include='reference.RFC.8310'?>
 
       <?rfc include='reference.RFC.8914'?>
+
+      <?rfc include='reference.RFC.8738'?>
 
       <?rfc include='reference.I-D.ietf-dprive-phase2-requirements'?>
 

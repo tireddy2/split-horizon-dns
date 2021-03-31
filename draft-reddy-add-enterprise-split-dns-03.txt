@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: September 30, 2021                                       Citrix
-                                                          March 29, 2021
+Expires: October 1, 2021                                          Citrix
+                                                          March 30, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on September 30, 2021.
+   This Internet-Draft will expire on October 1, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy & Wing           Expires September 30, 2021               [Page 1]
+Reddy & Wing             Expires October 1, 2021                [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -72,7 +72,7 @@ Table of Contents
      5.1.  Authority over the Domains  . . . . . . . . . . . . . . .   6
    6.  PvD SplitDNSAllowed and ErrorSplitDNSBlocked Keys . . . . . .   7
    7.  An Example  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-   8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   8
+   8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   9
    9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   9
    10. Security Considerations . . . . . . . . . . . . . . . . . . .   9
    11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy & Wing           Expires September 30, 2021               [Page 2]
+Reddy & Wing             Expires October 1, 2021                [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 30, 2021               [Page 3]
+Reddy & Wing             Expires October 1, 2021                [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 30, 2021               [Page 4]
+Reddy & Wing             Expires October 1, 2021                [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 30, 2021               [Page 5]
+Reddy & Wing             Expires October 1, 2021                [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 30, 2021               [Page 6]
+Reddy & Wing             Expires October 1, 2021                [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
@@ -369,7 +369,7 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    under "internal.corp1.example.com".  The DnsZones PvD Key would
    indicate that "*.internal.corp1.example.com" are private domain
    names.  The client can trigger a NS query of
-   ""internal.corp1.example.com" and the NS RRset returns that the
+   "internal.corp1.example.com" and the NS RRset returns that the
    nameserver is "ns1.corp2.example.com".  The client would then connect
    to the network-designated encrypted resolver whose name is
    "ns1.corp2.example.com", authenticate it using server certificate
@@ -389,17 +389,20 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing           Expires September 30, 2021               [Page 7]
+Reddy & Wing             Expires October 1, 2021                [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
    lookup to reach the DNS servers not provided by the network.  For
    example, the client can be pre-configured with both the domain name
-   and IP addresses of the DNS server not provided by the network (see
-   Section 7.1 in [RFC8310]).  In this case, the extended error code
-   "Blocked" defined in [RFC8914] cannot be returned to the client to
-   provide additional information about the cause for the block.
+   and IP addresses of the DNS server not provided by the network
+   (Section 7.1 in [RFC8310]) or the client can be pre-configured with
+   the IP address of the resolver, and it uses IP address in the
+   certificate as identifier (see [RFC8738]).  In this case, the
+   extended error code "Blocked" defined in [RFC8914] cannot be returned
+   to the client to provide additional information about the cause for
+   the block.
 
    Split DNS configurations may be preferable to sending all DNS queries
    to an network-designated DNS server in some deployments.  This allows
@@ -436,20 +439,23 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    The JSON keys "identifier", "expires", and "prefixes" are defined in
    [RFC8801].
 
+
+
+
+
+
+
+Reddy & Wing             Expires October 1, 2021                [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
 8.  Roaming Enterprise Users
 
    In this Enterprise scenario (Section 1.1.3 of [RFC7296]), a roaming
    user connects to the Enterprise network through an VPN tunnel (e.g.,
    IPsec, SSL, Wireguard).  The split-tunnel Virtual Private Network
    (VPN) configuration allows the endpoint to access hosts that reside
-
-
-
-Reddy & Wing           Expires September 30, 2021               [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
-
    in the Enterprise network [RFC8598] using that tunnel; other traffic
    not destined to the Enterprise does not traverse the tunnel.  In
    contrast, a non-split- tunnel VPN configuration causes all traffic to
@@ -491,20 +497,20 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    could then even modify the DNS answers without detection.  It is
    similar to the mechanism discussed in Section 8 of [RFC8598].
 
+
+
+
+
+Reddy & Wing             Expires October 1, 2021                [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    The content of dnsZones and SplitDNSAllowed may be passed to another
    (DNS) program for processing.  As with any network input, the content
    SHOULD be considered untrusted and handled accordingly.  The split
    DNS configuration assigned by an anonymous or unknown network (e.g.,
    coffee shops) MUST be ignored by the client.
-
-
-
-
-
-Reddy & Wing           Expires September 30, 2021               [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
 
 11.  IANA Considerations
 
@@ -549,18 +555,17 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
+
+
+Reddy & Wing             Expires October 1, 2021               [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    [RFC8801]  Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
               Shao, "Discovering Provisioning Domain Names and Data",
               RFC 8801, DOI 10.17487/RFC8801, July 2020,
               <https://www.rfc-editor.org/info/rfc8801>.
-
-
-
-
-Reddy & Wing           Expires September 30, 2021              [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
 
 13.2.  Informative References
 
@@ -605,18 +610,18 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
               ngInternet/Conceptual/iPhoneOTAConfiguration/OTASecurity/
               OTASecurity.html>.
 
+
+
+
+Reddy & Wing             Expires October 1, 2021               [Page 11]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    [PEAP]     Microsoft, "[MS-PEAP]: Protected Extensible Authentication
               Protocol (PEAP)", <https://docs.microsoft.com/en-
               us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-
               beec-fb367325c0f9>.
-
-
-
-
-Reddy & Wing           Expires September 30, 2021              [Page 11]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
 
    [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
               Pre-Shared Key Extensible Authentication Protocol (EAP)
@@ -659,20 +664,25 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
               Terminology", BCP 219, RFC 8499, DOI 10.17487/RFC8499,
               January 2019, <https://www.rfc-editor.org/info/rfc8499>.
 
+
+
+
+
+
+Reddy & Wing             Expires October 1, 2021               [Page 12]
+
+Internet-Draft       Split-Horizon DNS Configuration          March 2021
+
+
    [RFC8598]  Pauly, T. and P. Wouters, "Split DNS Configuration for the
               Internet Key Exchange Protocol Version 2 (IKEv2)",
               RFC 8598, DOI 10.17487/RFC8598, May 2019,
               <https://www.rfc-editor.org/info/rfc8598>.
 
-
-
-
-
-
-Reddy & Wing           Expires September 30, 2021              [Page 12]
-
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
-
+   [RFC8738]  Shoemaker, R., "Automated Certificate Management
+              Environment (ACME) IP Identifier Validation Extension",
+              RFC 8738, DOI 10.17487/RFC8738, February 2020,
+              <https://www.rfc-editor.org/info/rfc8738>.
 
    [RFC8914]  Kumari, W., Hunt, E., Arends, R., Hardaker, W., and D.
               Lawrence, "Extended DNS Errors", RFC 8914,
@@ -715,14 +725,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-Reddy & Wing           Expires September 30, 2021              [Page 13]
+Reddy & Wing             Expires October 1, 2021               [Page 13]
