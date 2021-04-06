@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: October 1, 2021                                          Citrix
-                                                          March 30, 2021
+Expires: October 8, 2021                                          Citrix
+                                                           April 6, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 1, 2021.
+   This Internet-Draft will expire on October 8, 2021.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Reddy & Wing             Expires October 1, 2021                [Page 1]
+Reddy & Wing             Expires October 8, 2021                [Page 1]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
    include Simplified BSD License text as described in Section 4.e of
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Reddy & Wing             Expires October 1, 2021                [Page 2]
+Reddy & Wing             Expires October 8, 2021                [Page 2]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
    network, for example using the techniques proposed in [I-D.ietf-add-
@@ -165,9 +165,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021                [Page 3]
+Reddy & Wing             Expires October 8, 2021                [Page 3]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
    discussed in [Firefox-Policy] for Windows and MacOS, and setting
@@ -221,9 +221,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021                [Page 4]
+Reddy & Wing             Expires October 8, 2021                [Page 4]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
       applications are sandboxed (e.g., ransomware attack is not
@@ -277,9 +277,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021                [Page 5]
+Reddy & Wing             Expires October 8, 2021                [Page 5]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 5.  PvD dnsZones
@@ -333,9 +333,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021                [Page 6]
+Reddy & Wing             Expires October 8, 2021                [Page 6]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
    2.  The client checks that the NS RRset matches, or is a subdomain
@@ -389,9 +389,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021                [Page 7]
+Reddy & Wing             Expires October 8, 2021                [Page 7]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
    lookup to reach the DNS servers not provided by the network.  For
@@ -414,13 +414,13 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
    responsibility of the enterprise to resolve every DNS domain
    potentially asked for by the endpoints.
 
-   The SplitDNSAllowed key value set to false is a internal security
+   The SplitDNSAllowed key value set to false is an internal security
    policy expression by the operator of the network but is not a policy
    prescription to the endpoints to disable use of DNS servers not
    provided by the network.  If SplitDNSAllowed is set to false, the
    client MUST NOT trust the SplitDNSAllowed key in case of connecting
    to unknown or untrusted networks (e.g., coffee shops or hotel
-   networks).  Most importantly, the endpoint can choose to use a
+   networks).  Most importantly, the endpoint can choose to use an
    alternate network to resolve the global domain names.
 
 7.  An Example
@@ -445,9 +445,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021                [Page 8]
+Reddy & Wing             Expires October 8, 2021                [Page 8]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 8.  Roaming Enterprise Users
@@ -501,9 +501,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021                [Page 9]
+Reddy & Wing             Expires October 8, 2021                [Page 9]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
    The content of dnsZones and SplitDNSAllowed may be passed to another
@@ -557,9 +557,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021               [Page 10]
+Reddy & Wing             Expires October 8, 2021               [Page 10]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
    [RFC8801]  Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
@@ -613,9 +613,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021               [Page 11]
+Reddy & Wing             Expires October 8, 2021               [Page 11]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
    [PEAP]     Microsoft, "[MS-PEAP]: Protected Extensible Authentication
@@ -669,9 +669,9 @@ Internet-Draft       Split-Horizon DNS Configuration          March 2021
 
 
 
-Reddy & Wing             Expires October 1, 2021               [Page 12]
+Reddy & Wing             Expires October 8, 2021               [Page 12]
 
-Internet-Draft       Split-Horizon DNS Configuration          March 2021
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
    [RFC8598]  Pauly, T. and P. Wouters, "Split DNS Configuration for the
@@ -725,4 +725,4 @@ Authors' Addresses
 
 
 
-Reddy & Wing             Expires October 1, 2021               [Page 13]
+Reddy & Wing             Expires October 8, 2021               [Page 13]

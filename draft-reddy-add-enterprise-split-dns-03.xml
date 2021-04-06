@@ -389,13 +389,13 @@
       enterprise to resolve every DNS domain potentially asked for by the
       endpoints.</t>
 
-      <t>The SplitDNSAllowed key value set to false is a internal security
+      <t>The SplitDNSAllowed key value set to false is an internal security
       policy expression by the operator of the network but is not a policy
       prescription to the endpoints to disable use of DNS servers not provided
       by the network. If SplitDNSAllowed is set to false, the client MUST NOT
       trust the SplitDNSAllowed key in case of connecting to unknown or
       untrusted networks (e.g., coffee shops or hotel networks). Most
-      importantly, the endpoint can choose to use a alternate network to
+      importantly, the endpoint can choose to use an alternate network to
       resolve the global domain names.</t>
     </section>
 
