@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: October 8, 2021                                          Citrix
-                                                           April 6, 2021
+Expires: October 9, 2021                                          Citrix
+                                                           April 7, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 8, 2021.
+   This Internet-Draft will expire on October 9, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy & Wing             Expires October 8, 2021                [Page 1]
+Reddy & Wing             Expires October 9, 2021                [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -70,9 +70,9 @@ Table of Contents
    4.  Split DNS . . . . . . . . . . . . . . . . . . . . . . . . . .   5
    5.  PvD dnsZones  . . . . . . . . . . . . . . . . . . . . . . . .   6
      5.1.  Authority over the Domains  . . . . . . . . . . . . . . .   6
-   6.  PvD SplitDNSAllowed and ErrorSplitDNSBlocked Keys . . . . . .   7
+   6.  PvD NetworkDNSOnly and ErrorNetworkDNSOnly Keys . . . . . . .   7
    7.  An Example  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-   8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   9
+   8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   8
    9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   9
    10. Security Considerations . . . . . . . . . . . . . . . . . . .   9
    11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy & Wing             Expires October 8, 2021                [Page 2]
+Reddy & Wing             Expires October 9, 2021                [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 
-Reddy & Wing             Expires October 8, 2021                [Page 3]
+Reddy & Wing             Expires October 9, 2021                [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 
-Reddy & Wing             Expires October 8, 2021                [Page 4]
+Reddy & Wing             Expires October 9, 2021                [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 
-Reddy & Wing             Expires October 8, 2021                [Page 5]
+Reddy & Wing             Expires October 9, 2021                [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 
-Reddy & Wing             Expires October 8, 2021                [Page 6]
+Reddy & Wing             Expires October 9, 2021                [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -376,24 +376,25 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    validation in TLS handshake, and use it for resolving the domains in
    the subtree of "*.internal.corp1.example.com".
 
-6.  PvD SplitDNSAllowed and ErrorSplitDNSBlocked Keys
+6.  PvD NetworkDNSOnly and ErrorNetworkDNSOnly Keys
 
-   If an Enterprise network restricts all the DNS queries to be sent to
-   the network-designated DNS server, SplitDNSAllowed will be set to
-   false.  If SplitDNSAllowed is set to false, it implies the network
-   will try to block DNS queries to DNS servers not provided by the
-   network and the ErrorSplitDNSBlocked key MUST contain a human-
-   friendly description for this block.  This information is intended
-   for human consumption (not automated parsing).  The
-   ErrorSplitDNSBlocked key is useful when the client does not use DNS
+   Some enterprise networks require clients to query the network-
+   provided DNS servers, it sets the PvD NetworkDNSOnly key to True,
+   otherwise sets NetworkDNSOnly to False.  If NetworkDNSOnly is set to
+   True, it it implies the network will block, or attempt to block, DNS
+   queries sent to DNS servers that were not signaled by the network.
+   If NetworkDNSOnly is True, the ErrorNetworkDNSOnly key MUST contain a
+   human-friendly description for this block.  This information is
+   intended for human consumption (not automated parsing).  The
 
 
 
-Reddy & Wing             Expires October 8, 2021                [Page 7]
+Reddy & Wing             Expires October 9, 2021                [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
+   ErrorNetworkDNSOnly key is useful when the client does not use DNS
    lookup to reach the DNS servers not provided by the network.  For
    example, the client can be pre-configured with both the domain name
    and IP addresses of the DNS server not provided by the network
@@ -404,24 +405,18 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    to the client to provide additional information about the cause for
    the block.
 
-   Split DNS configurations may be preferable to sending all DNS queries
-   to an network-designated DNS server in some deployments.  This allows
-   an endpoint to only send DNS queries for the enterprise to the
-   network-designated DNS servers.  The Enterprise remains unaware of
-   all non-enterprise (DNS) activity of the user.  It also allows the
-   network-designated DNS servers to only be configured for the
-   enterprise DNS domains, which removes the legal and technical
-   responsibility of the enterprise to resolve every DNS domain
-   potentially asked for by the endpoints.
-
-   The SplitDNSAllowed key value set to false is an internal security
-   policy expression by the operator of the network but is not a policy
-   prescription to the endpoints to disable use of DNS servers not
-   provided by the network.  If SplitDNSAllowed is set to false, the
-   client MUST NOT trust the SplitDNSAllowed key in case of connecting
-   to unknown or untrusted networks (e.g., coffee shops or hotel
-   networks).  Most importantly, the endpoint can choose to use an
-   alternate network to resolve the global domain names.
+   The NetworkDNSOnly set to True is an internal security policy
+   expression by the operator of the network but is not a policy
+   prescription to the endpoints to disable its use of its other
+   configured DNS servers; that is, the endpoint can ignore
+   NetworkDNSOnly set to True.  If joining an un-trusted network (e.g.,
+   coffeeshop, hotel, airport network), a True value of NetworkDNSOnly
+   MUST be ignored.  The mechanism the client uses to determine 'trusted
+   network' must involve cryptographic verification, not merely matching
+   SSID (in the case of WiFi), such as 802.1x or confirming the network-
+   provided encrypted DNS server has a certificate matching a trusted
+   network.  In all cases the endpoint can choose to use an alternate
+   network (e.g., cellular) to resolve the global domain names.
 
 7.  An Example
 
@@ -439,17 +434,6 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    The JSON keys "identifier", "expires", and "prefixes" are defined in
    [RFC8801].
 
-
-
-
-
-
-
-Reddy & Wing             Expires October 8, 2021                [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
 8.  Roaming Enterprise Users
 
    In this Enterprise scenario (Section 1.1.3 of [RFC7296]), a roaming
@@ -458,6 +442,14 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    (VPN) configuration allows the endpoint to access hosts that reside
    in the Enterprise network [RFC8598] using that tunnel; other traffic
    not destined to the Enterprise does not traverse the tunnel.  In
+
+
+
+Reddy & Wing             Expires October 9, 2021                [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
+
    contrast, a non-split- tunnel VPN configuration causes all traffic to
    traverse the tunnel into the Enterprise.
 
@@ -497,20 +489,22 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    could then even modify the DNS answers without detection.  It is
    similar to the mechanism discussed in Section 8 of [RFC8598].
 
-
-
-
-
-Reddy & Wing             Expires October 8, 2021                [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    The content of dnsZones and SplitDNSAllowed may be passed to another
    (DNS) program for processing.  As with any network input, the content
    SHOULD be considered untrusted and handled accordingly.  The split
    DNS configuration assigned by an anonymous or unknown network (e.g.,
    coffee shops) MUST be ignored by the client.
+
+
+
+
+
+
+
+Reddy & Wing             Expires October 9, 2021                [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
 
 11.  IANA Considerations
 
@@ -555,17 +549,18 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
-
-
-Reddy & Wing             Expires October 8, 2021               [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    [RFC8801]  Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
               Shao, "Discovering Provisioning Domain Names and Data",
               RFC 8801, DOI 10.17487/RFC8801, July 2020,
               <https://www.rfc-editor.org/info/rfc8801>.
+
+
+
+
+Reddy & Wing             Expires October 9, 2021               [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
 
 13.2.  Informative References
 
@@ -610,18 +605,18 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               ngInternet/Conceptual/iPhoneOTAConfiguration/OTASecurity/
               OTASecurity.html>.
 
-
-
-
-Reddy & Wing             Expires October 8, 2021               [Page 11]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    [PEAP]     Microsoft, "[MS-PEAP]: Protected Extensible Authentication
               Protocol (PEAP)", <https://docs.microsoft.com/en-
               us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-
               beec-fb367325c0f9>.
+
+
+
+
+Reddy & Wing             Expires October 9, 2021               [Page 11]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
 
    [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
               Pre-Shared Key Extensible Authentication Protocol (EAP)
@@ -664,20 +659,20 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               Terminology", BCP 219, RFC 8499, DOI 10.17487/RFC8499,
               January 2019, <https://www.rfc-editor.org/info/rfc8499>.
 
-
-
-
-
-
-Reddy & Wing             Expires October 8, 2021               [Page 12]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    [RFC8598]  Pauly, T. and P. Wouters, "Split DNS Configuration for the
               Internet Key Exchange Protocol Version 2 (IKEv2)",
               RFC 8598, DOI 10.17487/RFC8598, May 2019,
               <https://www.rfc-editor.org/info/rfc8598>.
+
+
+
+
+
+
+Reddy & Wing             Expires October 9, 2021               [Page 12]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
 
    [RFC8738]  Shoemaker, R., "Automated Certificate Management
               Environment (ACME) IP Identifier Validation Extension",
@@ -725,4 +720,9 @@ Authors' Addresses
 
 
 
-Reddy & Wing             Expires October 8, 2021               [Page 13]
+
+
+
+
+
+Reddy & Wing             Expires October 9, 2021               [Page 13]
