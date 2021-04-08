@@ -75,11 +75,11 @@ Table of Contents
    8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   8
    9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   9
    10. Security Considerations . . . . . . . . . . . . . . . . . . .   9
-   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  10
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  11
+     13.2.  Informative References . . . . . . . . . . . . . . . . .  10
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
 
 1.  Introduction
@@ -379,9 +379,9 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 6.  PvD NetworkDNSOnly and ErrorNetworkDNSOnly Keys
 
    Some enterprise networks require clients to query the network-
-   provided DNS servers, it sets the PvD NetworkDNSOnly key to True,
+   designated DNS servers, it sets the PvD NetworkDNSOnly key to True,
    otherwise sets NetworkDNSOnly to False.  If NetworkDNSOnly is set to
-   True, it it implies the network will block, or attempt to block, DNS
+   True, it implies the network will block, or attempt to block, DNS
    queries sent to DNS servers that were not signaled by the network.
    If NetworkDNSOnly is True, the ErrorNetworkDNSOnly key MUST contain a
    human-friendly description for this block.  This information is
@@ -411,12 +411,9 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    configured DNS servers; that is, the endpoint can ignore
    NetworkDNSOnly set to True.  If joining an un-trusted network (e.g.,
    coffeeshop, hotel, airport network), a True value of NetworkDNSOnly
-   MUST be ignored.  The mechanism the client uses to determine 'trusted
-   network' must involve cryptographic verification, not merely matching
-   SSID (in the case of WiFi), such as 802.1x or confirming the network-
-   provided encrypted DNS server has a certificate matching a trusted
-   network.  In all cases the endpoint can choose to use an alternate
-   network (e.g., cellular) to resolve the global domain names.
+   MUST be ignored.  In all cases the endpoint can choose to use an
+   alternate network (e.g., cellular) to resolve the global domain
+   names.
 
 7.  An Example
 
@@ -442,6 +439,9 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    (VPN) configuration allows the endpoint to access hosts that reside
    in the Enterprise network [RFC8598] using that tunnel; other traffic
    not destined to the Enterprise does not traverse the tunnel.  In
+   contrast, a non-split- tunnel VPN configuration causes all traffic to
+   traverse the tunnel into the Enterprise.
+
 
 
 
@@ -449,9 +449,6 @@ Reddy & Wing             Expires October 9, 2021                [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
-
-   contrast, a non-split- tunnel VPN configuration causes all traffic to
-   traverse the tunnel into the Enterprise.
 
    When the VPN tunnel is IPsec, the encrypted server hosted by the
    Enterprise network can be securely discovered by the endpoint using
@@ -495,8 +492,11 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    DNS configuration assigned by an anonymous or unknown network (e.g.,
    coffee shops) MUST be ignored by the client.
 
+11.  IANA Considerations
 
-
+   IANA is requested to add SplitDNSAllowed and ErrorSplitDNSBlocked PvD
+   Keys to the Additional Information PvD Keys registry
+   (https://www.iana.org/assignments/pvds/pvds.xhtml).
 
 
 
@@ -505,12 +505,6 @@ Reddy & Wing             Expires October 9, 2021                [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
-
-11.  IANA Considerations
-
-   IANA is requested to add SplitDNSAllowed and ErrorSplitDNSBlocked PvD
-   Keys to the Additional Information PvD Keys registry
-   (https://www.iana.org/assignments/pvds/pvds.xhtml).
 
 12.  Acknowledgements
 
@@ -554,6 +548,12 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               RFC 8801, DOI 10.17487/RFC8801, July 2020,
               <https://www.rfc-editor.org/info/rfc8801>.
 
+13.2.  Informative References
+
+   [Chrome-DoH]
+              The Unicode Consortium, "Chrome DNS over HTTPS (aka DoH)",
+              <https://www.chromium.org/developers/dns-over-https>.
+
 
 
 
@@ -561,12 +561,6 @@ Reddy & Wing             Expires October 9, 2021               [Page 10]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
-
-13.2.  Informative References
-
-   [Chrome-DoH]
-              The Unicode Consortium, "Chrome DNS over HTTPS (aka DoH)",
-              <https://www.chromium.org/developers/dns-over-https>.
 
    [Chrome-Policy]
               The Unicode Consortium, "Chrome policies for users or
@@ -610,6 +604,12 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-
               beec-fb367325c0f9>.
 
+   [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
+              Pre-Shared Key Extensible Authentication Protocol (EAP)
+              Method", RFC 4764, DOI 10.17487/RFC4764, January 2007,
+              <https://www.rfc-editor.org/info/rfc4764>.
+
+
 
 
 
@@ -617,11 +617,6 @@ Reddy & Wing             Expires October 9, 2021               [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
-
-   [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
-              Pre-Shared Key Extensible Authentication Protocol (EAP)
-              Method", RFC 4764, DOI 10.17487/RFC4764, January 2007,
-              <https://www.rfc-editor.org/info/rfc4764>.
 
    [RFC6698]  Hoffman, P. and J. Schlyter, "The DNS-Based Authentication
               of Named Entities (DANE) Transport Layer Security (TLS)
@@ -664,6 +659,11 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               RFC 8598, DOI 10.17487/RFC8598, May 2019,
               <https://www.rfc-editor.org/info/rfc8598>.
 
+   [RFC8738]  Shoemaker, R., "Automated Certificate Management
+              Environment (ACME) IP Identifier Validation Extension",
+              RFC 8738, DOI 10.17487/RFC8738, February 2020,
+              <https://www.rfc-editor.org/info/rfc8738>.
+
 
 
 
@@ -673,11 +673,6 @@ Reddy & Wing             Expires October 9, 2021               [Page 12]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
-
-   [RFC8738]  Shoemaker, R., "Automated Certificate Management
-              Environment (ACME) IP Identifier Validation Extension",
-              RFC 8738, DOI 10.17487/RFC8738, February 2020,
-              <https://www.rfc-editor.org/info/rfc8738>.
 
    [RFC8914]  Kumari, W., Hunt, E., Arends, R., Hardaker, W., and D.
               Lawrence, "Extended DNS Errors", RFC 8914,
@@ -705,6 +700,11 @@ Authors' Addresses
    USA
 
    Email: danwing@gmail.com
+
+
+
+
+
 
 
 
