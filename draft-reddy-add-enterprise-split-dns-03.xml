@@ -360,14 +360,16 @@
     </section>
 
     <section anchor="SplitDNSAllowed"
-             title="PvD SplitDNSAllowed and ErrorSplitDNSBlocked Keys">
-      <t>If an Enterprise network restricts all the DNS queries to be sent to
-      the network-designated DNS server, SplitDNSAllowed will be set to false.
-      If SplitDNSAllowed is set to false, it implies the network will try to
-      block DNS queries to DNS servers not provided by the network and the
-      ErrorSplitDNSBlocked key MUST contain a human-friendly description for
+             title="PvD NetworkDNSOnly and ErrorNetworkDNSOnly Keys">
+      <t>Some enterprise networks require clients to query the network-
+      provided DNS servers, it sets the PvD NetworkDNSOnly key to True, otherwise
+      sets NetworkDNSOnly to False.  If NetworkDNSOnly is set to True, it
+      it implies the network will block, or attempt to block,
+      DNS queries sent to DNS servers that were not signaled by the
+      network.  If NetworkDNSOnly is True, the
+      ErrorNetworkDNSOnly key MUST contain a human-friendly description for
       this block. This information is intended for human consumption (not
-      automated parsing). The ErrorSplitDNSBlocked key is useful when the
+      automated parsing). The ErrorNetworkDNSOnly key is useful when the
       client does not use DNS lookup to reach the DNS servers not provided by
       the network. For example, the client can be pre-configured with both the
       domain name and IP addresses of the DNS server not provided by the
@@ -379,7 +381,7 @@
       to the client to provide additional information about the cause for the
       block.</t>
 
-      <t>Split DNS configurations may be preferable to sending all DNS queries
+<!--      <t>Split DNS configurations may be preferable to sending all DNS queries
       to an network-designated DNS server in some deployments. This allows an
       endpoint to only send DNS queries for the enterprise to the
       network-designated DNS servers. The Enterprise remains unaware of all
@@ -388,15 +390,21 @@
       DNS domains, which removes the legal and technical responsibility of the
       enterprise to resolve every DNS domain potentially asked for by the
       endpoints.</t>
+-->
 
-      <t>The SplitDNSAllowed key value set to false is an internal security
-      policy expression by the operator of the network but is not a policy
-      prescription to the endpoints to disable use of DNS servers not provided
-      by the network. If SplitDNSAllowed is set to false, the client MUST NOT
-      trust the SplitDNSAllowed key in case of connecting to unknown or
-      untrusted networks (e.g., coffee shops or hotel networks). Most
-      importantly, the endpoint can choose to use an alternate network to
-      resolve the global domain names.</t>
+      <t>The NetworkDNSOnly set to True is an internal security policy
+      expression by the operator of the network but is not a policy
+      prescription to the endpoints to disable its use of its other
+      configured DNS servers; that is, the endpoint can ignore
+      NetworkDNSOnly set to True.  If joining an un-trusted network
+      (e.g., coffeeshop, hotel, airport network), a True value of
+      NetworkDNSOnly MUST be ignored. The mechanism the client uses to
+      determine 'trusted network' must involve cryptographic
+      verification, not merely matching SSID (in the case of WiFi),
+      such as 802.1x or confirming the network-provided encrypted DNS
+      server has a certificate matching a trusted network.  In all
+      cases the endpoint can choose to use an alternate
+      network (e.g., cellular) to resolve the global domain names.</t>
     </section>
 
     <section title="An Example">
