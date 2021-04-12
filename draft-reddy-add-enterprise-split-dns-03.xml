@@ -385,8 +385,22 @@
       prescription to the endpoints to disable its use of its other configured
       DNS servers; that is, the endpoint can ignore NetworkDNSOnly set to
       True. If joining an un-trusted network (e.g., coffeeshop, hotel, airport
-      network), a True value of NetworkDNSOnly MUST be ignored. In all cases
-      the endpoint can choose to use an alternate network (e.g., cellular) to
+      network), a True value of NetworkDNSOnly MUST be ignored. The mechanism
+      the client uses to determine 'trusted network' to assist the user must
+      involve authenticated identity for the access point, not merely matching
+      SSID (in the case of WiFi), such as 802.1X or confirming the
+      network-designated encrypted resolver name is pre-configured in the
+      Operating System. For example, the client can determine "Open"
+      (unencrypted") wireless networks as "untrusted networks'', notify the
+      user that using a shared and public Pre-Shared Key (PSK) that is that is
+      printed on a sandwich board at the entrance, on a chalkboard on the
+      wall, or on a menu for wireless authentication is a untrusted network.
+      For example, coffee shops and air ports use PSK and are unwilling to
+      perform complex configuration on their networks. In addition, customers
+      are generally unwilling to do complicated provisioning on their devices
+      just to obtain free Wi-Fi. This type of networks can be tagged as
+      "untrusted networks" with minimal human intervention. In all cases the
+      endpoint can choose to use an alternate network (e.g., cellular) to
       resolve the global domain names.</t>
     </section>
 
