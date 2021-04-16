@@ -387,21 +387,25 @@
       True. If joining an un-trusted network (e.g., coffeeshop, hotel, airport
       network), a True value of NetworkDNSOnly MUST be ignored. The mechanism
       the client uses to determine 'trusted network' to assist the user MUST
-      involve authenticated identity of the network (not merely matching
-      SSID in the case of WiFi), such as 802.1X or confirming the
+      involve authenticated identity of the network (not merely matching SSID
+      in the case of WiFi), such as 802.1X or confirming the
       network-designated encrypted resolver name is pre-configured in the
-      Operating System and TLS handshake with it succeeds. For example, the client can determine "Open"
-      (unencrypted) wireless networks are untrusted networks, notify the
-      user that using a shared and public Pre-Shared Key (PSK) that is 
-      printed on a sandwich board at the entrance, on a chalkboard on the
-      wall, or on a menu for wireless authentication is a untrusted network.
-      For example, coffee shops and air ports use PSK and are unwilling to
-      perform complex configuration on their networks. In addition, customers
-      are generally unwilling to do complicated provisioning on their devices
-      just to obtain free Wi-Fi. This type of networks can be tagged as
-      "untrusted networks" with minimal human intervention. In such cases the
-      endpoint MAY choose to use an alternate network (e.g., cellular) to
-      resolve the global domain names.</t>
+      Operating System and TLS handshake with it succeeds. For example, the
+      client can determine "Open" (unencrypted) wireless networks are
+      untrusted networks, notify the user that using a shared and public
+      Pre-Shared Key (PSK) for wireless authentication is a untrusted network.
+      If the pre-shared-key is the same for all clients that connect to the
+      same WLAN, the shared key will be available to all nodes, including
+      attackers, so it is possible to mount an active on-path attack (e.g.,
+      <xref target="Evil-Twin"></xref>, <xref target="Krack"></xref>, <xref
+      target="Dragonblood"></xref>). For example, coffee shops and air ports
+      use PSK and are unwilling to perform complex configuration on their
+      networks. In addition, customers are generally unwilling to do
+      complicated provisioning on their devices just to obtain free Wi-Fi.
+      This type of networks can be tagged as "untrusted networks" with minimal
+      human intervention. In such cases the endpoint MAY choose to use an
+      alternate network (e.g., cellular) to resolve the global domain
+      names.</t>
     </section>
 
     <section title="An Example">
@@ -639,6 +643,45 @@
 
           <author>
             <organization>Microsoft</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="Evil-Twin"
+                 target="https://en.wikipedia.org/wiki/Evil_twin_(wireless_networks)">
+        <front>
+          <title>Evil twin (wireless networks)</title>
+
+          <author>
+            <organization>The Unicode Consortium</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="Krack" target="https://www.krackattacks.com/">
+        <front>
+          <title>Key Reinstallation Attacks</title>
+
+          <author>
+            <organization>The Unicode Consortium</organization>
+          </author>
+
+          <date day="" month="" year="2017" />
+        </front>
+      </reference>
+
+      <reference anchor="Dragonblood"
+                 target="https://papers.mathyvanhoef.com/dragonblood.pdf">
+        <front>
+          <title>Dragonblood: Analyzing the Dragonfly Handshake of WPA3 and
+          EAP-pwd</title>
+
+          <author>
+            <organization>The Unicode Consortium</organization>
           </author>
 
           <date day="" month="" year="" />

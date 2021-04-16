@@ -5,8 +5,8 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: October 14, 2021                                         Citrix
-                                                          April 12, 2021
+Expires: October 17, 2021                                         Citrix
+                                                          April 15, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 14, 2021.
+   This Internet-Draft will expire on October 17, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy & Wing            Expires October 14, 2021                [Page 1]
+Reddy & Wing            Expires October 17, 2021                [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -74,13 +74,13 @@ Table of Contents
    7.  An Example  . . . . . . . . . . . . . . . . . . . . . . . . .   8
    8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   9
    9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   9
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  10
    11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
    12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
    13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
      13.1.  Normative References . . . . . . . . . . . . . . . . . .  10
      13.2.  Informative References . . . . . . . . . . . . . . . . .  11
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
 
 1.  Introduction
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy & Wing            Expires October 14, 2021                [Page 2]
+Reddy & Wing            Expires October 17, 2021                [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 
-Reddy & Wing            Expires October 14, 2021                [Page 3]
+Reddy & Wing            Expires October 17, 2021                [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 
-Reddy & Wing            Expires October 14, 2021                [Page 4]
+Reddy & Wing            Expires October 17, 2021                [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 
-Reddy & Wing            Expires October 14, 2021                [Page 5]
+Reddy & Wing            Expires October 17, 2021                [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 
-Reddy & Wing            Expires October 14, 2021                [Page 6]
+Reddy & Wing            Expires October 17, 2021                [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -389,7 +389,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
 
 
-Reddy & Wing            Expires October 14, 2021                [Page 7]
+Reddy & Wing            Expires October 17, 2021                [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
@@ -412,27 +412,43 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    NetworkDNSOnly set to True.  If joining an un-trusted network (e.g.,
    coffeeshop, hotel, airport network), a True value of NetworkDNSOnly
    MUST be ignored.  The mechanism the client uses to determine 'trusted
-   network' to assist the user must involve authenticated identity for
-   the access point, not merely matching SSID (in the case of WiFi),
-   such as 802.1X or confirming the network-designated encrypted
-   resolver name is pre-configured in the Operating System.  For
-   example, the client can determine "Open" (unencrypted") wireless
-   networks as "untrusted networks'', notify the user that using a
-   shared and public Pre-Shared Key (PSK) that is that is printed on a
-   sandwich board at the entrance, on a chalkboard on the wall, or on a
-   menu for wireless authentication is a untrusted network.  For
-   example, coffee shops and air ports use PSK and are unwilling to
-   perform complex configuration on their networks.  In addition,
-   customers are generally unwilling to do complicated provisioning on
-   their devices just to obtain free Wi-Fi.  This type of networks can
-   be tagged as "untrusted networks" with minimal human intervention.
-   In all cases the endpoint can choose to use an alternate network
-   (e.g., cellular) to resolve the global domain names.
+   network' to assist the user MUST involve authenticated identity of
+   the network (not merely matching SSID in the case of WiFi), such as
+   802.1X or confirming the network-designated encrypted resolver name
+   is pre-configured in the Operating System and TLS handshake with it
+   succeeds.  For example, the client can determine "Open" (unencrypted)
+   wireless networks are untrusted networks, notify the user that using
+   a shared and public Pre-Shared Key (PSK) for wireless authentication
+   is a untrusted network.  If the pre-shared-key is the same for all
+   clients that connect to the same WLAN, the shared key will be
+   available to all nodes, including attackers, so it is possible to
+   mount an active on-path attack (e.g., [Evil-Twin], [Krack],
+   [Dragonblood]).  For example, coffee shops and air ports use PSK and
+   are unwilling to perform complex configuration on their networks.  In
+   addition, customers are generally unwilling to do complicated
+   provisioning on their devices just to obtain free Wi-Fi.  This type
+   of networks can be tagged as "untrusted networks" with minimal human
+   intervention.  In such cases the endpoint MAY choose to use an
+   alternate network (e.g., cellular) to resolve the global domain
+   names.
 
 7.  An Example
 
    The following example shows how the JSON keys defined in this
    document can be used:
+
+
+
+
+
+
+
+
+
+Reddy & Wing            Expires October 17, 2021                [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
 
       {
         "identifier": "cafe.example.com.",
@@ -441,14 +457,6 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
         "SplitDNSAllowed": True,
          "dnsZones:": ["city.other.test", "example.com"]
       }
-
-
-
-
-Reddy & Wing            Expires October 14, 2021                [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
 
    The JSON keys "identifier", "expires", and "prefixes" are defined in
    [RFC8801].
@@ -490,6 +498,14 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    to conform to the requirements discussed in
    [I-D.ietf-dprive-phase2-requirements].
 
+
+
+
+Reddy & Wing            Expires October 17, 2021                [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
+
 10.  Security Considerations
 
    Clients may want to preconfigure global domains for TLDs and Second-
@@ -497,15 +513,6 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    known domains.  This prevents users from unknowingly giving DNS
    queries to third parties.  This is even more important if those well-
    known domains are not deploying DNSSEC, as the Enterprise network
-
-
-
-
-Reddy & Wing            Expires October 14, 2021                [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    could then even modify the DNS answers without detection.  It is
    similar to the mechanism discussed in Section 8 of [RFC8598].
 
@@ -546,6 +553,15 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
               2000, <https://www.rfc-editor.org/info/rfc2826>.
 
+
+
+
+
+Reddy & Wing            Expires October 17, 2021               [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
+
    [RFC6761]  Cheshire, S. and M. Krochmal, "Special-Use Domain Names",
               RFC 6761, DOI 10.17487/RFC6761, February 2013,
               <https://www.rfc-editor.org/info/rfc6761>.
@@ -553,14 +569,6 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    [RFC6762]  Cheshire, S. and M. Krochmal, "Multicast DNS", RFC 6762,
               DOI 10.17487/RFC6762, February 2013,
               <https://www.rfc-editor.org/info/rfc6762>.
-
-
-
-
-Reddy & Wing            Expires October 14, 2021               [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -587,10 +595,28 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               <https://support.google.com/chromebook/
               answer/3438631?hl=en>.
 
+   [Dragonblood]
+              The Unicode Consortium, "Dragonblood: Analyzing the
+              Dragonfly Handshake of WPA3 and EAP-pwd",
+              <https://papers.mathyvanhoef.com/dragonblood.pdf>.
+
+   [Evil-Twin]
+              The Unicode Consortium, "Evil twin (wireless networks)",
+              <https://en.wikipedia.org/wiki/
+              Evil_twin_(wireless_networks)>.
+
    [Firefox-Policy]
               "Policy templates for Firefox",
               <https://github.com/mozilla/policy-templates/blob/master/
               README.md#dnsoverhttps>.
+
+
+
+
+Reddy & Wing            Expires October 17, 2021               [Page 11]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
 
    [I-D.btw-add-ipsecme-ike]
               Boucadair, M., Reddy.K, T., Wing, D., and V. Smyslov,
@@ -604,19 +630,13 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               Resolvers and Authoritative Servers", draft-ietf-dprive-
               phase2-requirements-02 (work in progress), November 2020.
 
+   [Krack]    The Unicode Consortium, "Key Reinstallation Attacks",
+              2017, <https://www.krackattacks.com/>.
+
    [MDM-Apple]
               Apple, "Mobile Device Management",
               <https://developer.apple.com/documentation/
               devicemanagement>.
-
-
-
-
-
-Reddy & Wing            Expires October 14, 2021               [Page 11]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
 
    [OTA]      Apple, "Over-the-Air Profile Delivery Concepts", <https://
               developer.apple.com/library/archive/documentation/Networki
@@ -643,6 +663,17 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               the DNS", RFC 6950, DOI 10.17487/RFC6950, October 2013,
               <https://www.rfc-editor.org/info/rfc6950>.
 
+
+
+
+
+
+
+Reddy & Wing            Expires October 17, 2021               [Page 12]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
+
    [RFC7296]  Kaufman, C., Hoffman, P., Nir, Y., Eronen, P., and T.
               Kivinen, "Internet Key Exchange Protocol Version 2
               (IKEv2)", STD 79, RFC 7296, DOI 10.17487/RFC7296, October
@@ -665,15 +696,6 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               DOI 10.17487/RFC8310, March 2018,
               <https://www.rfc-editor.org/info/rfc8310>.
 
-
-
-
-
-Reddy & Wing            Expires October 14, 2021               [Page 12]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    [RFC8499]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
               Terminology", BCP 219, RFC 8499, DOI 10.17487/RFC8499,
               January 2019, <https://www.rfc-editor.org/info/rfc8499>.
@@ -695,6 +717,18 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
    [win10s]   Microsoft, "Windows 10 in S mode",
               <https://www.microsoft.com/en-us/windows/s-mode>.
+
+
+
+
+
+
+
+
+Reddy & Wing            Expires October 17, 2021               [Page 13]
+
+Internet-Draft       Split-Horizon DNS Configuration          April 2021
+
 
 Authors' Addresses
 
@@ -725,4 +759,26 @@ Authors' Addresses
 
 
 
-Reddy & Wing            Expires October 14, 2021               [Page 13]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reddy & Wing            Expires October 17, 2021               [Page 14]
