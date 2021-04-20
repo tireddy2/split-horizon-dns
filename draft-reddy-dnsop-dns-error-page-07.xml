@@ -456,8 +456,9 @@
             specification. To detect this scenario, the DNS client MUST verify
             the domain name in the Error Page URI matches the domain name of
             the encrypted DNS resolver. If this match fails, the DNS client
-            MUST NOT process any part of that DNS response.</t>
-          </list></t>
+	    MUST ignore Error Page URI EDNS0 option in the response, but
+	    SHOULD process other parts of the response.</t>
+	</list></t>
       </section>
     </section>
 
