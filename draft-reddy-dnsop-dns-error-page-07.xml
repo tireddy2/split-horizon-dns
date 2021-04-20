@@ -409,9 +409,9 @@
         <t>The Error Page URI EDNS0 option is susceptible to forgery. An
         attacker (e.g., a man in the middle (MITM)) could insert an extended
         Error Page URI EDNS0 option into the DNS response causing a client to
-        attempt to visit that URI. For instance, the the attacker can be
-        located between the stub resolver and DNS recursive server or between
-        the DNS proxy and the upstream resolver. To mitigate that attack, the
+        attempt to visit that URI. For instance, the attacker can be located
+        between the stub resolver and DNS recursive server or between the DNS
+        proxy and the upstream resolver. To mitigate that attack, the
         following measures are enforced:</t>
 
         <t><list style="symbols">
@@ -428,7 +428,7 @@
             security and privacy. If the DNS client has enabled opportunistic
             privacy profile for DoT, the DNS client MUST ignore Error Page URI
             EDNS0 option in responses, but SHOULD process other parts of the
-            response. </t>
+            response.</t>
 
             <t>If a DNS client has enabled strict privacy profile (Section 5
             of <xref target="RFC8310"></xref>) for DoT, the DNS client
@@ -456,7 +456,7 @@
             specification. To detect this scenario, the DNS client MUST verify
             the domain name in the Error Page URI matches the domain name of
             the encrypted DNS resolver. If this match fails, the DNS client
-            MUST NOT process any part of that DNS response. </t>
+            MUST NOT process any part of that DNS response.</t>
           </list></t>
       </section>
     </section>

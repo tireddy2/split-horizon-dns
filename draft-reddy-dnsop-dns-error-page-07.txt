@@ -414,10 +414,10 @@ Internet-Draft        DNS Access Denied Error Page            April 2021
    The Error Page URI EDNS0 option is susceptible to forgery.  An
    attacker (e.g., a man in the middle (MITM)) could insert an extended
    Error Page URI EDNS0 option into the DNS response causing a client to
-   attempt to visit that URI.  For instance, the the attacker can be
-   located between the stub resolver and DNS recursive server or between
-   the DNS proxy and the upstream resolver.  To mitigate that attack,
-   the following measures are enforced:
+   attempt to visit that URI.  For instance, the attacker can be located
+   between the stub resolver and DNS recursive server or between the DNS
+   proxy and the upstream resolver.  To mitigate that attack, the
+   following measures are enforced:
 
    o  The DNS client MUST NOT process the DNS response with Error Page
       URI EDNS0 option unless DNS messages exchanged are
