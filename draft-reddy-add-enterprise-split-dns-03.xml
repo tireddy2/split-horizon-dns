@@ -199,11 +199,16 @@
       the client to override local DNS settings for a specific network. It is
       similar to the way users explicitly disable VPN connection in specific
       networks and VPN connection is enabled by default in other networks for
-      privacy. The unmanaged BYOD devices typically use the credentials (user
-      name and password) provided by the IT admin to mutually authenticate to
-      the Enterprise WLAN Access Point (e.g., PEAP-MSCHAPv2 <xref
-      target="PEAP"></xref>, EAP-pwd <xref target="RFC8146"></xref>, EAP-PSK
-      <xref target="RFC4764"></xref>).</t>
+      privacy. The unmanaged BYOD devices use mutual authentication of the
+      client and the enterprise network. The client is typically authenticated
+      with their user credentials (e.g., username and password). The network
+      is typically authenticated with a certificate (e.g., PEAP-MSCHAPv2 <xref
+      target="PEAP"></xref>) or a mutually-authenticated key exchange which is
+      well-defended from offline attacks (e.g., EAP-pwd <xref
+      target="RFC8146"></xref>, EAP-PSK <xref target="RFC4764"></xref>).
+      Importantly, WPA-PSK and WPA2-PSK are not well-defended from offline
+      attacks and MUST NOT be used in conjunction with this specification.
+      </t>
 
       <t><list style="hanging">
           <t hangText="Note: ">Many users have privacy and personal data
