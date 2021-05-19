@@ -137,10 +137,7 @@
       [I-D.ietf-add-ddr]. Discovery of encrypted DNS server for roaming
       enterprise endpoints is discussed in <xref
       target="I-D.btw-add-ipsecme-ike"></xref> (see <xref
-      target="VPN"></xref>). Another use case for split-horizon DNS is
-      Cellular and Fixed-access networks (ISPs) typically offer private
-      domains, including account status/controls, and free education
-      initiatives <xref target="INS"></xref>.</t>
+      target="VPN"></xref>). </t>
 
       <t>Provisioning Domains (PvDs) are defined in <xref
       target="RFC7556"></xref> as sets of network configuration information
@@ -214,7 +211,10 @@
       case, the client is instructed to send DNS queries for the enterprise
       public domain (e.g., "example.com") to the network-designated DNS
       servers. A configuration for this deployment scenario is referred to as
-      a Split DNS configuration.</t>
+      a Split DNS configuration. Another use case for split-horizon DNS is
+      Cellular and Fixed-access networks (ISPs) typically offer private
+      domains, including account status/controls, and free education
+      initiatives <xref target="INS"></xref>.</t>
 
       <t>The PvD RA option defined in <xref target="RFC8801"></xref> SHOULD
       set the H-flag to indicate that Additional Information is available.
