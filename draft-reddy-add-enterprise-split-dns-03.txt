@@ -5,10 +5,10 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: November 19, 2021                                        Citrix
+Expires: November 20, 2021                                        Citrix
                                                                 K. Smith
                                                                 Vodafone
-                                                            May 18, 2021
+                                                            May 19, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on November 19, 2021.
+   This Internet-Draft will expire on November 20, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy, et al.           Expires November 19, 2021               [Page 1]
+Reddy, et al.           Expires November 20, 2021               [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy, et al.           Expires November 19, 2021               [Page 2]
+Reddy, et al.           Expires November 20, 2021               [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021               [Page 3]
+Reddy, et al.           Expires November 20, 2021               [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021               [Page 4]
+Reddy, et al.           Expires November 20, 2021               [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021               [Page 5]
+Reddy, et al.           Expires November 20, 2021               [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021               [Page 6]
+Reddy, et al.           Expires November 20, 2021               [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -389,7 +389,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021               [Page 7]
+Reddy, et al.           Expires November 20, 2021               [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -417,20 +417,20 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
    server to access both private domains and global domains.
 
    The scope of NetworkDNSOnly key is restricted to unmanaged BYOD
-   devices without a configuration profile and split DNS configuration
-   on explicitly trusted networks.  In this use case, the user has
-   authorized the client to override local DNS settings for a specific
-   network.  It is similar to the way users explicitly disable VPN
-   connection in specific networks and VPN connection is enabled by
-   default in other networks for privacy.  The unmanaged BYOD devices
-   use mutual authentication of the client and the enterprise network.
-   The client is typically authenticated with their user credentials
-   (e.g., username and password).  The network is typically
-   authenticated with a certificate (e.g., PEAP-MSCHAPv2 [PEAP]) or a
-   mutually-authenticated key exchange which is well-defended from
-   offline attacks (e.g., EAP-pwd [RFC8146], EAP-PSK [RFC4764]).
-   Importantly, WPA-PSK and WPA2-PSK are not well-defended from offline
-   attacks and MUST NOT be used in conjunction with this specification.
+   devices without a configuration profile on explicitly trusted
+   networks.  In this use case, the user has authorized the client to
+   override local DNS settings for a specific network.  It is similar to
+   the way users explicitly disable VPN connection in specific networks
+   and VPN connection is enabled by default in other networks for
+   privacy.  The unmanaged BYOD devices use mutual authentication of the
+   client and the enterprise network.  The client is typically
+   authenticated with their user credentials (e.g., username and
+   password).  The network is typically authenticated with a certificate
+   (e.g., PEAP-MSCHAPv2 [PEAP]) or a mutually-authenticated key exchange
+   which is well-defended from offline attacks (e.g., EAP-pwd [RFC8146],
+   EAP-PSK [RFC4764]).  Importantly, WPA-PSK and WPA2-PSK are not well-
+   defended from offline attacks and MUST NOT be used in conjunction
+   with NetworkDNSOnly set to True.
 
    Note:   Many users have privacy and personal data sovereignty
       concerns with employers installing MDM on their personal devices;
@@ -445,7 +445,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021               [Page 8]
+Reddy, et al.           Expires November 20, 2021               [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -501,7 +501,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021               [Page 9]
+Reddy, et al.           Expires November 20, 2021               [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -557,7 +557,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021              [Page 10]
+Reddy, et al.           Expires November 20, 2021              [Page 10]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -613,7 +613,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021              [Page 11]
+Reddy, et al.           Expires November 20, 2021              [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -669,7 +669,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021              [Page 12]
+Reddy, et al.           Expires November 20, 2021              [Page 12]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -725,7 +725,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
 
-Reddy, et al.           Expires November 19, 2021              [Page 13]
+Reddy, et al.           Expires November 20, 2021              [Page 13]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
@@ -781,4 +781,4 @@ Authors' Addresses
 
 
 
-Reddy, et al.           Expires November 19, 2021              [Page 14]
+Reddy, et al.           Expires November 20, 2021              [Page 14]
