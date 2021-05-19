@@ -77,6 +77,22 @@
       </address>
     </author>
 
+    <author fullname="Kevin Smith" initials="K." surname="Smith">
+      <organization abbrev="Vodafone">Vodafone Group</organization>
+
+      <address>
+        <postal>
+          <street>One Kingdom Street</street>
+
+          <city>London</city>
+
+          <country>UK</country>
+        </postal>
+
+        <email>kevin.smith@vodafone.com</email>
+      </address>
+    </author>
+
     <date />
 
     <workgroup>ADD</workgroup>
@@ -121,7 +137,10 @@
       [I-D.ietf-add-ddr]. Discovery of encrypted DNS server for roaming
       enterprise endpoints is discussed in <xref
       target="I-D.btw-add-ipsecme-ike"></xref> (see <xref
-      target="VPN"></xref>).</t>
+      target="VPN"></xref>). Another use case for split-horizon DNS is
+      Cellular and Fixed-access networks (ISPs) typically offer private
+      domains, including account status/controls, and free education
+      initiatives <xref target="INS"></xref>.</t>
 
       <t>Provisioning Domains (PvDs) are defined in <xref
       target="RFC7556"></xref> as sets of network configuration information
@@ -158,74 +177,6 @@
       Small Office, Home Office or Corporation. The clients that connect to a
       enterprise network can securely authenticate that network and the client
       is sure that it has connected to the network it was expecting.</t>
-    </section>
-
-    <section anchor="Scope" title="Scope of the Document">
-      <t>If a device is managed by an enterprise's IT department, the device
-      can be configured to use a specific encrypted DNS server. This
-      configuration may be manual or rely upon whatever deployed device
-      management tool in an Enterprise network. For example, customizing
-      Firefox using Group Policy to use the Enterprise DoH server is discussed
-      in <xref target="Firefox-Policy"></xref> for Windows and MacOS, and
-      setting Chrome policies is discussed in <xref
-      target="Chrome-Policy"></xref> and <xref
-      target="Chrome-DoH"></xref>.</t>
-
-      <t>If mobile device management (MDM) (e.g., <xref
-      target="MDM-Apple"></xref>) secures a device, MDM can configure
-      OS/browser with a specific encrypted DNS server. If an endpoint is
-      on-boarded, for example, using Over-The-Air (OTA) enrollment <xref
-      target="OTA"></xref> to provision the device with a certificate and
-      configuration profile, the configuration profile can include the
-      authentication domain name (ADN) of the encrypted DNS server. The
-      OS/Browser can use the configuration profile to use a specific encrypted
-      DNS server. In this case, MDM is not installed on the device.</t>
-
-      <t>Provisioning IT-managed devices, BYOD devices with MDM or
-      configuration profile with the Split DNS configuration is outside the
-      scope of this document.</t>
-
-      <t>Typically, Enterprise networks do not assume that all devices in
-      their network are managed by the IT team or MDM, especially in the quite
-      common BYOD scenario. The endpoint can use the discovered
-      network-designated DNS server to only access DNS names for which the
-      Enterprise network claims authority and use another public DNS server
-      for global domains or use the discovered network-designated DNS server
-      to access both private domains and global domains.</t>
-
-      <t>The scope of this document is restricted to unmanaged BYOD devices
-      without a configuration profile and split DNS configuration on
-      explicitly trusted networks. In this use case, the user has authorized
-      the client to override local DNS settings for a specific network. It is
-      similar to the way users explicitly disable VPN connection in specific
-      networks and VPN connection is enabled by default in other networks for
-      privacy. The unmanaged BYOD devices use mutual authentication of the
-      client and the enterprise network. The client is typically authenticated
-      with their user credentials (e.g., username and password). The network
-      is typically authenticated with a certificate (e.g., PEAP-MSCHAPv2 <xref
-      target="PEAP"></xref>) or a mutually-authenticated key exchange which is
-      well-defended from offline attacks (e.g., EAP-pwd <xref
-      target="RFC8146"></xref>, EAP-PSK <xref target="RFC4764"></xref>).
-      Importantly, WPA-PSK and WPA2-PSK are not well-defended from offline
-      attacks and MUST NOT be used in conjunction with this specification.
-      </t>
-
-      <t><list style="hanging">
-          <t hangText="Note: ">Many users have privacy and personal data
-          sovereignty concerns with employers installing MDM on their personal
-          devices; they are concerned that admin can glean personal
-          information and could control how they use their devices. When users
-          do not install MDM on their devices, IT admins do not get visibility
-          into the security posture of those devices. To overcome this
-          problem, a host agent can cryptographically attest the security
-          status associated with device, such as minimum pass code length,
-          biometric login enabled, OS version etc. This approach is fast
-          gaining traction especially with the advent of closed OS like <xref
-          target="win10s">Windows 10 in S mode</xref> or <xref
-          target="Chromebook">Chromebook</xref>, where applications are
-          sandboxed (e.g., ransomware attack is not possible) and applications
-          can only be installed via the OS store.</t>
-        </list></t>
     </section>
 
     <section anchor="split-horizon" title="Split DNS">
@@ -409,8 +360,77 @@
       complicated provisioning on their devices just to obtain free Wi-Fi.
       This type of networks can be tagged as "untrusted networks" with minimal
       human intervention. In such cases the endpoint MAY choose to use an
-      alternate network (e.g., cellular) to resolve the global domain
-      names.</t>
+      alternate network (e.g., cellular) to resolve the global domain names.
+      </t>
+
+      <section anchor="Scope" title="Scope of NetworkDNSOnly Key">
+        <t>If a device is managed by an enterprise's IT department, the device
+        can be configured to use a specific encrypted DNS server. This
+        configuration may be manual or rely upon whatever deployed device
+        management tool in an Enterprise network. For example, customizing
+        Firefox using Group Policy to use the Enterprise DoH server is
+        discussed in <xref target="Firefox-Policy"></xref> for Windows and
+        MacOS, and setting Chrome policies is discussed in <xref
+        target="Chrome-Policy"></xref> and <xref
+        target="Chrome-DoH"></xref>.</t>
+
+        <t>If mobile device management (MDM) (e.g., <xref
+        target="MDM-Apple"></xref>) secures a device, MDM can configure
+        OS/browser with a specific encrypted DNS server. If an endpoint is
+        on-boarded, for example, using Over-The-Air (OTA) enrollment <xref
+        target="OTA"></xref> to provision the device with a certificate and
+        configuration profile, the configuration profile can include the
+        authentication domain name (ADN) of the encrypted DNS server. The
+        OS/Browser can use the configuration profile to use a specific
+        encrypted DNS server. In this case, MDM is not installed on the
+        device.</t>
+
+        <t>Provisioning IT-managed devices, BYOD devices with MDM or
+        configuration profile with network-designated DNS server is outside
+        the scope of this document.</t>
+
+        <t>Typically, Enterprise networks do not assume that all devices in
+        their network are managed by the IT team or MDM, especially in the
+        quite common BYOD scenario. The endpoint can use the discovered
+        network-designated DNS server to only access DNS names for which the
+        Enterprise network claims authority and use another public DNS server
+        for global domains or use the discovered network-designated DNS server
+        to access both private domains and global domains.</t>
+
+        <t>The scope of NetworkDNSOnly key is restricted to unmanaged BYOD
+        devices without a configuration profile and split DNS configuration on
+        explicitly trusted networks. In this use case, the user has authorized
+        the client to override local DNS settings for a specific network. It
+        is similar to the way users explicitly disable VPN connection in
+        specific networks and VPN connection is enabled by default in other
+        networks for privacy. The unmanaged BYOD devices use mutual
+        authentication of the client and the enterprise network. The client is
+        typically authenticated with their user credentials (e.g., username
+        and password). The network is typically authenticated with a
+        certificate (e.g., PEAP-MSCHAPv2 <xref target="PEAP"></xref>) or a
+        mutually-authenticated key exchange which is well-defended from
+        offline attacks (e.g., EAP-pwd <xref target="RFC8146"></xref>, EAP-PSK
+        <xref target="RFC4764"></xref>). Importantly, WPA-PSK and WPA2-PSK are
+        not well-defended from offline attacks and MUST NOT be used in
+        conjunction with this specification.</t>
+
+        <t><list style="hanging">
+            <t hangText="Note: ">Many users have privacy and personal data
+            sovereignty concerns with employers installing MDM on their
+            personal devices; they are concerned that admin can glean personal
+            information and could control how they use their devices. When
+            users do not install MDM on their devices, IT admins do not get
+            visibility into the security posture of those devices. To overcome
+            this problem, a host agent can cryptographically attest the
+            security status associated with device, such as minimum pass code
+            length, biometric login enabled, OS version etc. This approach is
+            fast gaining traction especially with the advent of closed OS like
+            <xref target="win10s">Windows 10 in S mode</xref> or <xref
+            target="Chromebook">Chromebook</xref>, where applications are
+            sandboxed (e.g., ransomware attack is not possible) and
+            applications can only be installed via the OS store.</t>
+          </list></t>
+      </section>
     </section>
 
     <section title="An Example">
@@ -684,6 +704,20 @@
         <front>
           <title>Dragonblood: Analyzing the Dragonfly Handshake of WPA3 and
           EAP-pwd</title>
+
+          <author>
+            <organization>The Unicode Consortium</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <reference anchor="INS"
+                 target="https://www.vodafone.com/about/vodafone-foundation/focus-areas/instant-schools">
+        <front>
+          <title>Vodafone Foundation Instant Schools for Sub-Saharan
+          Africa</title>
 
           <author>
             <organization>The Unicode Consortium</organization>

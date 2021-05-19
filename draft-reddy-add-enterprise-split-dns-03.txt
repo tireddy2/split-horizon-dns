@@ -5,8 +5,10 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    McAfee
 Intended status: Standards Track                                 D. Wing
-Expires: October 27, 2021                                         Citrix
-                                                          April 25, 2021
+Expires: November 19, 2021                                        Citrix
+                                                                K. Smith
+                                                                Vodafone
+                                                            May 18, 2021
 
 
          Split-Horizon DNS Configuration in Enterprise Networks
@@ -37,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 27, 2021.
+   This Internet-Draft will expire on November 19, 2021.
 
 Copyright Notice
 
@@ -48,16 +50,16 @@ Copyright Notice
    Provisions Relating to IETF Documents
    (https://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
+
+
+
+Reddy, et al.           Expires November 19, 2021               [Page 1]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
-
-
-
-Reddy & Wing            Expires October 27, 2021                [Page 1]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    include Simplified BSD License text as described in Section 4.e of
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
@@ -66,20 +68,20 @@ Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
-   3.  Scope of the Document . . . . . . . . . . . . . . . . . . . .   3
-   4.  Split DNS . . . . . . . . . . . . . . . . . . . . . . . . . .   5
-   5.  PvD dnsZones  . . . . . . . . . . . . . . . . . . . . . . . .   6
-     5.1.  Authority over the Domains  . . . . . . . . . . . . . . .   6
-   6.  PvD NetworkDNSOnly and ErrorNetworkDNSOnly Keys . . . . . . .   7
-   7.  An Example  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-   8.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   9
-   9.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   9
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  10
-   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
-   12. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
-   13. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
-     13.1.  Normative References . . . . . . . . . . . . . . . . . .  10
-     13.2.  Informative References . . . . . . . . . . . . . . . . .  11
+   3.  Split DNS . . . . . . . . . . . . . . . . . . . . . . . . . .   4
+   4.  PvD dnsZones  . . . . . . . . . . . . . . . . . . . . . . . .   5
+     4.1.  Authority over the Domains  . . . . . . . . . . . . . . .   5
+   5.  PvD NetworkDNSOnly and ErrorNetworkDNSOnly Keys . . . . . . .   6
+     5.1.  Scope of NetworkDNSOnly Key . . . . . . . . . . . . . . .   7
+   6.  An Example  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+   7.  Roaming Enterprise Users  . . . . . . . . . . . . . . . . . .   9
+   8.  Upstream Encryption . . . . . . . . . . . . . . . . . . . . .   9
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  10
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  11
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
 
 1.  Introduction
@@ -103,21 +105,25 @@ Table of Contents
    encrypted transport, provide a claimed privacy policy, (lack of)
    filtering).
 
+
+
+
+
+Reddy, et al.           Expires November 19, 2021               [Page 2]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
    This document specifies a mechanism to indicate which DNS zones are
    used for split-horizon DNS.  DNS clients can discover and
    authenticate encrypted DNS servers provided by the Enterprise
-
-
-
-Reddy & Wing            Expires October 27, 2021                [Page 2]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    network, for example using the techniques proposed in [I-D.ietf-add-
    dnr] and [I-D.ietf-add-ddr].  Discovery of encrypted DNS server for
    roaming enterprise endpoints is discussed in
-   [I-D.btw-add-ipsecme-ike] (see Section 8).
+   [I-D.btw-add-ipsecme-ike] (see Section 7).  Another use case for
+   split-horizon DNS is Cellular and Fixed-access networks (ISPs)
+   typically offer private domains, including account status/controls,
+   and free education initiatives [INS].
 
    Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
    network configuration information that clients can use to access
@@ -154,86 +160,17 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    the client is sure that it has connected to the network it was
    expecting.
 
-3.  Scope of the Document
-
-   If a device is managed by an enterprise's IT department, the device
-   can be configured to use a specific encrypted DNS server.  This
-   configuration may be manual or rely upon whatever deployed device
-   management tool in an Enterprise network.  For example, customizing
-   Firefox using Group Policy to use the Enterprise DoH server is
 
 
 
 
-Reddy & Wing            Expires October 27, 2021                [Page 3]
+
+Reddy, et al.           Expires November 19, 2021               [Page 3]
 
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
 
-   discussed in [Firefox-Policy] for Windows and MacOS, and setting
-   Chrome policies is discussed in [Chrome-Policy] and [Chrome-DoH].
-
-   If mobile device management (MDM) (e.g., [MDM-Apple]) secures a
-   device, MDM can configure OS/browser with a specific encrypted DNS
-   server.  If an endpoint is on-boarded, for example, using Over-The-
-   Air (OTA) enrollment [OTA] to provision the device with a certificate
-   and configuration profile, the configuration profile can include the
-   authentication domain name (ADN) of the encrypted DNS server.  The
-   OS/Browser can use the configuration profile to use a specific
-   encrypted DNS server.  In this case, MDM is not installed on the
-   device.
-
-   Provisioning IT-managed devices, BYOD devices with MDM or
-   configuration profile with the Split DNS configuration is outside the
-   scope of this document.
-
-   Typically, Enterprise networks do not assume that all devices in
-   their network are managed by the IT team or MDM, especially in the
-   quite common BYOD scenario.  The endpoint can use the discovered
-   network-designated DNS server to only access DNS names for which the
-   Enterprise network claims authority and use another public DNS server
-   for global domains or use the discovered network-designated DNS
-   server to access both private domains and global domains.
-
-   The scope of this document is restricted to unmanaged BYOD devices
-   without a configuration profile and split DNS configuration on
-   explicitly trusted networks.  In this use case, the user has
-   authorized the client to override local DNS settings for a specific
-   network.  It is similar to the way users explicitly disable VPN
-   connection in specific networks and VPN connection is enabled by
-   default in other networks for privacy.  The unmanaged BYOD devices
-   use mutual authentication of the client and the enterprise network.
-   The client is typically authenticated with their user credentials
-   (e.g., username and password).  The network is typically
-   authenticated with a certificate (e.g., PEAP-MSCHAPv2 [PEAP]) or a
-   mutually-authenticated key exchange which is well-defended from
-   offline attacks (e.g., EAP-pwd [RFC8146], EAP-PSK [RFC4764]).
-   Importantly, WPA-PSK and WPA2-PSK are not well-defended from offline
-   attacks and MUST NOT be used in conjunction with this specification.
-
-   Note:   Many users have privacy and personal data sovereignty
-      concerns with employers installing MDM on their personal devices;
-      they are concerned that admin can glean personal information and
-      could control how they use their devices.  When users do not
-      install MDM on their devices, IT admins do not get visibility into
-      the security posture of those devices.  To overcome this problem,
-      a host agent can cryptographically attest the security status
-
-
-
-Reddy & Wing            Expires October 27, 2021                [Page 4]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
-      associated with device, such as minimum pass code length,
-      biometric login enabled, OS version etc.  This approach is fast
-      gaining traction especially with the advent of closed OS like
-      Windows 10 in S mode [win10s] or Chromebook [Chromebook], where
-      applications are sandboxed (e.g., ransomware attack is not
-      possible) and applications can only be installed via the OS store.
-
-4.  Split DNS
+3.  Split DNS
 
    [RFC2826] "does not preclude private networks from operating their
    own private name spaces" but notes that if private networks "wish to
@@ -274,20 +211,24 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    indicate that Additional Information is available.  This Additional
    Information JSON object SHOULD include both the "dnsZones" and
    "SplitDNSAllowed" keys to define the DNS domains for which the
-
-
-
-Reddy & Wing            Expires October 27, 2021                [Page 5]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    Enterprise network claims authority and to indicate if the Enterprise
    network allows split-horizon DNS.
 
-5.  PvD dnsZones
 
-   As discussed in Section 4, the Enterprise internal resources tend to
+
+
+
+
+
+
+Reddy, et al.           Expires November 19, 2021               [Page 4]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
+4.  PvD dnsZones
+
+   As discussed in Section 3, the Enterprise internal resources tend to
    have private DNS names.  An enterprise can also run a different
    version of its global domain on its internal network, and require the
    use of network-designated DNS servers to get resolved.
@@ -317,7 +258,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    DNS resolver(s), but "otherexample.test" and "ple.test" can be
    resolved using the system's public resolver(s).
 
-5.1.  Authority over the Domains
+4.1.  Authority over the Domains
 
    To comply with [RFC2826] the split-horizon DNS zone must either not
    exist in the global DNS hierarchy or must be authoritatively
@@ -330,16 +271,16 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    1.  The client sends an NS query for the domain in DnsZones.  This
        query MUST only be sent over encrypted DNS session to a public
        resolver that is configured independently or to a network-
-
-
-
-Reddy & Wing            Expires October 27, 2021                [Page 6]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
        designated resolver whose response will be validated using DNSSEC
        as described in [RFC6698].
+
+
+
+
+Reddy, et al.           Expires November 19, 2021               [Page 5]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
 
    2.  The client checks that the NS RRset matches, or is a subdomain
        of, any one of the ADN of the discovered network-designated
@@ -379,24 +320,24 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    validation in TLS handshake, and use it for resolving the domains in
    the subtree of "*.internal.corp1.example.com".
 
-6.  PvD NetworkDNSOnly and ErrorNetworkDNSOnly Keys
+5.  PvD NetworkDNSOnly and ErrorNetworkDNSOnly Keys
 
    Some enterprise networks require clients to query the network-
    designated DNS servers, it sets the PvD NetworkDNSOnly key to True,
    otherwise sets NetworkDNSOnly to False.  If NetworkDNSOnly is set to
    True, it implies the network will block, or attempt to block, DNS
    queries sent to DNS servers that were not signaled by the network.
-
-
-
-Reddy & Wing            Expires October 27, 2021                [Page 7]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    If NetworkDNSOnly is True, the ErrorNetworkDNSOnly key MUST contain a
    human-friendly description for this block.  This information is
    intended for human consumption (not automated parsing).  The
+
+
+
+Reddy, et al.           Expires November 19, 2021               [Page 6]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
    ErrorNetworkDNSOnly key is useful when the client does not use DNS
    lookup to reach the DNS servers not provided by the network.  For
    example, the client can be pre-configured with both the domain name
@@ -435,20 +376,88 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    alternate network (e.g., cellular) to resolve the global domain
    names.
 
-7.  An Example
+5.1.  Scope of NetworkDNSOnly Key
+
+   If a device is managed by an enterprise's IT department, the device
+   can be configured to use a specific encrypted DNS server.  This
+   configuration may be manual or rely upon whatever deployed device
+   management tool in an Enterprise network.  For example, customizing
+   Firefox using Group Policy to use the Enterprise DoH server is
+   discussed in [Firefox-Policy] for Windows and MacOS, and setting
+   Chrome policies is discussed in [Chrome-Policy] and [Chrome-DoH].
+
+
+
+
+Reddy, et al.           Expires November 19, 2021               [Page 7]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
+   If mobile device management (MDM) (e.g., [MDM-Apple]) secures a
+   device, MDM can configure OS/browser with a specific encrypted DNS
+   server.  If an endpoint is on-boarded, for example, using Over-The-
+   Air (OTA) enrollment [OTA] to provision the device with a certificate
+   and configuration profile, the configuration profile can include the
+   authentication domain name (ADN) of the encrypted DNS server.  The
+   OS/Browser can use the configuration profile to use a specific
+   encrypted DNS server.  In this case, MDM is not installed on the
+   device.
+
+   Provisioning IT-managed devices, BYOD devices with MDM or
+   configuration profile with network-designated DNS server is outside
+   the scope of this document.
+
+   Typically, Enterprise networks do not assume that all devices in
+   their network are managed by the IT team or MDM, especially in the
+   quite common BYOD scenario.  The endpoint can use the discovered
+   network-designated DNS server to only access DNS names for which the
+   Enterprise network claims authority and use another public DNS server
+   for global domains or use the discovered network-designated DNS
+   server to access both private domains and global domains.
+
+   The scope of NetworkDNSOnly key is restricted to unmanaged BYOD
+   devices without a configuration profile and split DNS configuration
+   on explicitly trusted networks.  In this use case, the user has
+   authorized the client to override local DNS settings for a specific
+   network.  It is similar to the way users explicitly disable VPN
+   connection in specific networks and VPN connection is enabled by
+   default in other networks for privacy.  The unmanaged BYOD devices
+   use mutual authentication of the client and the enterprise network.
+   The client is typically authenticated with their user credentials
+   (e.g., username and password).  The network is typically
+   authenticated with a certificate (e.g., PEAP-MSCHAPv2 [PEAP]) or a
+   mutually-authenticated key exchange which is well-defended from
+   offline attacks (e.g., EAP-pwd [RFC8146], EAP-PSK [RFC4764]).
+   Importantly, WPA-PSK and WPA2-PSK are not well-defended from offline
+   attacks and MUST NOT be used in conjunction with this specification.
+
+   Note:   Many users have privacy and personal data sovereignty
+      concerns with employers installing MDM on their personal devices;
+      they are concerned that admin can glean personal information and
+      could control how they use their devices.  When users do not
+      install MDM on their devices, IT admins do not get visibility into
+      the security posture of those devices.  To overcome this problem,
+      a host agent can cryptographically attest the security status
+      associated with device, such as minimum pass code length,
+      biometric login enabled, OS version etc.  This approach is fast
+      gaining traction especially with the advent of closed OS like
+
+
+
+Reddy, et al.           Expires November 19, 2021               [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
+      Windows 10 in S mode [win10s] or Chromebook [Chromebook], where
+      applications are sandboxed (e.g., ransomware attack is not
+      possible) and applications can only be installed via the OS store.
+
+6.  An Example
 
    The following example shows how the JSON keys defined in this
    document can be used:
-
-
-
-
-
-
-Reddy & Wing            Expires October 27, 2021                [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
 
       {
         "identifier": "cafe.example.com.",
@@ -461,7 +470,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    The JSON keys "identifier", "expires", and "prefixes" are defined in
    [RFC8801].
 
-8.  Roaming Enterprise Users
+7.  Roaming Enterprise Users
 
    In this Enterprise scenario (Section 1.1.3 of [RFC7296]), a roaming
    user connects to the Enterprise network through an VPN tunnel (e.g.,
@@ -484,11 +493,19 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    Other VPN tunnel types have similar configuration capabilities, not
    detailed here.
 
-9.  Upstream Encryption
+8.  Upstream Encryption
 
    If an Enterprise network is using a local encrypted DNS server
    configured as a Forwarding DNS server [RFC8499] relying upon the
    upstream resolver (e.g., at an ISP) to perform recursive DNS lookups,
+
+
+
+Reddy, et al.           Expires November 19, 2021               [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
    DNS messages exchanged between the local encrypted DNS server and the
    recursive resolver MUST be encrypted.
 
@@ -498,15 +515,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    to conform to the requirements discussed in
    [I-D.ietf-dprive-phase2-requirements].
 
-
-
-
-Reddy & Wing            Expires October 27, 2021                [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
-10.  Security Considerations
+9.  Security Considerations
 
    Clients may want to preconfigure global domains for TLDs and Second-
    Level Domains (SLDs) to prevent malicious DNS redirections for well-
@@ -522,27 +531,36 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    DNS configuration assigned by an anonymous or unknown network (e.g.,
    coffee shops) MUST be ignored by the client.
 
-11.  IANA Considerations
+10.  IANA Considerations
 
    IANA is requested to add SplitDNSAllowed and ErrorSplitDNSBlocked PvD
    Keys to the Additional Information PvD Keys registry
    (https://www.iana.org/assignments/pvds/pvds.xhtml).
 
-12.  Acknowledgements
+11.  Acknowledgements
 
    Thanks to Mohamed Boucadair, Jim Reid, Ben Schwartz, Tommy Pauly,
    Paul Vixie and Vinny Parla for the discussion and comments.  The
    authors would like to give special thanks to Ben Schwartz for his
    help.
 
-13.  References
+12.  References
 
-13.1.  Normative References
+12.1.  Normative References
 
    [RFC1918]  Rekhter, Y., Moskowitz, B., Karrenberg, D., de Groot, G.,
               and E. Lear, "Address Allocation for Private Internets",
               BCP 5, RFC 1918, DOI 10.17487/RFC1918, February 1996,
               <https://www.rfc-editor.org/info/rfc1918>.
+
+
+
+
+
+Reddy, et al.           Expires November 19, 2021              [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -552,15 +570,6 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
    [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
               Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
               2000, <https://www.rfc-editor.org/info/rfc2826>.
-
-
-
-
-
-Reddy & Wing            Expires October 27, 2021               [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
 
    [RFC6761]  Cheshire, S. and M. Krochmal, "Special-Use Domain Names",
               RFC 6761, DOI 10.17487/RFC6761, February 2013,
@@ -579,7 +588,7 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               RFC 8801, DOI 10.17487/RFC8801, July 2020,
               <https://www.rfc-editor.org/info/rfc8801>.
 
-13.2.  Informative References
+12.2.  Informative References
 
    [Chrome-DoH]
               The Unicode Consortium, "Chrome DNS over HTTPS (aka DoH)",
@@ -600,6 +609,15 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               Dragonfly Handshake of WPA3 and EAP-pwd",
               <https://papers.mathyvanhoef.com/dragonblood.pdf>.
 
+
+
+
+
+Reddy, et al.           Expires November 19, 2021              [Page 11]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
    [Evil-Twin]
               The Unicode Consortium, "Evil twin (wireless networks)",
               <https://en.wikipedia.org/wiki/
@@ -610,25 +628,22 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               <https://github.com/mozilla/policy-templates/blob/master/
               README.md#dnsoverhttps>.
 
-
-
-
-Reddy & Wing            Expires October 27, 2021               [Page 11]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
-
    [I-D.btw-add-ipsecme-ike]
-              Boucadair, M., Reddy.K, T., Wing, D., and V. Smyslov,
+              Boucadair, M., Reddy, T., Wing, D., and V. Smyslov,
               "Internet Key Exchange Protocol Version 2 (IKEv2)
               Configuration for Encrypted DNS", draft-btw-add-ipsecme-
-              ike-01 (work in progress), September 2020.
+              ike-02 (work in progress), February 2021.
 
    [I-D.ietf-dprive-phase2-requirements]
               Livingood, J., Mayrhofer, A., and B. Overeinder, "DNS
               Privacy Requirements for Exchanges between Recursive
               Resolvers and Authoritative Servers", draft-ietf-dprive-
               phase2-requirements-02 (work in progress), November 2020.
+
+   [INS]      The Unicode Consortium, "Vodafone Foundation Instant
+              Schools for Sub-Saharan Africa",
+              <https://www.vodafone.com/about/vodafone-foundation/focus-
+              areas/instant-schools>.
 
    [Krack]    The Unicode Consortium, "Key Reinstallation Attacks",
               2017, <https://www.krackattacks.com/>.
@@ -648,6 +663,17 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-
               beec-fb367325c0f9>.
 
+
+
+
+
+
+
+Reddy, et al.           Expires November 19, 2021              [Page 12]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
    [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
               Pre-Shared Key Extensible Authentication Protocol (EAP)
               Method", RFC 4764, DOI 10.17487/RFC4764, January 2007,
@@ -662,17 +688,6 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               "Architectural Considerations on Application Features in
               the DNS", RFC 6950, DOI 10.17487/RFC6950, October 2013,
               <https://www.rfc-editor.org/info/rfc6950>.
-
-
-
-
-
-
-
-Reddy & Wing            Expires October 27, 2021               [Page 12]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
 
    [RFC7296]  Kaufman, C., Hoffman, P., Nir, Y., Eronen, P., and T.
               Kivinen, "Internet Key Exchange Protocol Version 2
@@ -705,6 +720,16 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
               RFC 8598, DOI 10.17487/RFC8598, May 2019,
               <https://www.rfc-editor.org/info/rfc8598>.
 
+
+
+
+
+
+Reddy, et al.           Expires November 19, 2021              [Page 13]
+
+Internet-Draft       Split-Horizon DNS Configuration            May 2021
+
+
    [RFC8738]  Shoemaker, R., "Automated Certificate Management
               Environment (ACME) IP Identifier Validation Extension",
               RFC 8738, DOI 10.17487/RFC8738, February 2020,
@@ -717,18 +742,6 @@ Internet-Draft       Split-Horizon DNS Configuration          April 2021
 
    [win10s]   Microsoft, "Windows 10 in S mode",
               <https://www.microsoft.com/en-us/windows/s-mode>.
-
-
-
-
-
-
-
-
-Reddy & Wing            Expires October 27, 2021               [Page 13]
-
-Internet-Draft       Split-Horizon DNS Configuration          April 2021
-
 
 Authors' Addresses
 
@@ -750,6 +763,13 @@ Authors' Addresses
    Email: danwing@gmail.com
 
 
+   Kevin Smith
+   Vodafone Group
+   One Kingdom Street
+   London
+   UK
+
+   Email: kevin.smith@vodafone.com
 
 
 
@@ -761,24 +781,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Reddy & Wing            Expires October 27, 2021               [Page 14]
+Reddy, et al.           Expires November 19, 2021              [Page 14]
