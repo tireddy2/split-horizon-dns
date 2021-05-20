@@ -150,8 +150,9 @@
       (Web PvD).</t>
 
       <t>This document defines one PvD Key:<list style="hanging">
-          <t hangText="The SplitDNSAllowed PvD Key:">which determines if the
-          Enterprise network allows split-horizon DNS.</t>
+          <t hangText="The NetworkDNSOnly PvD Key:">which determines if
+          network will block, or attempt to block, DNS queries sent to DNS
+          servers that were not signaled by the network.</t>
         </list></t>
     </section>
 
@@ -218,10 +219,9 @@
 
       <t>The PvD RA option defined in <xref target="RFC8801"></xref> SHOULD
       set the H-flag to indicate that Additional Information is available.
-      This Additional Information JSON object SHOULD include both the
-      "dnsZones" and "SplitDNSAllowed" keys to define the DNS domains for
-      which the Enterprise network claims authority and to indicate if the
-      Enterprise network allows split-horizon DNS.</t>
+      This Additional Information JSON object SHOULD include the "dnsZones"
+      key to define the DNS domains for which the Enterprise network claims
+      authority.</t>
     </section>
 
     <section anchor="dnsZones" title="PvD dnsZones">
@@ -442,7 +442,7 @@
      "identifier": "cafe.example.com.",
      "expires": "2020-05-23T06:00:00Z",
      "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
-     "SplitDNSAllowed": True, 
+     "NetworkDNSOnly": True, 
       "dnsZones:": ["city.other.test", "example.com"]
    }]]></artwork>
         </figure></t>
@@ -500,7 +500,7 @@
       to the mechanism discussed in Section 8 of <xref
       target="RFC8598"></xref>.</t>
 
-      <t>The content of dnsZones and SplitDNSAllowed may be passed to another
+      <t>The content of dnsZones and NetworkDNSOnly may be passed to another
       (DNS) program for processing. As with any network input, the content
       SHOULD be considered untrusted and handled accordingly. The split DNS
       configuration assigned by an anonymous or unknown network (e.g., coffee
@@ -508,7 +508,7 @@
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
-      <t>IANA is requested to add SplitDNSAllowed and ErrorSplitDNSBlocked PvD
+      <t>IANA is requested to add NetworkDNSOnly and ErrorSplitDNSBlocked PvD
       Keys to the Additional Information PvD Keys registry
       (https://www.iana.org/assignments/pvds/pvds.xhtml).</t>
     </section>
