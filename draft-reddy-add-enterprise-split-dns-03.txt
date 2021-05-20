@@ -527,9 +527,7 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
    The content of dnsZones and NetworkDNSOnly may be passed to another
    (DNS) program for processing.  As with any network input, the content
-   SHOULD be considered untrusted and handled accordingly.  The split
-   DNS configuration assigned by an anonymous or unknown network (e.g.,
-   coffee shops) MUST be ignored by the client.
+   SHOULD be considered untrusted and handled accordingly.
 
 10.  IANA Considerations
 
@@ -552,6 +550,8 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
               and E. Lear, "Address Allocation for Private Internets",
               BCP 5, RFC 1918, DOI 10.17487/RFC1918, February 1996,
               <https://www.rfc-editor.org/info/rfc1918>.
+
+
 
 
 

@@ -502,9 +502,7 @@
 
       <t>The content of dnsZones and NetworkDNSOnly may be passed to another
       (DNS) program for processing. As with any network input, the content
-      SHOULD be considered untrusted and handled accordingly. The split DNS
-      configuration assigned by an anonymous or unknown network (e.g., coffee
-      shops) MUST be ignored by the client.</t>
+      SHOULD be considered untrusted and handled accordingly. </t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
