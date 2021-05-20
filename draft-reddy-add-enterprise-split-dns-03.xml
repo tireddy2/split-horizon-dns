@@ -98,13 +98,12 @@
     <workgroup>ADD</workgroup>
 
     <abstract>
-      <t>When split-horizon DNS is deployed by an enterprise, certain
-      enterprise domains are only resolvable by querying the
-      network-designated DNS server. DNS clients which use DNS servers not
-      provided by the network need to route those DNS domain queries to the
-      network-designated DNS server. This document informs DNS clients of
-      split-horizon DNS, their DNS domains, and is compatible with encrypted
-      DNS.</t>
+      <t>When split-horizon DNS is deployed by a network, certain domains are
+      only resolvable by querying the network-designated DNS server. DNS
+      clients which use DNS servers not provided by the network need to route
+      those DNS domain queries to the network-designated DNS server. This
+      document informs DNS clients of split-horizon DNS, their DNS domains,
+      and is compatible with encrypted DNS.</t>
     </abstract>
   </front>
 
@@ -115,27 +114,22 @@
       Advertisement). While it has long been possible to configure endpoints
       to ignore the network's suggestions and use a (public) DNS server on the
       Internet, this was seldom used because some networks block UDP/53 (in
-      order to enforce their own DNS policies). With the advent of DoT and
+      order to enforce their own DNS policies). Also, there has been an
+      increase in the availability of "public resolvers" <xref
+      target="RFC8499"></xref> which DNS clients may be pre-configured to use
+      instead of the default network resolver for a variety of reasons (e.g.,
+      offer a good reachability, support an encrypted transport, provide a
+      claimed privacy policy, (lack of) filtering). With the advent of DoT and
       DoH, such network blocking is more difficult, but the endpoint is unable
       to (properly) resolve split-horizon DNS domains which must query the
       network-designated DNS server.</t>
 
-      <t><xref target="RFC7626"></xref> discusses DNS privacy considerations
-      in both "on the wire" (Section 2.4 of <xref target="RFC7626"></xref>)
-      and "in the server" (Section 2.5 of <xref target="RFC7626"></xref>)
-      contexts. Also, there has been an increase in the availability of
-      "public resolvers" <xref target="RFC8499"></xref> which DNS clients may
-      be pre-configured to use instead of the default network resolver for a
-      variety of reasons (e.g., offer a good reachability, support an
-      encrypted transport, provide a claimed privacy policy, (lack of)
-      filtering).</t>
-
       <t>This document specifies a mechanism to indicate which DNS zones are
       used for split-horizon DNS. DNS clients can discover and authenticate
-      encrypted DNS servers provided by the Enterprise network, for example
-      using the techniques proposed in <xref target="I-D.ietf-add-dnr"></xref>
-      and <xref target="I-D.ietf-add-ddr"></xref>. Discovery of encrypted DNS
-      server for roaming enterprise endpoints is discussed in <xref
+      DNS servers provided by the network, for example using the techniques
+      proposed in <xref target="I-D.ietf-add-dnr"></xref> and <xref
+      target="I-D.ietf-add-ddr"></xref>. Discovery of encrypted DNS server for
+      roaming enterprise endpoints is discussed in <xref
       target="I-D.btw-add-ipsecme-ike"></xref> (see <xref
       target="VPN"></xref>). </t>
 
@@ -206,25 +200,25 @@
       servers, or directories, for example -- while preserving the ease of use
       offered by domain names for internal users.</t>
 
-      <t>An Enterprise can require one or more DNS domains to be resolved via
-      network-designated DNS servers. This can be a special domain, such as
-      "corp.example.com" for an enterprise that is publicly known to use
-      "example.com". In this case, the endpoint needs to be informed what the
-      private domain names are and what the IP addresses of the
-      network-designated DNS servers are. An Enterprise can also run a
-      different version of its global domain on its internal network. In that
-      case, the client is instructed to send DNS queries for the enterprise
-      public domain (e.g., "example.com") to the network-designated DNS
-      servers. A configuration for this deployment scenario is referred to as
-      a Split DNS configuration. Another use case for split-horizon DNS is
-      Cellular and Fixed-access networks (ISPs) typically offer private
-      domains, including account status/controls, and free education
-      initiatives <xref target="INS"></xref>.</t>
+      <t>A typical use case is an Enterprise network can require one or more
+      DNS domains to be resolved via network-designated DNS servers. This can
+      be a special domain, such as "corp.example.com" for an enterprise that
+      is publicly known to use "example.com". In this case, the endpoint needs
+      to be informed what the private domain names are and what the IP
+      addresses of the network-designated DNS servers are. An Enterprise can
+      also run a different version of its global domain on its internal
+      network. In that case, the client is instructed to send DNS queries for
+      the enterprise public domain (e.g., "example.com") to the
+      network-designated DNS servers. A configuration for this deployment
+      scenario is referred to as a Split DNS configuration. Another use case
+      for split-horizon DNS is Cellular and Fixed-access networks (ISPs)
+      typically offer private domains, including account status/controls, and
+      free education initiatives <xref target="INS"></xref>.</t>
 
       <t>The PvD RA option defined in <xref target="RFC8801"></xref> SHOULD
       set the H-flag to indicate that Additional Information is available.
       This Additional Information JSON object SHOULD include the "dnsZones"
-      key to define the DNS domains for which the Enterprise network claims
+      key to define the DNS domains for which the network claims
       authority.</t>
     </section>
 
@@ -236,14 +230,13 @@
       resolved.</t>
 
       <t>The PvD Key dnsZones is defined in <xref target="RFC8801"></xref>.
-      The PvD Key dnsZones adds support for DNS domains for which the
-      Enterprise network claims authority. The private domains specified in
-      the dnsZones key are intended to be resolved using network-designated
-      DNS servers. The private domains in dnsZones are only reachable by
-      devices authenticated or attached to the Enterprise network. The global
-      domains specified in the dnsZones key have a different version in the
-      internal network. DNS resolution for other domains remains
-      unchanged.</t>
+      The PvD Key dnsZones adds support for DNS domains for which the network
+      claims authority. The private domains specified in the dnsZones key are
+      intended to be resolved using network-designated DNS servers. The
+      private domains in dnsZones are only reachable by devices authenticated
+      or attached to the network. The global domains specified in the dnsZones
+      key have a different version in the internal network. DNS resolution for
+      other domains remains unchanged.</t>
 
       <t>The dnsZones PvD Key conveys the specified DNS domains that need to
       be resolved using an network-designated DNS server. The DNS root zone
@@ -371,7 +364,7 @@
         <t>If a device is managed by an enterprise's IT department, the device
         can be configured to use a specific encrypted DNS server. This
         configuration may be manual or rely upon whatever deployed device
-        management tool in an Enterprise network. For example, customizing
+        management tool in an enterprise network. For example, customizing
         Firefox using Group Policy to use the Enterprise DoH server is
         discussed in <xref target="Firefox-Policy"></xref> for Windows and
         MacOS, and setting Chrome policies is discussed in <xref
@@ -499,7 +492,7 @@
       Second-Level Domains (SLDs) to prevent malicious DNS redirections for
       well-known domains. This prevents users from unknowingly giving DNS
       queries to third parties. This is even more important if those
-      well-known domains are not deploying DNSSEC, as the Enterprise network
+      well-known domains are not deploying DNSSEC, as the attached network
       could then even modify the DNS answers without detection. It is similar
       to the mechanism discussed in Section 8 of <xref
       target="RFC8598"></xref>.</t>
@@ -545,8 +538,6 @@
       <?rfc include='reference.RFC.8499'?>
 
       <?rfc include='reference.RFC.8598'?>
-
-      <?rfc include='reference.RFC.7626' ?>
 
       <?rfc include='reference.RFC.7296' ?>
 
