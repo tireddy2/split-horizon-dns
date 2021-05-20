@@ -133,9 +133,9 @@
       <t>This document specifies a mechanism to indicate which DNS zones are
       used for split-horizon DNS. DNS clients can discover and authenticate
       encrypted DNS servers provided by the Enterprise network, for example
-      using the techniques proposed in [I-D.ietf-add-dnr] and
-      [I-D.ietf-add-ddr]. Discovery of encrypted DNS server for roaming
-      enterprise endpoints is discussed in <xref
+      using the techniques proposed in <xref target="I-D.ietf-add-dnr"></xref>
+      and <xref target="I-D.ietf-add-ddr"></xref>. Discovery of encrypted DNS
+      server for roaming enterprise endpoints is discussed in <xref
       target="I-D.btw-add-ipsecme-ike"></xref> (see <xref
       target="VPN"></xref>). </t>
 
@@ -260,11 +260,11 @@
         <t>To comply with <xref target="RFC2826"></xref> the split-horizon DNS
         zone must either not exist in the global DNS hierarchy or must be
         authoritatively delegated to the split-horizon DNS server to answer.
-        The client can use the mechanism described in [I-D.ietf-add-dnr] to
-        discover the network-designated resolvers. To determine if the
-        network-designated encrypted resolvers are authoritative over the
-        domains in DnsZones, the client performs the following steps for each
-        domain in DnsZones:</t>
+        The client can use the mechanism described in <xref
+        target="I-D.ietf-add-dnr"></xref> to discover the network-designated
+        resolvers. To determine if the network-designated encrypted resolvers
+        are authoritative over the domains in DnsZones, the client performs
+        the following steps for each domain in DnsZones:</t>
 
         <t><list style="numbers">
             <t>The client sends an NS query for the domain in DnsZones. This
@@ -567,6 +567,10 @@
       <?rfc include='reference.I-D.ietf-dprive-phase2-requirements'?>
 
       <?rfc include='reference.I-D.btw-add-ipsecme-ike'?>
+
+      <?rfc include='reference.I-D.ietf-add-dnr'?>
+
+      <?rfc include='reference.I-D.ietf-add-ddr'?>
 
       <!-- not yet in XML library           <?rfc include='reference.I-D.ietf-add-ddr'?> 
            <?rfc include='reference.I-D.ietf-add-dnr'?> -->

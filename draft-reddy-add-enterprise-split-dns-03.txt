@@ -117,9 +117,9 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
    This document specifies a mechanism to indicate which DNS zones are
    used for split-horizon DNS.  DNS clients can discover and
    authenticate encrypted DNS servers provided by the Enterprise
-   network, for example using the techniques proposed in [I-D.ietf-add-
-   dnr] and [I-D.ietf-add-ddr].  Discovery of encrypted DNS server for
-   roaming enterprise endpoints is discussed in
+   network, for example using the techniques proposed in
+   [I-D.ietf-add-dnr] and [I-D.ietf-add-ddr].  Discovery of encrypted
+   DNS server for roaming enterprise endpoints is discussed in
    [I-D.btw-add-ipsecme-ike] (see Section 7).
 
    Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
@@ -629,6 +629,17 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
               Configuration for Encrypted DNS", draft-btw-add-ipsecme-
               ike-02 (work in progress), February 2021.
 
+   [I-D.ietf-add-ddr]
+              Pauly, T., Kinnear, E., Wood, C. A., McManus, P., and T.
+              Jensen, "Discovery of Designated Resolvers", draft-ietf-
+              add-ddr-00 (work in progress), February 2021.
+
+   [I-D.ietf-add-dnr]
+              Boucadair, M., Reddy, T., Wing, D., Cook, N., and T.
+              Jensen, "DHCP and Router Advertisement Options for the
+              Discovery of Network-designated Resolvers (DNR)", draft-
+              ietf-add-dnr-00 (work in progress), February 2021.
+
    [I-D.ietf-dprive-phase2-requirements]
               Livingood, J., Mayrhofer, A., and B. Overeinder, "DNS
               Privacy Requirements for Exchanges between Recursive
@@ -653,17 +664,6 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
               ngInternet/Conceptual/iPhoneOTAConfiguration/OTASecurity/
               OTASecurity.html>.
 
-   [PEAP]     Microsoft, "[MS-PEAP]: Protected Extensible Authentication
-              Protocol (PEAP)", <https://docs.microsoft.com/en-
-              us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-
-              beec-fb367325c0f9>.
-
-   [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
-              Pre-Shared Key Extensible Authentication Protocol (EAP)
-              Method", RFC 4764, DOI 10.17487/RFC4764, January 2007,
-              <https://www.rfc-editor.org/info/rfc4764>.
-
-
 
 
 
@@ -673,6 +673,16 @@ Reddy, et al.           Expires November 20, 2021              [Page 12]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
+
+   [PEAP]     Microsoft, "[MS-PEAP]: Protected Extensible Authentication
+              Protocol (PEAP)", <https://docs.microsoft.com/en-
+              us/openspecs/windows_protocols/ms-peap/5308642b-90c9-4cc4-
+              beec-fb367325c0f9>.
+
+   [RFC4764]  Bersani, F. and H. Tschofenig, "The EAP-PSK Protocol: A
+              Pre-Shared Key Extensible Authentication Protocol (EAP)
+              Method", RFC 4764, DOI 10.17487/RFC4764, January 2007,
+              <https://www.rfc-editor.org/info/rfc4764>.
 
    [RFC6698]  Hoffman, P. and J. Schlyter, "The DNS-Based Authentication
               of Named Entities (DANE) Transport Layer Security (TLS)
@@ -710,16 +720,6 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
               Terminology", BCP 219, RFC 8499, DOI 10.17487/RFC8499,
               January 2019, <https://www.rfc-editor.org/info/rfc8499>.
 
-   [RFC8598]  Pauly, T. and P. Wouters, "Split DNS Configuration for the
-              Internet Key Exchange Protocol Version 2 (IKEv2)",
-              RFC 8598, DOI 10.17487/RFC8598, May 2019,
-              <https://www.rfc-editor.org/info/rfc8598>.
-
-   [RFC8738]  Shoemaker, R., "Automated Certificate Management
-              Environment (ACME) IP Identifier Validation Extension",
-              RFC 8738, DOI 10.17487/RFC8738, February 2020,
-              <https://www.rfc-editor.org/info/rfc8738>.
-
 
 
 
@@ -729,6 +729,16 @@ Reddy, et al.           Expires November 20, 2021              [Page 13]
 
 Internet-Draft       Split-Horizon DNS Configuration            May 2021
 
+
+   [RFC8598]  Pauly, T. and P. Wouters, "Split DNS Configuration for the
+              Internet Key Exchange Protocol Version 2 (IKEv2)",
+              RFC 8598, DOI 10.17487/RFC8598, May 2019,
+              <https://www.rfc-editor.org/info/rfc8598>.
+
+   [RFC8738]  Shoemaker, R., "Automated Certificate Management
+              Environment (ACME) IP Identifier Validation Extension",
+              RFC 8738, DOI 10.17487/RFC8738, February 2020,
+              <https://www.rfc-editor.org/info/rfc8738>.
 
    [RFC8914]  Kumari, W., Hunt, E., Arends, R., Hardaker, W., and D.
               Lawrence, "Extended DNS Errors", RFC 8914,
@@ -765,16 +775,6 @@ Authors' Addresses
    UK
 
    Email: kevin.smith@vodafone.com
-
-
-
-
-
-
-
-
-
-
 
 
 
