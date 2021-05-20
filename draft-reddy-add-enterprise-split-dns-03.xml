@@ -149,10 +149,14 @@
       configuration information is referred to as a Web Provisioning Domain
       (Web PvD).</t>
 
-      <t>This document defines one PvD Key:<list style="hanging">
+      <t>This document defines two PvD Key:<list style="hanging">
           <t hangText="The NetworkDNSOnly PvD Key:">which determines if
           network will block, or attempt to block, DNS queries sent to DNS
           servers that were not signaled by the network.</t>
+
+          <t hangText="The ErrorNetworkDNSOnly PvD Key:">which contains a
+          human-friendly description of the reason to block access to DNS
+          servers that were not signaled by the network. </t>
         </list></t>
     </section>
 

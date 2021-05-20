@@ -131,11 +131,15 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
    additional configuration information is referred to as a Web
    Provisioning Domain (Web PvD).
 
-   This document defines one PvD Key:
+   This document defines two PvD Key:
 
    The NetworkDNSOnly PvD Key:  which determines if network will block,
       or attempt to block, DNS queries sent to DNS servers that were not
       signaled by the network.
+
+   The ErrorNetworkDNSOnly PvD Key:  which contains a human-friendly
+      description of the reason to block access to DNS servers that were
+      not signaled by the network.
 
 2.  Terminology
 
@@ -157,10 +161,6 @@ Internet-Draft       Split-Horizon DNS Configuration            May 2021
    to a enterprise network can securely authenticate that network and
    the client is sure that it has connected to the network it was
    expecting.
-
-
-
-
 
 
 
