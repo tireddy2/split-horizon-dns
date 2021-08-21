@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+     which is available here: http://xml.resource.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+     There has to be one entity for each item to be referenced. 
+     An alternate method (rfc include) is described in the references. -->
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs), 
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space 
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc category="std" docName="draft-reddy-add-split-dns-00" ipr="trust200902">
+  <front>
+    <title abbrev="Split-Horizon DNS Configuration">Split-Horizon DNS
+    Configuration</title>
+
+    <author fullname="Tirumaleswar Reddy" initials="T." surname="Reddy">
+      <organization abbrev="McAfee">McAfee, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>Embassy Golf Link Business Park</street>
+
+          <city>Bangalore</city>
+
+          <region>Karnataka</region>
+
+          <code>560071</code>
+
+          <country>India</country>
+        </postal>
+
+        <email>kondtir@gmail.com</email>
+      </address>
+    </author>
+
+    <author fullname="Dan Wing" initials="D." surname="Wing">
+      <organization abbrev="Citrix">Citrix Systems, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>4988 Great America Pkwy</street>
+
+          <city>Santa Clara</city>
+
+          <region>CA</region>
+
+          <code>95054</code>
+
+          <country>USA</country>
+        </postal>
+
+        <email>danwing@gmail.com</email>
+      </address>
+    </author>
+
+    <author fullname="Kevin Smith" initials="K." surname="Smith">
+      <organization abbrev="Vodafone">Vodafone Group</organization>
+
+      <address>
+        <postal>
+          <street>One Kingdom Street</street>
+
+          <city>London</city>
+
+          <country>UK</country>
+        </postal>
+
+        <email>kevin.smith@vodafone.com</email>
+      </address>
+    </author>
+
+    <date />
+
+    <workgroup>ADD</workgroup>
+
+    <abstract>
+      <t>When split-horizon DNS is deployed by a network, certain domains are
+      only resolvable by querying the network-designated DNS server. DNS
+      clients which use DNS servers not provided by the network need to route
+      those DNS domain queries to the network-designated DNS server. This
+      document informs DNS clients of split-horizon DNS, their DNS domains,
+      and is compatible with encrypted DNS.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>Historically, an endpoint would utilize network-designated DNS
+      servers upon joining a network (e.g., DHCP OFFER, IPv6 Router
+      Advertisement). While it has long been possible to configure endpoints
+      to ignore the network's suggestions and use a (public) DNS server on the
+      Internet, this was seldom used because some networks block UDP/53 (in
+      order to enforce their own DNS policies). Also, there has been an
+      increase in the availability of "public resolvers" <xref
+      target="RFC8499"></xref> which DNS clients may be pre-configured to use
+      instead of the default network resolver for a variety of reasons (e.g.,
+      offer a good reachability, support an encrypted transport, provide a
+      claimed privacy policy, (lack of) filtering). With the advent of DoT and
+      DoH, such network blocking is more difficult, but the endpoint is unable
+      to (properly) resolve split-horizon DNS domains which must query the
+      network-designated DNS server.</t>
+
+      <t>This document specifies a mechanism to indicate which DNS zones are
+      used for split-horizon DNS. DNS clients can discover and authenticate
+      DNS servers provided by the network, for example using the techniques
+      proposed in <xref target="I-D.ietf-add-dnr"></xref> and <xref
+      target="I-D.ietf-add-ddr"></xref>.</t>
+
+      <t>Provisioning Domains (PvDs) are defined in <xref
+      target="RFC7556"></xref> as sets of network configuration information
+      that clients can use to access networks, including rules for DNS
+      resolution and proxy configuration. <xref target="RFC8801"></xref>
+      defines a mechanism for discovering multiple Explicit PvDs on a single
+      network and their Additional Information by means of an HTTP-over-TLS
+      query using a URI derived from the PvD ID. This set of additional
+      configuration information is referred to as a Web Provisioning Domain
+      (Web PvD). The "dnsZones" PvD key defined in <xref
+      target="RFC8801"></xref> is used to define the DNS domains for which the
+      network claims authority.</t>
+    </section>
+
+    <section anchor="notation" title="Terminology">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+      "OPTIONAL" in this document are to be interpreted as described in BCP 14
+      <xref target="RFC2119"></xref><xref target="RFC8174"></xref> when, and
+      only when, they appear in all capitals, as shown here.</t>
+
+      <t>This document makes use of the terms defined in <xref
+      target="RFC8499"></xref>. The terms "Private DNS", "Global DNS" and
+      "Split DNS" are defined in <xref target="RFC8499"></xref>.</t>
+
+      <t>'Encrypted DNS' refers to a DNS protocol that provides an encrypted
+      channel between a DNS client and server (e.g., DoT, DoH, or DoQ).</t>
+
+      <t>The term "enterprise network" in this document extends to a wide
+      variety of deployment scenarios. For example, an "enterprise" can be a
+      Small Office, Home Office or Corporation.</t>
+    </section>
+
+    <section anchor="split-horizon" title="Split DNS">
+      <t><xref target="RFC2826"></xref> "does not preclude private networks
+      from operating their own private name spaces" but notes that if private
+      networks "wish to make use of names uniquely defined for the global
+      Internet, they have to fetch that information from the global DNS naming
+      hierarchy".</t>
+
+      <t>There are various DNS deployments outside of the global DNS,
+      including "split horizon" deployments and DNS usages on private (or
+      virtual private) networks. In a split horizon, an authoritative server
+      gives different responses to queries from the Internet than they do to
+      network-designated DNS servers; while some deployments differentiate
+      internal queries from public queries by the source IP address, the
+      concerns in Section 3.1.1 of <xref target="RFC6950"></xref> relating to
+      trusting source IP addresses apply to such deployments.</t>
+
+      <t>When the internal address space range is private <xref
+      target="RFC1918"></xref>, this makes it both easier for the server to
+      discriminate public from private and harder for public entities to
+      impersonate nodes in the private network. The use cases that motivate
+      split-horizon DNS typically involve restricting access to some network
+      services -- intranet resources such as internal web sites, development
+      servers, or directories, for example -- while preserving the ease of use
+      offered by domain names for internal users.</t>
+
+      <t>A typical use case is an Enterprise network can require one or more
+      DNS domains to be resolved via network-designated DNS servers. This can
+      be a special domain, such as "corp.example.com" for an enterprise that
+      is publicly known to use "example.com". In this case, the endpoint needs
+      to be informed what the private domain names are and what the IP
+      addresses of the network-designated DNS servers are. An Enterprise can
+      also run a different version of its global domain on its internal
+      network. In that case, the client is instructed to send DNS queries for
+      the enterprise public domain (e.g., "example.com") to the
+      network-designated DNS servers. A configuration for this deployment
+      scenario is referred to as a Split DNS configuration. Another use case
+      for split-horizon DNS is Cellular and Fixed-access networks (ISPs)
+      typically offer private domains, including account status/controls, and
+      free education initiatives <xref target="INS"></xref>.</t>
+
+      <t>The PvD RA option defined in <xref target="RFC8801"></xref> SHOULD
+      set the H-flag to indicate that Additional Information is available.
+      This Additional Information JSON object SHOULD include the "dnsZones"
+      key to define the DNS domains for which the network claims
+      authority.</t>
+    </section>
+
+    <section anchor="dnsZones" title="PvD dnsZones">
+      <t>As discussed in <xref target="split-horizon"></xref>, internal
+      resources in an network tend to have private DNS names. An network can
+      also run a different version of its global domain on its internal
+      network, and require the use of network-designated DNS servers to get
+      resolved.</t>
+
+      <t>The PvD Key dnsZones is defined in <xref target="RFC8801"></xref>.
+      The PvD Key dnsZones adds support for DNS domains for which the network
+      claims authority. The private domains specified in the dnsZones key are
+      intended to be resolved using network-designated DNS servers. The
+      private domains in dnsZones are only reachable by devices authenticated
+      or attached to the network. The global domains specified in the dnsZones
+      key have a different version in the internal network. DNS resolution for
+      other domains remains unchanged.</t>
+
+      <t>The dnsZones PvD Key conveys the specified DNS domains that need to
+      be resolved using an network-designated DNS server. The DNS root zone
+      (".") MUST be ignored if it appears in dnsZones. Other generic or global
+      domains, such as Top-Level Domains (TLDs), similarly MUST be ignored if
+      they appear in dnsZones.</t>
+
+      <t>For each dnsZones entry, the client can use the network-designated
+      DNS servers to resolve the listed domains and its subdomains. Other
+      domain names may be resolved using some other DNS servers that are
+      configured independently. For example, if the dnsZones key specifies
+      "example.test", then "example.test", "www.example.test", and
+      "mail.eng.example.test" can be resolved using the network-designated DNS
+      resolver(s), but "otherexample.test" and "ple.test" can be resolved
+      using the system's public resolver(s).</t>
+
+      <section anchor="Authority" title="Authority over the Domains">
+        <t>To comply with <xref target="RFC2826"></xref> the split-horizon DNS
+        zone must either not exist in the global DNS hierarchy or must be
+        authoritatively delegated to the split-horizon DNS server to answer.
+        The client can use the mechanism described in <xref
+        target="I-D.ietf-add-dnr"></xref> to discover the network-designated
+        resolvers. To determine if the network-designated encrypted resolvers
+        are authoritative over the domains in DnsZones, the client performs
+        the following steps for each domain in DnsZones:</t>
+
+        <t><list style="numbers">
+            <t>The client sends an NS query for the domain in DnsZones. This
+            query MUST only be sent over encrypted DNS session to a public
+            resolver that is configured independently or to a
+            network-designated resolver whose response will be validated using
+            DNSSEC as described in <xref target="RFC6698"></xref>.</t>
+
+            <t>The client checks that the NS RRset matches, or is a subdomain
+            of, any one of the ADN of the discovered network-designated
+            encrypted DNS resolvers. <list style="letters">
+                <t>If the match fails, the client determines the network is
+                not authoritative for the indicated domain. It might log an
+                error, reject the network entirely (because the network lied
+                about its authority over a domain) or other action.</t>
+
+                <t>If the match succeeds, the client can then establish a
+                secure connection to that network-designated resolver and
+                validate its certificate. <list style="symbols">
+                    <t>If the server certificate does not validate and a
+                    secure connection cannot be established to the network
+                    designated resolver, the client can action as discussed in
+                    step 3 (A).</t>
+
+                    <t>If the server certificate validation is successful and
+                    a secure connection is established, the client can
+                    subsequently resolve the domains in that subtree using the
+                    network-designated resolver.</t>
+                  </list></t>
+              </list></t>
+
+            <t>As an exception to this rule, the client need not perform the
+            above validation for domains reserved for special use <xref
+            target="RFC6761"></xref> or <xref target="RFC6762"></xref> such as
+            ".home.arpa" or ".local".</t>
+
+            <t>If the client uses a public resolver, authenticated denial of
+            existence using NSEC3 or NSEC records can be used by a client to
+            identify that the domain name does not exist in the global DNS.
+            <xref target="RFC7149"></xref> recommends validation of responses
+            using NSEC3.</t>
+          </list></t>
+
+        <t>For example, if in an network the private domain names are defined
+        under "internal.corp1.example.com". The DnsZones PvD Key would
+        indicate that "*.internal.corp1.example.com" are private domain names.
+        The client can trigger a NS query of "internal.corp1.example.com" and
+        the NS RRset returns that the nameserver is "ns1.corp2.example.com".
+        The client would then connect to the network-designated encrypted
+        resolver whose name is "ns1.corp2.example.com", authenticate it using
+        server certificate validation in TLS handshake, and use it for
+        resolving the domains in the subtree of
+        "*.internal.corp1.example.com".</t>
+      </section>
+    </section>
+
+    <section title="An Example">
+      <t>The following example shows how the JSON keys defined in this
+      document can be used:</t>
+
+      <t><figure>
+          <artwork><![CDATA[   {
+     "identifier": "cafe.example.com.",
+     "expires": "2020-05-23T06:00:00Z",
+     "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
+     "dnsZones:": ["city.other.test", "example.com"]
+   }]]></artwork>
+        </figure></t>
+
+      <t>The JSON keys "identifier", "expires", and "prefixes" are defined in
+      <xref target="RFC8801"></xref>.</t>
+    </section>
+
+    <section anchor="VPN" title="Split DNS Configuration for IKEv2">
+      <t>The split-tunnel Virtual Private Network (VPN) configuration allows
+      the endpoint to access resources that reside in the VPN network <xref
+      target="RFC8598"></xref> via the tunnel; other traffic not destined to
+      the VPN network does not traverse the tunnel. In contrast, a non-split-
+      tunnel VPN configuration causes all traffic to traverse the tunnel into
+      the VPN network.</t>
+
+      <t>When the VPN tunnel is IPsec, the encrypted DNS resolver hosted by
+      the VPN service provider can be securely discovered by the endpoint
+      using the ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types
+      defined in <xref target="I-D.btw-add-ipsecme-ike"></xref>. For
+      split-tunnel VPN configurations, the endpoint uses the discovered
+      encrypted DNS server to resolve domain names for which the VPN provider
+      claims authority. For non-split-tunnel VPN configurations, the endpoint
+      uses the discovered encrypted DNS server to resolve both global and
+      private domain names. For split-tunnel VPN configurations, the IKE
+      client can use the steps discussed in <xref target="Authority"></xref>
+      to determine if the VPN service provider is authoritative over the
+      INTERNAL_DNS_DOMAIN domains.</t>
+
+      <t>Other VPN tunnel types have similar configuration capabilities, not
+      detailed here.</t>
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t>The content of dnsZones may be passed to another (DNS) program for
+      processing. As with any network input, the content SHOULD be considered
+      untrusted and handled accordingly. The client must perform the steps
+      discussed in <xref target="Authority"></xref> to determine if the
+      network-designated encrypted resolvers are authoritative over the
+      domains in DnsZones. If the network is lying, the client can take
+      appropriate action like disconnecting from the network.</t>
+
+      <t>As an additional precaution, clients may want to preconfigure global
+      domains for TLDs and Second-Level Domains (SLDs) to prevent malicious
+      DNS redirections for well-known domains. This prevents users from
+      unknowingly giving DNS queries to third parties. This is even more
+      important if those well-known domains are not deploying DNSSEC, as the
+      attached network could then even modify the DNS answers without
+      detection. It is similar to the mechanism discussed in Section 8 of
+      <xref target="RFC8598"></xref>.</t>
+    </section>
+
+    <section anchor="IANA" title="IANA Considerations">
+      <t>This document has no IANA actions..</t>
+    </section>
+
+    <section title="Acknowledgements">
+      <t>Thanks to Mohamed Boucadair, Jim Reid, Ben Schwartz, Tommy Pauly,
+      Paul Vixie and Vinny Parla for the discussion and comments. The authors
+      would like to give special thanks to Ben Schwartz for his help.</t>
+    </section>
+  </middle>
+
+  <!--  *****BACK MATTER ***** -->
+
+  <back>
+    <references title="Normative References">
+      <?rfc include='reference.RFC.2119'?>
+
+      <?rfc include='reference.RFC.8174'?>
+
+      <?rfc include='reference.RFC.8801'?>
+
+      <?rfc include='reference.RFC.2826'?>
+
+      <?rfc include='reference.RFC.1918'?>
+
+      <?rfc include='reference.RFC.6761'?>
+
+      <?rfc include='reference.RFC.6762'?>
+    </references>
+
+    <references title="Informative References">
+      <?rfc include='reference.RFC.8499'?>
+
+      <?rfc include='reference.RFC.8598'?>
+
+      <?rfc include='reference.RFC.6950' ?>
+
+      <?rfc include='reference.RFC.7556' ?>
+
+      <?rfc include='reference.RFC.6698'?>
+
+      <?rfc include='reference.RFC.7149'?>
+
+      <?rfc include='reference.I-D.ietf-add-dnr'?>
+
+      <?rfc include='reference.I-D.btw-add-ipsecme-ike'?>
+
+      <?rfc include='reference.I-D.ietf-add-ddr'?>
+
+      <!-- not yet in XML library           <?rfc include='reference.I-D.ietf-add-ddr'?> 
+           <?rfc include='reference.I-D.ietf-add-dnr'?> -->
+
+      <reference anchor="INS"
+                 target="https://www.vodafone.com/about/vodafone-foundation/focus-areas/instant-schools">
+        <front>
+          <title>Vodafone Foundation Instant Schools for Sub-Saharan
+          Africa</title>
+
+          <author>
+            <organization>The Unicode Consortium</organization>
+          </author>
+
+          <date day="" month="" year="" />
+        </front>
+      </reference>
+
+      <!---->
+    </references>
+  </back>
+</rfc>
