@@ -3,7 +3,7 @@
 
 
 ADD                                                             T. Reddy
-Internet-Draft                                                    McAfee
+Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
 Expires: February 22, 2022                                        Citrix
                                                                 K. Smith
@@ -486,7 +486,7 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
 Authors' Addresses
 
    Tirumaleswar Reddy
-   McAfee, Inc.
+   Akamai
    Embassy Golf Link Business Park
    Bangalore, Karnataka  560071
    India
