@@ -138,9 +138,8 @@
       network and their Additional Information by means of an HTTP-over-TLS
       query using a URI derived from the PvD ID. This set of additional
       configuration information is referred to as a Web Provisioning Domain
-      (Web PvD). The "dnsZones" PvD key defined in <xref
-      target="RFC8801"></xref> is used to define the DNS domains for which the
-      network claims authority.</t>
+      (Web PvD). The network lists its claims of authority for DNS domains using
+      the "dnsZones" PvD key (defined in <xref target="RFC8801"></xref>).</t>
     </section>
 
     <section anchor="notation" title="Terminology">
@@ -211,7 +210,7 @@
 
     <section anchor="dnsZones" title="PvD dnsZones">
       <t>As discussed in <xref target="split-horizon"></xref>, internal
-      resources in an network tend to have private DNS names. An network can
+      resources in a network tend to have private DNS names. A network can
       also run a different version of its global domain on its internal
       network, and require the use of network-designated DNS servers to get
       resolved.</t>
@@ -226,7 +225,7 @@
       other domains remains unchanged.</t>
 
       <t>The dnsZones PvD Key conveys the specified DNS domains that need to
-      be resolved using an network-designated DNS server. The DNS root zone
+      be resolved using a network-designated DNS server. The DNS root zone
       (".") MUST be ignored if it appears in dnsZones. Other generic or global
       domains, such as Top-Level Domains (TLDs), similarly MUST be ignored if
       they appear in dnsZones.</t>
@@ -292,7 +291,7 @@
             using NSEC3.</t>
           </list></t>
 
-        <t>For example, if in an network the private domain names are defined
+        <t>For example, if in a network the private domain names are defined
         under "internal.corp1.example.com". The DnsZones PvD Key would
         indicate that "*.internal.corp1.example.com" are private domain names.
         The client can trigger a NS query of "internal.corp1.example.com" and
@@ -324,11 +323,11 @@
 
     <section anchor="VPN" title="Split DNS Configuration for IKEv2">
       <t>The split-tunnel Virtual Private Network (VPN) configuration allows
-      the endpoint to access resources that reside in the VPN network <xref
+      the endpoint to access resources that reside in the VPN  <xref
       target="RFC8598"></xref> via the tunnel; other traffic not destined to
-      the VPN network does not traverse the tunnel. In contrast, a non-split-
+      the VPN  does not traverse the tunnel. In contrast, a non-split-
       tunnel VPN configuration causes all traffic to traverse the tunnel into
-      the VPN network.</t>
+      the VPN.</t>
 
       <t>When the VPN tunnel is IPsec, the encrypted DNS resolver hosted by
       the VPN service provider can be securely discovered by the endpoint
