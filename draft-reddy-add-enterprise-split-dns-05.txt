@@ -5,10 +5,10 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: February 22, 2022                                        Citrix
+Expires: February 25, 2022                                        Citrix
                                                                 K. Smith
                                                                 Vodafone
-                                                         August 21, 2021
+                                                         August 24, 2021
 
 
                     Split-Horizon DNS Configuration
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on February 22, 2022.
+   This Internet-Draft will expire on February 25, 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy, et al.           Expires February 22, 2022               [Page 1]
+Reddy, et al.           Expires February 25, 2022               [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy, et al.           Expires February 22, 2022               [Page 2]
+Reddy, et al.           Expires February 25, 2022               [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
@@ -117,9 +117,9 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
    on a single network and their Additional Information by means of an
    HTTP-over-TLS query using a URI derived from the PvD ID.  This set of
    additional configuration information is referred to as a Web
-   Provisioning Domain (Web PvD).  The "dnsZones" PvD key defined in
-   [RFC8801] is used to define the DNS domains for which the network
-   claims authority.
+   Provisioning Domain (Web PvD).  The network lists its claims of
+   authority for DNS domains using the "dnsZones" PvD key (defined in
+   [RFC8801]).
 
 2.  Terminology
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
 
 
-Reddy, et al.           Expires February 22, 2022               [Page 3]
+Reddy, et al.           Expires February 25, 2022               [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
@@ -195,8 +195,8 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
 4.  PvD dnsZones
 
-   As discussed in Section 3, internal resources in an network tend to
-   have private DNS names.  An network can also run a different version
+   As discussed in Section 3, internal resources in a network tend to
+   have private DNS names.  A network can also run a different version
    of its global domain on its internal network, and require the use of
    network-designated DNS servers to get resolved.
 
@@ -210,10 +210,10 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
    other domains remains unchanged.
 
    The dnsZones PvD Key conveys the specified DNS domains that need to
-   be resolved using an network-designated DNS server.  The DNS root
-   zone (".") MUST be ignored if it appears in dnsZones.  Other generic
-   or global domains, such as Top-Level Domains (TLDs), similarly MUST
-   be ignored if they appear in dnsZones.
+   be resolved using a network-designated DNS server.  The DNS root zone
+   (".") MUST be ignored if it appears in dnsZones.  Other generic or
+   global domains, such as Top-Level Domains (TLDs), similarly MUST be
+   ignored if they appear in dnsZones.
 
    For each dnsZones entry, the client can use the network-designated
    DNS servers to resolve the listed domains and its subdomains.  Other
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
 
 
-Reddy, et al.           Expires February 22, 2022               [Page 4]
+Reddy, et al.           Expires February 25, 2022               [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
 
 
-Reddy, et al.           Expires February 22, 2022               [Page 5]
+Reddy, et al.           Expires February 25, 2022               [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
@@ -287,7 +287,7 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
        identify that the domain name does not exist in the global DNS.
        [RFC7149] recommends validation of responses using NSEC3.
 
-   For example, if in an network the private domain names are defined
+   For example, if in a network the private domain names are defined
    under "internal.corp1.example.com".  The DnsZones PvD Key would
    indicate that "*.internal.corp1.example.com" are private domain
    names.  The client can trigger a NS query of
@@ -316,11 +316,10 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
 6.  Split DNS Configuration for IKEv2
 
    The split-tunnel Virtual Private Network (VPN) configuration allows
-   the endpoint to access resources that reside in the VPN network
-   [RFC8598] via the tunnel; other traffic not destined to the VPN
-   network does not traverse the tunnel.  In contrast, a non-split-
-   tunnel VPN configuration causes all traffic to traverse the tunnel
-   into the VPN network.
+   the endpoint to access resources that reside in the VPN [RFC8598] via
+   the tunnel; other traffic not destined to the VPN does not traverse
+   the tunnel.  In contrast, a non-split- tunnel VPN configuration
+   causes all traffic to traverse the tunnel into the VPN.
 
    When the VPN tunnel is IPsec, the encrypted DNS resolver hosted by
    the VPN service provider can be securely discovered by the endpoint
@@ -330,15 +329,15 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
    to resolve domain names for which the VPN provider claims authority.
    For non-split-tunnel VPN configurations, the endpoint uses the
    discovered encrypted DNS server to resolve both global and private
+   domain names.  For split-tunnel VPN configurations, the IKE client
 
 
 
-Reddy, et al.           Expires February 22, 2022               [Page 6]
+Reddy, et al.           Expires February 25, 2022               [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
 
-   domain names.  For split-tunnel VPN configurations, the IKE client
    can use the steps discussed in Section 4.1 to determine if the VPN
    service provider is authoritative over the INTERNAL_DNS_DOMAIN
    domains.
@@ -389,7 +388,8 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
 
 
-Reddy, et al.           Expires February 22, 2022               [Page 7]
+
+Reddy, et al.           Expires February 25, 2022               [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
@@ -445,7 +445,7 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
 
 
-Reddy, et al.           Expires February 22, 2022               [Page 8]
+Reddy, et al.           Expires February 25, 2022               [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
@@ -501,7 +501,7 @@ Authors' Addresses
 
 
 
-Reddy, et al.           Expires February 22, 2022               [Page 9]
+Reddy, et al.           Expires February 25, 2022               [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
@@ -557,4 +557,4 @@ Internet-Draft       Split-Horizon DNS Configuration         August 2021
 
 
 
-Reddy, et al.           Expires February 22, 2022              [Page 10]
+Reddy, et al.           Expires February 25, 2022              [Page 10]
