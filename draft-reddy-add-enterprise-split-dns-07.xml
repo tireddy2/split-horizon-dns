@@ -254,20 +254,24 @@
             client SHOULD apply the same validation policy to the NS query as
             it does to other queries. A client that does not validate DNSSEC
             SHOULD apply the same policy (if any) to the NS query as it does
-            to other queries. </t>
+            to other queries.</t>
 
             <t>The client checks that the NS RRset matches any one of the ADN
             of the discovered network-designated encrypted DNS resolvers.
             <list style="letters">
                 <t>If the match fails but if any one of the ADN of the
                 discovered network-designated encrypted DNS resolvers is a
-                subdomain of NS RRset, the client can then establish a secure
-                TLS connection to that network-designated resolver, validates
-                its certificate using PKIX authentication and checks if at
-                least one of the values in subjectAltName matches NS RRset. If
-                the match succeeds, the client can subsequently resolve the
-                domains in that subtree using the network-designated
-                resolver.</t>
+                subdomain of NS RRset, the client can then establish a TLS
+                connection to that network-designated resolver. The client
+                follows the mechanism discussed in Section 8 of <xref
+                target="RFC8310"></xref> to authenticate the DNS server
+                certificate using the ADN and checks if at least one of the
+                values in subjectAltName matches NS RRset. If the server
+                certificate validation and match succeeds, the client can
+                subsequently resolve the domains in that subtree using the
+                network-designated resolver. If the server certificate does
+                not validate or match fails, the client can proceed as
+                discussed in step 2 (A).</t>
 
                 <t>If the match fails, the client determines the network is
                 not authoritative for the indicated domain. It might log an
@@ -275,13 +279,14 @@
                 about its authority over a domain) or other action.</t>
 
                 <t>If the match succeeds, the client can then establish a TLS
-                connection to that network-designated resolver and validates
-                the server certificate exchanged during the TLS handshake
-                using PKIX authentication. <list style="symbols">
+                connection to that network-designated resolver. The client
+                follows the mechanism discussed in Section 8 of <xref
+                target="RFC8310"></xref> to authenticate the DNS server
+                certificate using the ADN.<list style="symbols">
                     <t>If the server certificate does not validate and a
                     secure connection cannot be established to the network
                     designated resolver, the client can proceed as discussed
-                    in step 3 (A).</t>
+                    in step 2 (A).</t>
 
                     <t>If the server certificate validation is successful and
                     a secure connection is established, the client can
@@ -444,6 +449,8 @@
       <?rfc include='reference.RFC.6761'?>
 
       <?rfc include='reference.RFC.6762'?>
+
+      <?rfc include='reference.RFC.8310'?>
     </references>
 
     <references title="Informative References">

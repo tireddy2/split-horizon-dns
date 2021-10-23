@@ -5,10 +5,10 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: April 25, 2022                                           Citrix
+Expires: April 26, 2022                                           Citrix
                                                                 K. Smith
                                                                 Vodafone
-                                                        October 22, 2021
+                                                        October 23, 2021
 
 
                     Split-Horizon DNS Configuration
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 25, 2022.
+   This Internet-Draft will expire on April 26, 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy, et al.            Expires April 25, 2022                 [Page 1]
+Reddy, et al.            Expires April 26, 2022                 [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy, et al.            Expires April 25, 2022                 [Page 2]
+Reddy, et al.            Expires April 26, 2022                 [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
 
-Reddy, et al.            Expires April 25, 2022                 [Page 3]
+Reddy, et al.            Expires April 26, 2022                 [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
 
-Reddy, et al.            Expires April 25, 2022                 [Page 4]
+Reddy, et al.            Expires April 26, 2022                 [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
@@ -252,13 +252,17 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
        A.  If the match fails but if any one of the ADN of the
            discovered network-designated encrypted DNS resolvers is a
-           subdomain of NS RRset, the client can then establish a secure
-           TLS connection to that network-designated resolver, validates
-           its certificate using PKIX authentication and checks if at
-           least one of the values in subjectAltName matches NS RRset.
-           If the match succeeds, the client can subsequently resolve
-           the domains in that subtree using the network-designated
-           resolver.
+           subdomain of NS RRset, the client can then establish a TLS
+           connection to that network-designated resolver.  The client
+           follows the mechanism discussed in Section 8 of [RFC8310] to
+           authenticate the DNS server certificate using the ADN and
+           checks if at least one of the values in subjectAltName
+           matches NS RRset.  If the server certificate validation and
+           match succeeds, the client can subsequently resolve the
+           domains in that subtree using the network-designated
+           resolver.  If the server certificate does not validate or
+           match fails, the client can proceed as discussed in step 2
+           (A).
 
        B.  If the match fails, the client determines the network is not
            authoritative for the indicated domain.  It might log an
@@ -266,21 +270,22 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
            about its authority over a domain) or other action.
 
        C.  If the match succeeds, the client can then establish a TLS
-           connection to that network-designated resolver and validates
-           the server certificate exchanged during the TLS handshake
-           using PKIX authentication.
-
-           +  If the server certificate does not validate and a secure
-              connection cannot be established to the network designated
-              resolver, the client can proceed as discussed in step 3
-              (A).
+           connection to that network-designated resolver.  The client
+           follows the mechanism discussed in Section 8 of [RFC8310] to
+           authenticate the DNS server certificate using the ADN.
 
 
 
-Reddy, et al.            Expires April 25, 2022                 [Page 5]
+
+Reddy, et al.            Expires April 26, 2022                 [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
+
+           +  If the server certificate does not validate and a secure
+              connection cannot be established to the network designated
+              resolver, the client can proceed as discussed in step 2
+              (A).
 
            +  If the server certificate validation is successful and a
               secure connection is established, the client can
@@ -324,20 +329,20 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    and "ns2.uk.ns1.example.com".  Note that these names can be added in
    addition to more traditional names that might already exist for those
    DNS servers (e.g., the common "service dot location" such as
+
+
+
+
+Reddy, et al.            Expires April 26, 2022                 [Page 6]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
    "ns1.uk.example.com").  All of those names would be advertised to the
    endpoints as described in [I-D.ietf-add-dnr].
 
    The endpoints compliant with this specification can then determine
    the network's internal nameservers are owned and managed by the same
-
-
-
-
-Reddy, et al.            Expires April 25, 2022                 [Page 6]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
-
    entity that has published the NS records on the Internet, as
    described in the following paragraphs:
 
@@ -381,19 +386,19 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    The split-tunnel Virtual Private Network (VPN) configuration allows
    the endpoint to access resources that reside in the VPN [RFC8598] via
    the tunnel; other traffic not destined to the VPN does not traverse
+
+
+
+Reddy, et al.            Expires April 26, 2022                 [Page 7]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
    the tunnel.  In contrast, a non-split- tunnel VPN configuration
    causes all traffic to traverse the tunnel into the VPN.
 
    When the VPN tunnel is IPsec, the encrypted DNS resolver hosted by
    the VPN service provider can be securely discovered by the endpoint
-
-
-
-Reddy, et al.            Expires April 25, 2022                 [Page 7]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
-
    using the ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types
    defined in [I-D.btw-add-ipsecme-ike].  For split-tunnel VPN
    configurations, the endpoint uses the discovered encrypted DNS server
@@ -438,17 +443,17 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
               BCP 5, RFC 1918, DOI 10.17487/RFC1918, February 1996,
               <https://www.rfc-editor.org/info/rfc1918>.
 
+
+
+Reddy, et al.            Expires April 26, 2022                 [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
-
-
-
-Reddy, et al.            Expires April 25, 2022                 [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
 
    [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
               Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
@@ -465,6 +470,11 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8310]  Dickinson, S., Gillmor, D., and T. Reddy, "Usage Profiles
+              for DNS over TLS and DNS over DTLS", RFC 8310,
+              DOI 10.17487/RFC8310, March 2018,
+              <https://www.rfc-editor.org/info/rfc8310>.
 
    [RFC8801]  Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
               Shao, "Discovering Provisioning Domain Names and Data",
@@ -484,6 +494,18 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
               Jensen, "Discovery of Designated Resolvers", draft-ietf-
               add-ddr-03 (work in progress), October 2021.
 
+
+
+
+
+
+
+
+Reddy, et al.            Expires April 26, 2022                 [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
    [I-D.ietf-add-dnr]
               Boucadair, M., Reddy, T., Wing, D., Cook, N., and T.
               Jensen, "DHCP and Router Advertisement Options for the
@@ -494,17 +516,6 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
               Schools for Sub-Saharan Africa",
               <https://www.vodafone.com/about/vodafone-foundation/focus-
               areas/instant-schools>.
-
-
-
-
-
-
-
-Reddy, et al.            Expires April 25, 2022                 [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
 
    [RFC6950]  Peterson, J., Kolkman, O., Tschofenig, H., and B. Aboba,
               "Architectural Considerations on Application Features in
@@ -544,6 +555,13 @@ Authors' Addresses
    Email: danwing@gmail.com
 
 
+
+
+Reddy, et al.            Expires April 26, 2022                [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
    Kevin Smith
    Vodafone Group
    One Kingdom Street
@@ -557,4 +575,42 @@ Authors' Addresses
 
 
 
-Reddy, et al.            Expires April 25, 2022                [Page 10]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reddy, et al.            Expires April 26, 2022                [Page 11]
