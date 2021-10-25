@@ -86,16 +86,16 @@ Table of Contents
    Historically, an endpoint would utilize network-designated DNS
    servers upon joining a network (e.g., DHCP OFFER, IPv6 Router
    Advertisement).  While it has long been possible to configure
-   endpoints to ignore the network's suggestions and use a (public) DNS
+   endpoints to ignore the network's suggestions and use a public DNS
    server on the Internet, this was seldom used because some networks
-   block UDP/53 (in order to enforce their own DNS policies).  Also,
+   block UDP/53 in order to enforce their own DNS policies.  Also,
    there has been an increase in the availability of "public resolvers"
    [RFC8499] which DNS clients may be pre-configured to use instead of
    the default network resolver for a variety of reasons (e.g., offer a
    good reachability, support an encrypted transport, provide a claimed
    privacy policy, (lack of) filtering).  With the advent of DoT and
-   DoH, such network blocking is more difficult, but the endpoint is
-   unable to (properly) resolve split-horizon DNS domains which must
+   DoH the endpoint is
+   unable to properly resolve split-horizon DNS domains which must
    query the network-designated DNS server.
 
    This document specifies a mechanism to indicate which DNS zones are
@@ -103,24 +103,9 @@ Table of Contents
    authenticate DNS servers provided by the network, for example using
    the techniques proposed in [I-D.ietf-add-dnr] and [I-D.ietf-add-ddr].
 
-   Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
-   network configuration information that clients can use to access
-   networks, including rules for DNS resolution and proxy configuration.
-
-
-
-Reddy, et al.            Expires April 26, 2022                 [Page 2]
+   Reddy, et al.            Expires April 26, 2022                 [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
-
-   [RFC8801] defines a mechanism for discovering multiple Explicit PvDs
-   on a single network and their Additional Information by means of an
-   HTTP-over-TLS query using a URI derived from the PvD ID.  This set of
-   additional configuration information is referred to as a Web
-   Provisioning Domain (Web PvD).  The network lists its claims of
-   authority for DNS domains using the "dnsZones" PvD key (defined in
-   [RFC8801]).
 
 2.  Terminology
 
@@ -190,35 +175,42 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    Information JSON object SHOULD include the "dnsZones" key to define
    the DNS domains for which the network claims authority.
 
-4.  PvD dnsZones
+4.  Provisioning Domains dnsZones
 
    As discussed in Section 3, internal resources in a network tend to
    have private DNS names.  A network can also run a different version
    of its global domain on its internal network, and require the use of
    network-designated DNS servers to get resolved.
-
+   
+   Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
+   network configuration information that clients can use to access
+   networks, including rules for DNS resolution and proxy configuration.
+   
    The PvD Key dnsZones is defined in [RFC8801].  The PvD Key dnsZones
-   adds support for DNS domains for which the network claims authority.
-   The private domains specified in the dnsZones key are intended to be
-   resolved using network-designated DNS servers.  The private domains
-   in dnsZones are only reachable by devices authenticated or attached
-   to the network.  The global domains specified in the dnsZones key
-   have a different version in the internal network.  DNS resolution for
-   other domains remains unchanged.
-
-   The dnsZones PvD Key conveys the specified DNS domains that need to
-   be resolved using a network-designated DNS server.  The DNS root zone
-   (".") MUST be ignored if it appears in dnsZones.  Other generic or
-   global domains, such as Top-Level Domains (TLDs), similarly MUST be
-   ignored if they appear in dnsZones.
-
+   adds support for DNS domains for which the network claims authority, 
+   and    which are intended to be resolved using network-designated DNS 
+   servers. The private domains in dnsZones are only reachable by devices 
+   attached and authenticated to the network. The global domains specified 
+   in the dnsZones key have a different version in the internal network.  
+   DNS resolution for  other domains remains unchanged.
+   
    For each dnsZones entry, the client can use the network-designated
    DNS servers to resolve the listed domains and its subdomains.  Other
    domain names may be resolved using some other DNS servers that are
    configured independently.  For example, if the dnsZones key specifies
    "example.test", then "example.test", "www.example.test", and
-   "mail.eng.example.test" can be resolved using the network-designated
+   "mail.eng.example.test" can be resolved using the network-designated DNS 
+   resolver(s), but "otherexample.test" and "ple.test" can be resolved using 
+   the system's public resolver(s).
 
+   [RFC8801] defines a mechanism for discovering multiple Explicit PvDs
+   on a single network and their Additional Information by means of an
+   HTTP-over-TLS query using a URI derived from the PvD ID.  This set of
+   additional configuration information is referred to as a Web
+   Provisioning Domain (Web PvD). The PvD RA option defined in [RFC8801] 
+   SHOULD set the H-flag to indicate that Additional Information is available.  
+   This Additional Information JSON object SHOULD include the "dnsZones" key 
+   to define the DNS domains for which the network claims authority. 
 
 
 Reddy, et al.            Expires April 26, 2022                 [Page 4]
@@ -226,16 +218,17 @@ Reddy, et al.            Expires April 26, 2022                 [Page 4]
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
-   DNS resolver(s), but "otherexample.test" and "ple.test" can be
-   resolved using the system's public resolver(s).
-
-4.1.  Authority over the Domains
+ 4.1.  Authority over the Domains
 
    To comply with [RFC2826] the split-horizon DNS zone must either not
    exist in the global DNS hierarchy or must be authoritatively
-   delegated to the split-horizon DNS server to answer.  The client can
-   use the mechanism described in [I-D.ietf-add-dnr] to discover the
-   network-designated resolvers.  To determine if the network-designated
+   delegated to the split-horizon DNS server to answer. The DNS root zone (".") 
+   MUST be ignored if it appears in dnsZones.  Other generic or
+   global domains, such as Top-Level Domains (TLDs), similarly MUST be
+   ignored if they appear in dnsZones.
+   
+   The client can use the mechanism described in [I-D.ietf-add-dnr] to discover 
+   the network-designated resolvers.  To determine if the network-designated
    encrypted resolvers are authoritative over the domains in DnsZones,
    the client performs the following steps for each domain in DnsZones:
 
@@ -247,27 +240,29 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
        SHOULD apply the same policy (if any) to the NS query as it does
        to other queries.
 
-   2.  The client checks that the NS RRset matches any one of the ADN of
-       the discovered network-designated encrypted DNS resolvers.
+   2.  The client checks that the NS RRset matches any one of the 
+       Authentication Domain Names (ADNs) of the discovered network-designated 
+       encrypted DNS resolvers.
 
-       A.  If the match fails but if any one of the ADN of the
-           discovered network-designated encrypted DNS resolvers is a
-           subdomain of NS RRset, the client can then establish a TLS
-           connection to that network-designated resolver.  The client
-           follows the mechanism discussed in Section 8 of [RFC8310] to
-           authenticate the DNS server certificate using the ADN and
-           checks if at least one of the values in subjectAltName
-           matches NS RRset.  If the server certificate validation and
-           match succeeds, the client can subsequently resolve the
-           domains in that subtree using the network-designated
-           resolver.  If the server certificate does not validate or
-           match fails, the client can proceed as discussed in step 2
-           (A).
-
-       B.  If the match fails, the client determines the network is not
+       A.  If the match fails and no ADN of the discovered 
+           network-designated encrypted DNS resolvers is a subdomain of 
+           NS RRset, the client determines the network is not
            authoritative for the indicated domain.  It might log an
            error, reject the network entirely (because the network lied
            about its authority over a domain) or other action.
+
+       B.  If the match fails but any one of the ADNs of the discovered 
+           network-designated encrypted DNS resolvers is a subdomain of 
+           NS RRset, the client can then establish a TLS connection to that 
+           network-designated resolver.  The client follows the mechanism 
+           discussed in Section 8 of [RFC8310] to authenticate the DNS server 
+           certificate using the ADN and checks if at least one of the values 
+           in subjectAltName matches NS RRset. If the server certificate 
+           validation and match succeeds, the client can subsequently resolve 
+           the domains in that subtree using the network-designated
+           resolver.  If the server certificate does not validate or
+           match fails, the client can proceed as discussed in step 2
+           (A).
 
        C.  If the match succeeds, the client can then establish a TLS
            connection to that network-designated resolver.  The client
@@ -310,7 +305,7 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    "ns1.corp2.example.com", authenticate it using server certificate
    validation in TLS handshake, and use it for resolving the domains in
    the subtree of "*.internal.corp1.example.com".
-
+   
 5.  An example of Split-Horizon DNS Configuration
 
    In a network the apex domain name is "example.com", which runs a
