@@ -5,10 +5,10 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: April 26, 2022                                           Citrix
+Expires: April 28, 2022                                           Citrix
                                                                 K. Smith
                                                                 Vodafone
-                                                        October 23, 2021
+                                                        October 25, 2021
 
 
                     Split-Horizon DNS Configuration
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 26, 2022.
+   This Internet-Draft will expire on April 28, 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy, et al.            Expires April 26, 2022                 [Page 1]
+Reddy, et al.            Expires April 28, 2022                 [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
@@ -69,15 +69,15 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Split DNS . . . . . . . . . . . . . . . . . . . . . . . . . .   3
-   4.  PvD dnsZones  . . . . . . . . . . . . . . . . . . . . . . . .   4
+   4.  Provisioning Domains dnsZones . . . . . . . . . . . . . . . .   4
      4.1.  Authority over the Domains  . . . . . . . . . . . . . . .   5
    5.  An example of Split-Horizon DNS Configuration . . . . . . . .   6
-   6.  Split DNS Configuration for IKEv2 . . . . . . . . . . . . . .   7
+   6.  Split DNS Configuration for IKEv2 . . . . . . . . . . . . . .   8
    7.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
    8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
    9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .   8
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .   9
      10.2.  Informative References . . . . . . . . . . . . . . . . .   9
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
 
@@ -88,24 +88,37 @@ Table of Contents
    Advertisement).  While it has long been possible to configure
    endpoints to ignore the network's suggestions and use a public DNS
    server on the Internet, this was seldom used because some networks
-   block UDP/53 in order to enforce their own DNS policies.  Also,
-   there has been an increase in the availability of "public resolvers"
+   block UDP/53 in order to enforce their own DNS policies.  Also, there
+   has been an increase in the availability of "public resolvers"
    [RFC8499] which DNS clients may be pre-configured to use instead of
    the default network resolver for a variety of reasons (e.g., offer a
    good reachability, support an encrypted transport, provide a claimed
    privacy policy, (lack of) filtering).  With the advent of DoT and
-   DoH the endpoint is
-   unable to properly resolve split-horizon DNS domains which must
-   query the network-designated DNS server.
+   DoH, the endpoint is unable to properly resolve split-horizon DNS
+   domains which must query the network-designated DNS server.
 
    This document specifies a mechanism to indicate which DNS zones are
    used for split-horizon DNS.  DNS clients can discover and
    authenticate DNS servers provided by the network, for example using
    the techniques proposed in [I-D.ietf-add-dnr] and [I-D.ietf-add-ddr].
 
-   Reddy, et al.            Expires April 26, 2022                 [Page 2]
+   The scope of the specification is split-horizon DNS names, which are
+   not domains reserved for special use like ".local".  Using these
+   domains are difficult because bookmarks, advertising, and human
+   behavior would need to change so that the special domains only work
+
+
+
+Reddy, et al.            Expires April 28, 2022                 [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
+   when connected to the correct network, which is difficult for users
+   to discern on most endpoints.  Furthermore, as special domains cannot
+   obtain certificates from a public CA, authenticated TLS connections
+   to those servers are fraught with (Trust on First Use) and
+   certificate warnings, a longstanding problem in the industry.
 
 2.  Terminology
 
@@ -146,18 +159,17 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    or directories, for example -- while preserving the ease of use
    offered by domain names for internal users.
 
+   A typical use case is an Enterprise network that requires one or more
+   DNS domains to be resolved via network-designated DNS servers.  This
+   can be a special domain, such as "corp.example.com" for an enterprise
 
 
 
-
-Reddy, et al.            Expires April 26, 2022                 [Page 3]
+Reddy, et al.            Expires April 28, 2022                 [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
-   A typical use case is an Enterprise network that requires one or more
-   DNS domains to be resolved via network-designated DNS servers.  This
-   can be a special domain, such as "corp.example.com" for an enterprise
    that is publicly known to use "example.com".  In this case, the
    endpoint needs to be informed what the private domain names are and
    what the IP addresses of the network-designated DNS servers are.  An
@@ -170,67 +182,67 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    networks (ISPs) typically offer private domains, including account
    status/controls, and free education initiatives [INS].
 
-   The PvD RA option defined in [RFC8801] SHOULD set the H-flag to
-   indicate that Additional Information is available.  This Additional
-   Information JSON object SHOULD include the "dnsZones" key to define
-   the DNS domains for which the network claims authority.
-
 4.  Provisioning Domains dnsZones
 
    As discussed in Section 3, internal resources in a network tend to
    have private DNS names.  A network can also run a different version
    of its global domain on its internal network, and require the use of
    network-designated DNS servers to get resolved.
-   
+
    Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
    network configuration information that clients can use to access
    networks, including rules for DNS resolution and proxy configuration.
-   
    The PvD Key dnsZones is defined in [RFC8801].  The PvD Key dnsZones
-   adds support for DNS domains for which the network claims authority, 
-   and    which are intended to be resolved using network-designated DNS 
-   servers. The private domains in dnsZones are only reachable by devices 
-   attached and authenticated to the network. The global domains specified 
-   in the dnsZones key have a different version in the internal network.  
-   DNS resolution for  other domains remains unchanged.
-   
+   adds support for DNS domains for which the network claims authority,
+   and which are intended to be resolved using network-designated DNS
+   servers.  The private domains in dnsZones are only reachable by
+   devices attached and authenticated to the network.  The global
+   domains specified in the dnsZones key have a different version in the
+   internal network.  DNS resolution for other domains remains
+   unchanged.
+
    For each dnsZones entry, the client can use the network-designated
    DNS servers to resolve the listed domains and its subdomains.  Other
    domain names may be resolved using some other DNS servers that are
    configured independently.  For example, if the dnsZones key specifies
    "example.test", then "example.test", "www.example.test", and
-   "mail.eng.example.test" can be resolved using the network-designated DNS 
-   resolver(s), but "otherexample.test" and "ple.test" can be resolved using 
-   the system's public resolver(s).
+   "mail.eng.example.test" can be resolved using the network-designated
+   DNS resolver(s), but "otherexample.test" and "ple.test" can be
+   resolved using the system's public resolver(s).
 
    [RFC8801] defines a mechanism for discovering multiple Explicit PvDs
    on a single network and their Additional Information by means of an
    HTTP-over-TLS query using a URI derived from the PvD ID.  This set of
    additional configuration information is referred to as a Web
-   Provisioning Domain (Web PvD). The PvD RA option defined in [RFC8801] 
-   SHOULD set the H-flag to indicate that Additional Information is available.  
-   This Additional Information JSON object SHOULD include the "dnsZones" key 
-   to define the DNS domains for which the network claims authority. 
+   Provisioning Domain (Web PvD).  The PvD RA option defined in
+   [RFC8801] SHOULD set the H-flag to indicate that Additional
+   Information is available.  This Additional Information JSON object
 
 
-Reddy, et al.            Expires April 26, 2022                 [Page 4]
+
+
+Reddy, et al.            Expires April 28, 2022                 [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
- 4.1.  Authority over the Domains
+   SHOULD include the "dnsZones" key to define the DNS domains for which
+   the network claims authority.
+
+4.1.  Authority over the Domains
 
    To comply with [RFC2826] the split-horizon DNS zone must either not
    exist in the global DNS hierarchy or must be authoritatively
-   delegated to the split-horizon DNS server to answer. The DNS root zone (".") 
-   MUST be ignored if it appears in dnsZones.  Other generic or
-   global domains, such as Top-Level Domains (TLDs), similarly MUST be
-   ignored if they appear in dnsZones.
-   
-   The client can use the mechanism described in [I-D.ietf-add-dnr] to discover 
-   the network-designated resolvers.  To determine if the network-designated
-   encrypted resolvers are authoritative over the domains in DnsZones,
-   the client performs the following steps for each domain in DnsZones:
+   delegated to the split-horizon DNS server to answer.  The DNS root
+   zone (".") MUST be ignored if it appears in dnsZones.  Other generic
+   or global domains, such as Top-Level Domains (TLDs), similarly MUST
+   be ignored if they appear in dnsZones.
+
+   The client can use the mechanism described in [I-D.ietf-add-dnr] to
+   discover the network-designated resolvers.  To determine if the
+   network-designated encrypted resolvers are authoritative over the
+   domains in DnsZones, the client performs the following steps for each
+   domain in DnsZones:
 
    1.  The client sends an NS query for the domain in DnsZones.  This
        query MUST only be sent over encrypted DNS session to a public
@@ -240,42 +252,43 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
        SHOULD apply the same policy (if any) to the NS query as it does
        to other queries.
 
-   2.  The client checks that the NS RRset matches any one of the 
-       Authentication Domain Names (ADNs) of the discovered network-designated 
-       encrypted DNS resolvers.
+   2.  The client checks that the NS RRset matches any one of the
+       Authentication Domain Names (ADNs) of the discovered network-
+       designated encrypted DNS resolvers.
 
-       A.  If the match fails and no ADN of the discovered 
-           network-designated encrypted DNS resolvers is a subdomain of 
-           NS RRset, the client determines the network is not
-           authoritative for the indicated domain.  It might log an
-           error, reject the network entirely (because the network lied
-           about its authority over a domain) or other action.
+       A.  If the match fails and no ADN of the discovered network-
+           designated encrypted DNS resolvers is a subdomain of NS
+           RRset, the client determines the network is not authoritative
+           for the indicated domain.  It might log an error, reject the
+           network entirely (because the network lied about its
+           authority over a domain) or other action.
 
-       B.  If the match fails but any one of the ADNs of the discovered 
-           network-designated encrypted DNS resolvers is a subdomain of 
-           NS RRset, the client can then establish a TLS connection to that 
-           network-designated resolver.  The client follows the mechanism 
-           discussed in Section 8 of [RFC8310] to authenticate the DNS server 
-           certificate using the ADN and checks if at least one of the values 
-           in subjectAltName matches NS RRset. If the server certificate 
-           validation and match succeeds, the client can subsequently resolve 
-           the domains in that subtree using the network-designated
-           resolver.  If the server certificate does not validate or
-           match fails, the client can proceed as discussed in step 2
-           (A).
+       B.  If the match fails but any one of the ADNs of the discovered
+           network-designated encrypted DNS resolvers is a subdomain of
+           NS RRset, the client can then establish a TLS connection to
+           that network-designated resolver.  The client follows the
+           mechanism discussed in Section 8 of [RFC8310] to authenticate
+           the DNS server certificate using the ADN and checks if at
+           least one of the values in subjectAltName matches NS RRset.
+           If the server certificate validation and match succeeds, the
+           client can subsequently resolve the domains in that subtree
+           using the network-designated resolver.  If the server
+
+
+
+
+Reddy, et al.            Expires April 28, 2022                 [Page 5]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
+           certificate does not validate or match fails, the client can
+           proceed as discussed in step 2 (A).
 
        C.  If the match succeeds, the client can then establish a TLS
            connection to that network-designated resolver.  The client
            follows the mechanism discussed in Section 8 of [RFC8310] to
            authenticate the DNS server certificate using the ADN.
-
-
-
-
-Reddy, et al.            Expires April 26, 2022                 [Page 5]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
 
            +  If the server certificate does not validate and a secure
               connection cannot be established to the network designated
@@ -305,7 +318,7 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    "ns1.corp2.example.com", authenticate it using server certificate
    validation in TLS handshake, and use it for resolving the domains in
    the subtree of "*.internal.corp1.example.com".
-   
+
 5.  An example of Split-Horizon DNS Configuration
 
    In a network the apex domain name is "example.com", which runs a
@@ -317,6 +330,14 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    network and endpoints first need to support [I-D.ietf-add-dnr] and
    [RFC8801].  Then, for each site the administrator would add DNS
    server names which end in "ns1.example.com" or "ns2.example.com" (the
+
+
+
+Reddy, et al.            Expires April 28, 2022                 [Page 6]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
    names published on the Internet).  Also on its internal network, it
    uses a geographic naming scheme for its internal nameservers with a
    "service dot location" naming scheme.  Assuming its two geographies
@@ -324,15 +345,6 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    and "ns2.uk.ns1.example.com".  Note that these names can be added in
    addition to more traditional names that might already exist for those
    DNS servers (e.g., the common "service dot location" such as
-
-
-
-
-Reddy, et al.            Expires April 26, 2022                 [Page 6]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
-
    "ns1.uk.example.com").  All of those names would be advertised to the
    endpoints as described in [I-D.ietf-add-dnr].
 
@@ -373,6 +385,15 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    from the public resolver, the client has finished validation that the
    nameservers signaled in [I-D.ietf-add-dnr] and [RFC8801] are owned
    and managed by the same entity that published the NS records on the
+
+
+
+
+Reddy, et al.            Expires April 28, 2022                 [Page 7]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
    Internet.  The endpoint will then use that information from
    [I-D.ietf-add-dnr] and [RFC8801] to resolve names within dnsZones.
 
@@ -381,14 +402,6 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    The split-tunnel Virtual Private Network (VPN) configuration allows
    the endpoint to access resources that reside in the VPN [RFC8598] via
    the tunnel; other traffic not destined to the VPN does not traverse
-
-
-
-Reddy, et al.            Expires April 26, 2022                 [Page 7]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
-
    the tunnel.  In contrast, a non-split- tunnel VPN configuration
    causes all traffic to traverse the tunnel into the VPN.
 
@@ -415,8 +428,8 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    considered untrusted and handled accordingly.  The client must
    perform the steps discussed in Section 4.1 to determine if the
    network-designated encrypted resolvers are authoritative over the
-   domains in DnsZones.  If the network is lying, the client can take
-   appropriate action like disconnecting from the network.
+   domains in DnsZones.  If not, the client can take appropriate action
+   like disconnecting from the network.
 
 8.  IANA Considerations
 
@@ -429,6 +442,14 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    comments.  The authors would like to give special thanks to Ben
    Schwartz for his help.
 
+
+
+
+Reddy, et al.            Expires April 28, 2022                 [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
 10.  References
 
 10.1.  Normative References
@@ -437,13 +458,6 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
               and E. Lear, "Address Allocation for Private Internets",
               BCP 5, RFC 1918, DOI 10.17487/RFC1918, February 1996,
               <https://www.rfc-editor.org/info/rfc1918>.
-
-
-
-Reddy, et al.            Expires April 26, 2022                 [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -484,22 +498,18 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
               Configuration for Encrypted DNS", draft-btw-add-ipsecme-
               ike-03 (work in progress), May 2021.
 
+
+
+
+Reddy, et al.            Expires April 28, 2022                 [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
    [I-D.ietf-add-ddr]
               Pauly, T., Kinnear, E., Wood, C. A., McManus, P., and T.
               Jensen, "Discovery of Designated Resolvers", draft-ietf-
               add-ddr-03 (work in progress), October 2021.
-
-
-
-
-
-
-
-
-Reddy, et al.            Expires April 26, 2022                 [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
 
    [I-D.ietf-add-dnr]
               Boucadair, M., Reddy, T., Wing, D., Cook, N., and T.
@@ -541,6 +551,17 @@ Authors' Addresses
    Email: kondtir@gmail.com
 
 
+
+
+
+
+
+
+Reddy, et al.            Expires April 28, 2022                [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration        October 2021
+
+
    Dan Wing
    Citrix Systems, Inc.
    4988 Great America Pkwy
@@ -548,13 +569,6 @@ Authors' Addresses
    USA
 
    Email: danwing@gmail.com
-
-
-
-
-Reddy, et al.            Expires April 26, 2022                [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
    Kevin Smith
@@ -599,13 +613,4 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
 
-
-
-
-
-
-
-
-
-
-Reddy, et al.            Expires April 26, 2022                [Page 11]
+Reddy, et al.            Expires April 28, 2022                [Page 11]

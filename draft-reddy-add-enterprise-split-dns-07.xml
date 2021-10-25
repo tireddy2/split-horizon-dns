@@ -113,17 +113,16 @@
       <t>Historically, an endpoint would utilize network-designated DNS
       servers upon joining a network (e.g., DHCP OFFER, IPv6 Router
       Advertisement). While it has long been possible to configure endpoints
-      to ignore the network's suggestions and use a (public) DNS server on the
-      Internet, this was seldom used because some networks block UDP/53 (in
-      order to enforce their own DNS policies). Also, there has been an
+      to ignore the network's suggestions and use a public DNS server on the
+      Internet, this was seldom used because some networks block UDP/53 in
+      order to enforce their own DNS policies. Also, there has been an
       increase in the availability of "public resolvers" <xref
       target="RFC8499"></xref> which DNS clients may be pre-configured to use
       instead of the default network resolver for a variety of reasons (e.g.,
       offer a good reachability, support an encrypted transport, provide a
       claimed privacy policy, (lack of) filtering). With the advent of DoT and
-      DoH, such network blocking is more difficult, but the endpoint is unable
-      to (properly) resolve split-horizon DNS domains which must query the
-      network-designated DNS server.</t>
+      DoH, the endpoint is unable to properly resolve split-horizon DNS
+      domains which must query the network-designated DNS server.</t>
 
       <t>This document specifies a mechanism to indicate which DNS zones are
       used for split-horizon DNS. DNS clients can discover and authenticate
@@ -131,17 +130,15 @@
       proposed in <xref target="I-D.ietf-add-dnr"></xref> and <xref
       target="I-D.ietf-add-ddr"></xref>.</t>
 
-      <t>Provisioning Domains (PvDs) are defined in <xref
-      target="RFC7556"></xref> as sets of network configuration information
-      that clients can use to access networks, including rules for DNS
-      resolution and proxy configuration. <xref target="RFC8801"></xref>
-      defines a mechanism for discovering multiple Explicit PvDs on a single
-      network and their Additional Information by means of an HTTP-over-TLS
-      query using a URI derived from the PvD ID. This set of additional
-      configuration information is referred to as a Web Provisioning Domain
-      (Web PvD). The network lists its claims of authority for DNS domains
-      using the "dnsZones" PvD key (defined in <xref
-      target="RFC8801"></xref>).</t>
+      <t>The scope of the specification is split-horizon DNS names, which are
+      not domains reserved for special use like ".local". Using these domains
+      are difficult because bookmarks, advertising, and human behavior would
+      need to change so that the special domains only work when connected to
+      the correct network, which is difficult for users to discern on most
+      endpoints. Furthermore, as special domains cannot obtain certificates
+      from a public CA, authenticated TLS connections to those servers are
+      fraught with (Trust on First Use) and certificate warnings, a
+      longstanding problem in the industry.</t>
     </section>
 
     <section anchor="notation" title="Terminology">
@@ -198,35 +195,26 @@
       for split-horizon DNS is Cellular and Fixed-access networks (ISPs)
       typically offer private domains, including account status/controls, and
       free education initiatives <xref target="INS"></xref>.</t>
-
-      <t>The PvD RA option defined in <xref target="RFC8801"></xref> SHOULD
-      set the H-flag to indicate that Additional Information is available.
-      This Additional Information JSON object SHOULD include the "dnsZones"
-      key to define the DNS domains for which the network claims
-      authority.</t>
     </section>
 
-    <section anchor="dnsZones" title="PvD dnsZones">
+    <section anchor="dnsZones" title="Provisioning Domains dnsZones">
       <t>As discussed in <xref target="split-horizon"></xref>, internal
       resources in a network tend to have private DNS names. A network can
       also run a different version of its global domain on its internal
       network, and require the use of network-designated DNS servers to get
       resolved.</t>
 
-      <t>The PvD Key dnsZones is defined in <xref target="RFC8801"></xref>.
-      The PvD Key dnsZones adds support for DNS domains for which the network
-      claims authority. The private domains specified in the dnsZones key are
+      <t>Provisioning Domains (PvDs) are defined in <xref
+      target="RFC7556"></xref> as sets of network configuration information
+      that clients can use to access networks, including rules for DNS
+      resolution and proxy configuration. The PvD Key dnsZones is defined in
+      <xref target="RFC8801"></xref>. The PvD Key dnsZones adds support for
+      DNS domains for which the network claims authority, and which are
       intended to be resolved using network-designated DNS servers. The
-      private domains in dnsZones are only reachable by devices authenticated
-      or attached to the network. The global domains specified in the dnsZones
-      key have a different version in the internal network. DNS resolution for
-      other domains remains unchanged.</t>
-
-      <t>The dnsZones PvD Key conveys the specified DNS domains that need to
-      be resolved using a network-designated DNS server. The DNS root zone
-      (".") MUST be ignored if it appears in dnsZones. Other generic or global
-      domains, such as Top-Level Domains (TLDs), similarly MUST be ignored if
-      they appear in dnsZones.</t>
+      private domains in dnsZones are only reachable by devices attached and
+      authenticated to the network. The global domains specified in the
+      dnsZones key have a different version in the internal network. DNS
+      resolution for other domains remains unchanged.</t>
 
       <t>For each dnsZones entry, the client can use the network-designated
       DNS servers to resolve the listed domains and its subdomains. Other
@@ -237,11 +225,25 @@
       resolver(s), but "otherexample.test" and "ple.test" can be resolved
       using the system's public resolver(s).</t>
 
+      <t><xref target="RFC8801"></xref> defines a mechanism for discovering
+      multiple Explicit PvDs on a single network and their Additional
+      Information by means of an HTTP-over-TLS query using a URI derived from
+      the PvD ID. This set of additional configuration information is referred
+      to as a Web Provisioning Domain (Web PvD). The PvD RA option defined in
+      <xref target="RFC8801"></xref> SHOULD set the H-flag to indicate that
+      Additional Information is available. This Additional Information JSON
+      object SHOULD include the "dnsZones" key to define the DNS domains for
+      which the network claims authority.</t>
+
       <section anchor="Authority" title="Authority over the Domains">
         <t>To comply with <xref target="RFC2826"></xref> the split-horizon DNS
         zone must either not exist in the global DNS hierarchy or must be
         authoritatively delegated to the split-horizon DNS server to answer.
-        The client can use the mechanism described in <xref
+        The DNS root zone (".") MUST be ignored if it appears in dnsZones.
+        Other generic or global domains, such as Top-Level Domains (TLDs),
+        similarly MUST be ignored if they appear in dnsZones.</t>
+
+        <t>The client can use the mechanism described in <xref
         target="I-D.ietf-add-dnr"></xref> to discover the network-designated
         resolvers. To determine if the network-designated encrypted resolvers
         are authoritative over the domains in DnsZones, the client performs
@@ -256,10 +258,17 @@
             SHOULD apply the same policy (if any) to the NS query as it does
             to other queries.</t>
 
-            <t>The client checks that the NS RRset matches any one of the ADN
-            of the discovered network-designated encrypted DNS resolvers.
-            <list style="letters">
-                <t>If the match fails but if any one of the ADN of the
+            <t>The client checks that the NS RRset matches any one of the
+            Authentication Domain Names (ADNs) of the discovered
+            network-designated encrypted DNS resolvers. <list style="letters">
+                <t>If the match fails and no ADN of the discovered
+                network-designated encrypted DNS resolvers is a subdomain of
+                NS RRset, the client determines the network is not
+                authoritative for the indicated domain. It might log an error,
+                reject the network entirely (because the network lied about
+                its authority over a domain) or other action.</t>
+
+                <t>If the match fails but any one of the ADNs of the
                 discovered network-designated encrypted DNS resolvers is a
                 subdomain of NS RRset, the client can then establish a TLS
                 connection to that network-designated resolver. The client
@@ -272,11 +281,6 @@
                 network-designated resolver. If the server certificate does
                 not validate or match fails, the client can proceed as
                 discussed in step 2 (A).</t>
-
-                <t>If the match fails, the client determines the network is
-                not authoritative for the indicated domain. It might log an
-                error, reject the network entirely (because the network lied
-                about its authority over a domain) or other action.</t>
 
                 <t>If the match succeeds, the client can then establish a TLS
                 connection to that network-designated resolver. The client
@@ -416,8 +420,8 @@
       untrusted and handled accordingly. The client must perform the steps
       discussed in <xref target="Authority"></xref> to determine if the
       network-designated encrypted resolvers are authoritative over the
-      domains in DnsZones. If the network is lying, the client can take
-      appropriate action like disconnecting from the network.</t>
+      domains in DnsZones. If not, the client can take appropriate action like
+      disconnecting from the network.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
