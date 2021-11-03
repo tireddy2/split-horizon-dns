@@ -5,10 +5,10 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: April 28, 2022                                           Citrix
+Expires: May 7, 2022                                              Citrix
                                                                 K. Smith
                                                                 Vodafone
-                                                        October 25, 2021
+                                                        November 3, 2021
 
 
                     Split-Horizon DNS Configuration
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 28, 2022.
+   This Internet-Draft will expire on May 7, 2022.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Reddy, et al.            Expires April 28, 2022                 [Page 1]
+Reddy, et al.              Expires May 7, 2022                  [Page 1]
 
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
 
 
    carefully, as they describe your rights and restrictions with respect
@@ -72,14 +72,14 @@ Table of Contents
    4.  Provisioning Domains dnsZones . . . . . . . . . . . . . . . .   4
      4.1.  Authority over the Domains  . . . . . . . . . . . . . . .   5
    5.  An example of Split-Horizon DNS Configuration . . . . . . . .   6
-   6.  Split DNS Configuration for IKEv2 . . . . . . . . . . . . . .   8
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
-   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .   9
-     10.2.  Informative References . . . . . . . . . . . . . . . . .   9
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
+   6.  Split DNS Configuration for IKEv2 . . . . . . . . . . . . . .   9
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .  10
+     10.2.  Informative References . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
 
 1.  Introduction
 
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Reddy, et al.            Expires April 28, 2022                 [Page 2]
+Reddy, et al.              Expires May 7, 2022                  [Page 2]
 
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
 
 
    when connected to the correct network, which is difficult for users
@@ -165,9 +165,9 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
 
-Reddy, et al.            Expires April 28, 2022                 [Page 3]
+Reddy, et al.              Expires May 7, 2022                  [Page 3]
 
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
 
 
    that is publicly known to use "example.com".  In this case, the
@@ -221,9 +221,9 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
 
-Reddy, et al.            Expires April 28, 2022                 [Page 4]
+Reddy, et al.              Expires May 7, 2022                  [Page 4]
 
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
 
 
    SHOULD include the "dnsZones" key to define the DNS domains for which
@@ -277,9 +277,9 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
 
-Reddy, et al.            Expires April 28, 2022                 [Page 5]
+Reddy, et al.              Expires May 7, 2022                  [Page 5]
 
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
 
 
            certificate does not validate or match fails, the client can
@@ -319,6 +319,11 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    validation in TLS handshake, and use it for resolving the domains in
    the subtree of "*.internal.corp1.example.com".
 
+   In order to deploy DNSSEC operationally for split-horizon domains,
+   the first three schemes described in
+   [I-D.krishnaswamy-dnsop-dnssec-split-view] can be used but not the
+   one discussed in Section 4.1.4.
+
 5.  An example of Split-Horizon DNS Configuration
 
    In a network the apex domain name is "example.com", which runs a
@@ -326,18 +331,17 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    Today, on the Internet it publishes two NS records, "ns1.example.com"
    and "ns2.example.com".
 
+
+
+Reddy, et al.              Expires May 7, 2022                  [Page 6]
+
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
+
+
    To add support for the mechanism described in this document, the
    network and endpoints first need to support [I-D.ietf-add-dnr] and
    [RFC8801].  Then, for each site the administrator would add DNS
    server names which end in "ns1.example.com" or "ns2.example.com" (the
-
-
-
-Reddy, et al.            Expires April 28, 2022                 [Page 6]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
-
    names published on the Internet).  Also on its internal network, it
    uses a geographic naming scheme for its internal nameservers with a
    "service dot location" naming scheme.  Assuming its two geographies
@@ -359,43 +363,124 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    "ns2.uk.ns1.example.com" and their IP addresses.  Using [RFC8801],
    the endpoint will also discover the PvD FQDN is "pvd.uk.example.com".
 
-   The client establishes an encrypted DNS connection with
-   "ns1.uk.ns1.example.com", validates its TLS certificate, and queries
-   it for "pvd.uk.example.com" to retrieve the PvD JSON object.  The PvD
-   contains:
+   Continuing with the UK site as the example, the endpoint performs the
+   following steps corresponding with the call flow diagram numbers:
 
-     {
+   o  Steps 1-2: The client joins the network, obtain an IP address, and
+      using [I-D.ietf-add-dnr] will discover the resolvers
+      "ns1.uk.ns1.example.com" and "ns2.uk.ns1.example.com" and their IP
+      addresses.  Using [RFC8801], the endpoint will also discover the
+      PvD FQDN is "pvd.uk.example.com".
+
+   o  Steps 3-7:The client establishes an encrypted DNS connection with
+      "ns1.uk.ns1.example.com", validates its TLS certificate, and
+      queries it for "pvd.uk.example.com" to retrieve the PvD JSON
+      object.  Note that [RFC8801] in Section 4.1 mandates the PvD FQDN
+      MUST be resolved using the DNS servers indicated by the associated
+      PvD.  The PvD contains:
+
+    {
        "identifier": "pvd.uk.example.com",
        "expires": "2020-05-23T06:00:00Z",
        "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
        "dnsZones:": ["example.com"]
      }
 
-   The JSON keys "identifier", "expires", and "prefixes" are defined in
-   [RFC8801].
-
-   The client then uses an encrypted DNS connection to a public resolver
-   (e.g., 1.1.1.1) to issue NS queries for the domains in dnsZones.  The
-   NS lookup for "example.com" will return "ns1.example.com" and
-   "ns2.example.com".
-
-   As the network-provided nameservers are subdomains of those names
-   retrieved from the public resolver and the network-designated
-   resolver's certificate includes at least one of the names retrieved
-   from the public resolver, the client has finished validation that the
-   nameservers signaled in [I-D.ietf-add-dnr] and [RFC8801] are owned
-   and managed by the same entity that published the NS records on the
 
 
 
-
-Reddy, et al.            Expires April 28, 2022                 [Page 7]
+Reddy, et al.              Expires May 7, 2022                  [Page 7]
 
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
 
 
-   Internet.  The endpoint will then use that information from
-   [I-D.ietf-add-dnr] and [RFC8801] to resolve names within dnsZones.
+      The JSON keys "identifier", "expires", and "prefixes" are defined
+      in [RFC8801].
+
+   o  Steps 8-9:The client then uses an encrypted DNS connection to a
+      public resolver (e.g., 1.1.1.1) to issue NS queries for the
+      domains in dnsZones.  The NS lookup for "example.com" will return
+      "ns1.example.com" and "ns2.example.com".
+
+   o  Step 10: As the network-provided nameservers are subdomains of
+      those names retrieved from the public resolver and the network-
+      designated resolver's certificate includes at least one of the
+      names retrieved from the public resolver, the client has finished
+      validation that the nameservers signaled in [I-D.ietf-add-dnr] and
+      [RFC8801] are owned and managed by the same entity that published
+      the NS records on the Internet.  The endpoint will then use that
+      information from [I-D.ietf-add-dnr] and [RFC8801] to resolve names
+      within dnsZones.
+
+   Figure 1 is a simple call flow diagram of the example discussed
+   above.
+
++---------+                                 +---------+ +--------+ +---------+ +---------+
+| client  |                                 | local   | | HTTPS  | | Router  | | public  |
+|         |                                 | resolvr | | server | |         | | resolvr |
++---------+                                 +---------+ +--------+ +---------+ +---------+
+     |                                          |         |          |           |
+     | Router Solicitation (1)                  |         |          |           |
+     |-------------------------------------------------------------->|           |
+     |                                          |         |          |           |
+     |       Router Advertisement with DNR hostnames & PvD FQDN (2)  |           |
+     |<--------------------------------------------------------------|           |
+     | -------------------------------------\   |         |          |           |
+     |-| now knows DNR hostnames & PvD FQDN |   |         |          |           |
+     | |------------------------------------|   |         |          |           |
+     |                                          |         |          |           |
+     | TLS connection (3)                       |         |          |           |
+     |----------------------------------------->|         |          |           |
+     | ---------------------------\             |         |          |           |
+     |-| validate TLS certificate |             |         |          |           |
+     | |--------------------------|             |         |          |           |
+     |                                          |         |          |           |
+     | resolve pvd.uk.example.com  (4)          |         |          |           |
+     |----------------------------------------->|         |          |           |
+     |                                          |         |          |           |
+     |                         AAAA records (5) |         |          |           |
+     |<-----------------------------------------|         |          |           |
+     |                                          |         |          |           |
+     | https://pvd.uk.example.com/.well-known/pvd (6)     |          |           |
+
+
+
+Reddy, et al.              Expires May 7, 2022                  [Page 8]
+
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
+
+
+     |--------------------------------------------------->|          |           |
+     |                                          |         |          |           |
+     |       200 OK (JSON Additional Information) (7)     |          |           |
+     |<---------------------------------------------------|          |           |
+     | -----------------------\                 |         |          |           |
+     |-| dnsZones=example.com |                 |         |          |           |
+     | |----------------------|                 |         |          |           |
+     |                                          |         |          |           |
+     | TLS connection                           |         |          |           |
+     |-------------------------------------------------------------------------->|
+     | ---------------------------\             |         |          |           |
+     |-| validate TLS certificate |             |         |          |           |
+     | |--------------------------|             |         |          |           |
+     |                                          |         |          |           |
+     | NS? example.com  (8)                     |         |          |           |
+     |-------------------------------------------------------------------------->|
+     |                                          |         |          |           |
+     |                               NS=ns1.example.com, ns2.example.com (9)     |
+     |<--------------------------------------------------------------------------|
+     | -------------------------------\         |         |          |           |
+     |-| PvD example.com is           |         |         |          |           |
+     | | subdomain of ns1.example.com |         |         |          |           |
+     | ----------------------\--------|         |         |          |           |
+     |-| finished validation |                  |         |          |           |
+     | |---------------------|                  |         |          |           |
+     |                                          |         |          |           |
+     | use local resolver for example.com (10)  |         |          |           |
+     |----------------------------------------->|         |          |           |
+     |                                          |         |          |           |
+
+          Figure 1: An Example of Split-Horizon DNS Configuration
 
 6.  Split DNS Configuration for IKEv2
 
@@ -413,6 +498,14 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    to resolve domain names for which the VPN provider claims authority.
    For non-split-tunnel VPN configurations, the endpoint uses the
    discovered encrypted DNS server to resolve both global and private
+
+
+
+Reddy, et al.              Expires May 7, 2022                  [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
+
+
    domain names.  For split-tunnel VPN configurations, the IKE client
    can use the steps discussed in Section 4.1 to determine if the VPN
    service provider is authoritative over the INTERNAL_DNS_DOMAIN
@@ -442,14 +535,6 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    comments.  The authors would like to give special thanks to Ben
    Schwartz for his help.
 
-
-
-
-Reddy, et al.            Expires April 28, 2022                 [Page 8]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
-
 10.  References
 
 10.1.  Normative References
@@ -467,6 +552,15 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
               Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
               2000, <https://www.rfc-editor.org/info/rfc2826>.
+
+
+
+
+
+Reddy, et al.              Expires May 7, 2022                 [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
+
 
    [RFC6761]  Cheshire, S. and M. Krochmal, "Special-Use Domain Names",
               RFC 6761, DOI 10.17487/RFC6761, February 2013,
@@ -498,14 +592,6 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
               Configuration for Encrypted DNS", draft-btw-add-ipsecme-
               ike-03 (work in progress), May 2021.
 
-
-
-
-Reddy, et al.            Expires April 28, 2022                 [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
-
    [I-D.ietf-add-ddr]
               Pauly, T., Kinnear, E., Wood, C. A., McManus, P., and T.
               Jensen, "Discovery of Designated Resolvers", draft-ietf-
@@ -516,6 +602,21 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
               Jensen, "DHCP and Router Advertisement Options for the
               Discovery of Network-designated Resolvers (DNR)", draft-
               ietf-add-dnr-02 (work in progress), May 2021.
+
+   [I-D.krishnaswamy-dnsop-dnssec-split-view]
+              Krishnaswamy, S., "Split-View DNSSEC Operational
+              Practices", draft-krishnaswamy-dnsop-dnssec-split-view-04
+              (work in progress), March 2007.
+
+
+
+
+
+
+Reddy, et al.              Expires May 7, 2022                 [Page 11]
+
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
+
 
    [INS]      The Unicode Consortium, "Vodafone Foundation Instant
               Schools for Sub-Saharan Africa",
@@ -551,17 +652,6 @@ Authors' Addresses
    Email: kondtir@gmail.com
 
 
-
-
-
-
-
-
-Reddy, et al.            Expires April 28, 2022                [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration        October 2021
-
-
    Dan Wing
    Citrix Systems, Inc.
    4988 Great America Pkwy
@@ -569,6 +659,19 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
    USA
 
    Email: danwing@gmail.com
+
+
+
+
+
+
+
+
+
+
+Reddy, et al.              Expires May 7, 2022                 [Page 12]
+
+Internet-Draft       Split-Horizon DNS Configuration       November 2021
 
 
    Kevin Smith
@@ -613,4 +716,13 @@ Internet-Draft       Split-Horizon DNS Configuration        October 2021
 
 
 
-Reddy, et al.            Expires April 28, 2022                [Page 11]
+
+
+
+
+
+
+
+
+
+Reddy, et al.              Expires May 7, 2022                 [Page 13]

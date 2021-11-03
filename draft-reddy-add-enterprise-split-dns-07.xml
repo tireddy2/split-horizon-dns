@@ -319,6 +319,11 @@
         server certificate validation in TLS handshake, and use it for
         resolving the domains in the subtree of
         "*.internal.corp1.example.com".</t>
+
+        <t>In order to deploy DNSSEC operationally for split-horizon domains,
+        the first three schemes described in <xref
+        target="I-D.krishnaswamy-dnsop-dnssec-split-view"></xref> can be used
+        but not the one discussed in Section 4.1.4.</t>
       </section>
     </section>
 
@@ -355,38 +360,112 @@
       addresses. Using <xref target="RFC8801"></xref>, the endpoint will also
       discover the PvD FQDN is "pvd.uk.example.com".</t>
 
-      <t>The client establishes an encrypted DNS connection with
-      "ns1.uk.ns1.example.com", validates its TLS certificate, and queries it
-      for "pvd.uk.example.com" to retrieve the PvD JSON object. The PvD
-      contains:</t>
+      <t>Continuing with the UK site as the example, the endpoint performs the
+      following steps corresponding with the call flow diagram numbers: </t>
 
-      <t><figure>
-          <artwork><![CDATA[  {
+      <t><list style="symbols">
+          <t>Steps 1-2: The client joins the network, obtain an IP address,
+          and using <xref target="I-D.ietf-add-dnr"></xref> will discover the
+          resolvers "ns1.uk.ns1.example.com" and "ns2.uk.ns1.example.com" and
+          their IP addresses. Using <xref target="RFC8801"></xref>, the
+          endpoint will also discover the PvD FQDN is "pvd.uk.example.com".
+          </t>
+
+          <t>Steps 3-7:The client establishes an encrypted DNS connection with
+          "ns1.uk.ns1.example.com", validates its TLS certificate, and queries
+          it for "pvd.uk.example.com" to retrieve the PvD JSON object. Note
+          that <xref target="RFC8801"></xref> in Section 4.1 mandates the PvD
+          FQDN MUST be resolved using the DNS servers indicated by the
+          associated PvD. The PvD contains:<figure>
+              <artwork><![CDATA[ {
     "identifier": "pvd.uk.example.com",   
     "expires": "2020-05-23T06:00:00Z",
     "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
     "dnsZones:": ["example.com"]
-  }
+  }]]></artwork>
+            </figure>The JSON keys "identifier", "expires", and "prefixes" are
+          defined in <xref target="RFC8801"></xref>.</t>
+
+          <t>Steps 8-9:The client then uses an encrypted DNS connection to a
+          public resolver (e.g., 1.1.1.1) to issue NS queries for the domains
+          in dnsZones. The NS lookup for "example.com" will return
+          "ns1.example.com" and "ns2.example.com". </t>
+
+          <t>Step 10: As the network-provided nameservers are subdomains of
+          those names retrieved from the public resolver and the
+          network-designated resolver's certificate includes at least one of
+          the names retrieved from the public resolver, the client has
+          finished validation that the nameservers signaled in <xref
+          target="I-D.ietf-add-dnr"></xref> and <xref target="RFC8801"></xref>
+          are owned and managed by the same entity that published the NS
+          records on the Internet. The endpoint will then use that information
+          from <xref target="I-D.ietf-add-dnr"></xref> and <xref
+          target="RFC8801"></xref> to resolve names within dnsZones.</t>
+        </list></t>
+
+      <t> <xref target="poex"></xref> is a simple call flow diagram of the
+      example discussed above.</t>
+
+      <figure anchor="poex"
+              title="An Example of Split-Horizon DNS Configuration">
+        <artwork><![CDATA[+---------+                                 +---------+ +--------+ +---------+ +---------+
+| client  |                                 | local   | | HTTPS  | | Router  | | public  |
+|         |                                 | resolvr | | server | |         | | resolvr |
++---------+                                 +---------+ +--------+ +---------+ +---------+
+     |                                          |         |          |           |
+     | Router Solicitation (1)                  |         |          |           |
+     |-------------------------------------------------------------->|           |
+     |                                          |         |          |           |
+     |       Router Advertisement with DNR hostnames & PvD FQDN (2)  |           |
+     |<--------------------------------------------------------------|           |
+     | -------------------------------------\   |         |          |           |
+     |-| now knows DNR hostnames & PvD FQDN |   |         |          |           |
+     | |------------------------------------|   |         |          |           |
+     |                                          |         |          |           |
+     | TLS connection (3)                       |         |          |           |
+     |----------------------------------------->|         |          |           |
+     | ---------------------------\             |         |          |           |
+     |-| validate TLS certificate |             |         |          |           |
+     | |--------------------------|             |         |          |           |
+     |                                          |         |          |           |
+     | resolve pvd.uk.example.com  (4)          |         |          |           |
+     |----------------------------------------->|         |          |           |
+     |                                          |         |          |           |
+     |                         AAAA records (5) |         |          |           |
+     |<-----------------------------------------|         |          |           |
+     |                                          |         |          |           |
+     | https://pvd.uk.example.com/.well-known/pvd (6)     |          |           |
+     |--------------------------------------------------->|          |           |
+     |                                          |         |          |           |
+     |       200 OK (JSON Additional Information) (7)     |          |           |
+     |<---------------------------------------------------|          |           |
+     | -----------------------\                 |         |          |           |
+     |-| dnsZones=example.com |                 |         |          |           |
+     | |----------------------|                 |         |          |           |
+     |                                          |         |          |           |
+     | TLS connection                           |         |          |           |
+     |-------------------------------------------------------------------------->|
+     | ---------------------------\             |         |          |           |
+     |-| validate TLS certificate |             |         |          |           |
+     | |--------------------------|             |         |          |           |
+     |                                          |         |          |           |
+     | NS? example.com  (8)                     |         |          |           |
+     |-------------------------------------------------------------------------->|
+     |                                          |         |          |           |
+     |                               NS=ns1.example.com, ns2.example.com (9)     |
+     |<--------------------------------------------------------------------------|
+     | -------------------------------\         |         |          |           |
+     |-| PvD example.com is           |         |         |          |           |
+     | | subdomain of ns1.example.com |         |         |          |           |
+     | ----------------------\--------|         |         |          |           |
+     |-| finished validation |                  |         |          |           |
+     | |---------------------|                  |         |          |           |
+     |                                          |         |          |           |
+     | use local resolver for example.com (10)  |         |          |           |
+     |----------------------------------------->|         |          |           |
+     |                                          |         |          |           |
 ]]></artwork>
-        </figure></t>
-
-      <t>The JSON keys "identifier", "expires", and "prefixes" are defined in
-      <xref target="RFC8801"></xref>.</t>
-
-      <t>The client then uses an encrypted DNS connection to a public resolver
-      (e.g., 1.1.1.1) to issue NS queries for the domains in dnsZones. The NS
-      lookup for "example.com" will return "ns1.example.com" and
-      "ns2.example.com".</t>
-
-      <t>As the network-provided nameservers are subdomains of those names
-      retrieved from the public resolver and the network-designated resolver's
-      certificate includes at least one of the names retrieved from the public
-      resolver, the client has finished validation that the nameservers
-      signaled in <xref target="I-D.ietf-add-dnr"></xref> and <xref
-      target="RFC8801"></xref> are owned and managed by the same entity that
-      published the NS records on the Internet. The endpoint will then use
-      that information from <xref target="I-D.ietf-add-dnr"></xref> and <xref
-      target="RFC8801"></xref> to resolve names within dnsZones.</t>
+      </figure>
     </section>
 
     <section anchor="VPN" title="Split DNS Configuration for IKEv2">
@@ -470,7 +549,9 @@
 
       <?rfc include='reference.I-D.btw-add-ipsecme-ike'?>
 
-      <?rfc include='reference.I-D.ietf-add-ddr'?>
+      <?rfc include='reference.I-D.krishnaswamy-dnsop-dnssec-split-view'?>
+
+      <?rfc include='reference.I-D.ietf-add-ddr' ?>
 
       <!-- not yet in XML library           <?rfc include='reference.I-D.ietf-add-ddr'?> 
            <?rfc include='reference.I-D.ietf-add-dnr'?> -->
