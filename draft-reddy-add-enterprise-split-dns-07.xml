@@ -353,25 +353,26 @@
       entity that has published the NS records on the Internet, as described
       in the following paragraphs:</t>
 
-      <t>Continuing with the UK site as the example, the endpoint will join
-      the network, obtain an IP address, and using <xref
+      <t>Continuing with the UK site as the example, the endpoint will
+      join the network, obtain an IPv6 address, and using <xref
       target="I-D.ietf-add-dnr"></xref> will discover the resolvers
-      "ns1.uk.ns1.example.com" and "ns2.uk.ns1.example.com" and their IP
-      addresses. Using <xref target="RFC8801"></xref>, the endpoint will also
-      discover the PvD FQDN is "pvd.uk.example.com".</t>
+      "ns1.uk.ns1.example.com" and "ns2.uk.ns1.example.com" and their
+      IP addresses. Using <xref target="RFC8801"></xref> (which
+      utilizes IPv6 Router Advertisments), the endpoint will also discover the PvD FQDN is
+      "pvd.uk.example.com".</t>
 
       <t>Continuing with the UK site as the example, the endpoint performs the
       following steps corresponding with the call flow diagram numbers: </t>
 
-      <t><list style="symbols">
-          <t>Steps 1-2: The client joins the network, obtain an IP address,
+      <t><list style="hanging">
+          <t hangText="Steps 1-2:">The client joins the network, obtain an IP address,
           and using <xref target="I-D.ietf-add-dnr"></xref> will discover the
           resolvers "ns1.uk.ns1.example.com" and "ns2.uk.ns1.example.com" and
           their IP addresses. Using <xref target="RFC8801"></xref>, the
           endpoint will also discover the PvD FQDN is "pvd.uk.example.com".
           </t>
 
-          <t>Steps 3-7:The client establishes an encrypted DNS connection with
+          <t hangText="Steps 3-7:">The client establishes an encrypted DNS connection with
           "ns1.uk.ns1.example.com", validates its TLS certificate, and queries
           it for "pvd.uk.example.com" to retrieve the PvD JSON object. Note
           that <xref target="RFC8801"></xref> in Section 4.1 mandates the PvD
@@ -386,12 +387,12 @@
             </figure>The JSON keys "identifier", "expires", and "prefixes" are
           defined in <xref target="RFC8801"></xref>.</t>
 
-          <t>Steps 8-9:The client then uses an encrypted DNS connection to a
+          <t hangText="Steps 8-9:">The client then uses an encrypted DNS connection to a
           public resolver (e.g., 1.1.1.1) to issue NS queries for the domains
           in dnsZones. The NS lookup for "example.com" will return
           "ns1.example.com" and "ns2.example.com". </t>
 
-          <t>Step 10: As the network-provided nameservers are subdomains of
+          <t hangText="Step 10:">As the network-provided nameservers are subdomains of
           those names retrieved from the public resolver and the
           network-designated resolver's certificate includes at least one of
           the names retrieved from the public resolver, the client has
