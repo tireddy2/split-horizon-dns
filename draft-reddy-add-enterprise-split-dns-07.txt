@@ -346,7 +346,7 @@ Internet-Draft       Split-Horizon DNS Configuration       November 2021
    uses a geographic naming scheme for its internal nameservers with a
    "service dot location" naming scheme.  Assuming its two geographies
    are "us" and "uk".  So the UK site would add "ns1.uk.ns1.example.com"
-   and "ns2.uk.ns1.example.com".  Note that these names can be added in
+   and "ns2.uk.ns2.example.com".  Note that these names can be added in
    addition to more traditional names that might already exist for those
    DNS servers (e.g., the common "service dot location" such as
    "ns1.uk.example.com").  All of those names would be advertised to the
@@ -360,7 +360,7 @@ Internet-Draft       Split-Horizon DNS Configuration       November 2021
    Continuing with the UK site as the example, the endpoint will join
    the network, obtain an IPv6 address, and using [I-D.ietf-add-dnr]
    will discover the resolvers "ns1.uk.ns1.example.com" and
-   "ns2.uk.ns1.example.com" and their IP addresses.  Using [RFC8801]
+   "ns2.uk.ns2.example.com" and their IP addresses.  Using [RFC8801]
    (which utilizes IPv6 Router Advertisments), the endpoint will also
    discover the PvD FQDN is "pvd.uk.example.com".
 
@@ -470,13 +470,14 @@ Internet-Draft       Split-Horizon DNS Configuration       November 2021
      |                               NS=ns1.example.com, ns2.example.com (9)     |
      |<--------------------------------------------------------------------------|
      | -------------------------------\         |         |          |           |
-     |-| PvD example.com is           |         |         |          |           |
+     |-| ns1.uk.ns1.example.com is    |         |         |          |           |
      | | subdomain of ns1.example.com |         |         |          |           |
      | ----------------------\--------|         |         |          |           |
      |-| finished validation |                  |         |          |           |
      | |---------------------|                  |         |          |           |
      |                                          |         |          |           |
-     | use local resolver for example.com (10)  |         |          |           |
+     | use network-designated resolver          |         |          |           |
+     | for example.com (10)                     |         |          |           |
      |----------------------------------------->|         |          |           |
      |                                          |         |          |           |
 
@@ -497,7 +498,6 @@ Internet-Draft       Split-Horizon DNS Configuration       November 2021
    configurations, the endpoint uses the discovered encrypted DNS server
    to resolve domain names for which the VPN provider claims authority.
    For non-split-tunnel VPN configurations, the endpoint uses the
-   discovered encrypted DNS server to resolve both global and private
 
 
 
@@ -506,6 +506,7 @@ Reddy, et al.              Expires May 8, 2022                  [Page 9]
 Internet-Draft       Split-Horizon DNS Configuration       November 2021
 
 
+   discovered encrypted DNS server to resolve both global and private
    domain names.  For split-tunnel VPN configurations, the IKE client
    can use the steps discussed in Section 4.1 to determine if the VPN
    service provider is authoritative over the INTERNAL_DNS_DOMAIN
@@ -552,7 +553,6 @@ Internet-Draft       Split-Horizon DNS Configuration       November 2021
    [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
               Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
               2000, <https://www.rfc-editor.org/info/rfc2826>.
-
 
 
 

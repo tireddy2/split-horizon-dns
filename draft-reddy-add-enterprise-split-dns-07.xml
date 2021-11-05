@@ -341,7 +341,7 @@
       the Internet). Also on its internal network, it uses a geographic naming
       scheme for its internal nameservers with a "service dot location" naming
       scheme. Assuming its two geographies are "us" and "uk". So the UK site
-      would add "ns1.uk.ns1.example.com" and "ns2.uk.ns1.example.com". Note
+      would add "ns1.uk.ns1.example.com" and "ns2.uk.ns2.example.com". Note
       that these names can be added in addition to more traditional names that
       might already exist for those DNS servers (e.g., the common "service dot
       location" such as "ns1.uk.example.com"). All of those names would be
@@ -356,7 +356,7 @@
       <t>Continuing with the UK site as the example, the endpoint will join
       the network, obtain an IPv6 address, and using <xref
       target="I-D.ietf-add-dnr"></xref> will discover the resolvers
-      "ns1.uk.ns1.example.com" and "ns2.uk.ns1.example.com" and their IP
+      "ns1.uk.ns1.example.com" and "ns2.uk.ns2.example.com" and their IP
       addresses. Using <xref target="RFC8801"></xref> (which utilizes IPv6
       Router Advertisments), the endpoint will also discover the PvD FQDN is
       "pvd.uk.example.com".</t>
@@ -456,13 +456,14 @@
      |                               NS=ns1.example.com, ns2.example.com (9)     |
      |<--------------------------------------------------------------------------|
      | -------------------------------\         |         |          |           |
-     |-| PvD example.com is           |         |         |          |           |
+     |-| ns1.uk.ns1.example.com is    |         |         |          |           |
      | | subdomain of ns1.example.com |         |         |          |           |
      | ----------------------\--------|         |         |          |           |
      |-| finished validation |                  |         |          |           |
      | |---------------------|                  |         |          |           |
      |                                          |         |          |           |
-     | use local resolver for example.com (10)  |         |          |           |
+     | use network-designated resolver          |         |          |           |
+     | for example.com (10)                     |         |          |           |
      |----------------------------------------->|         |          |           |
      |                                          |         |          |           |
 ]]></artwork>
