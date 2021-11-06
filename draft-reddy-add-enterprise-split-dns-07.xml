@@ -319,11 +319,6 @@
         server certificate validation in TLS handshake, and use it for
         resolving the domains in the subtree of
         "*.internal.corp1.example.com".</t>
-
-        <t>In order to deploy DNSSEC operationally for split-horizon domains,
-        the first three schemes described in <xref
-        target="I-D.krishnaswamy-dnsop-dnssec-split-view"></xref> can be used
-        but not the one discussed in Section 4.1.4.</t>
       </section>
     </section>
 
@@ -462,8 +457,8 @@
      |-| finished validation |                  |         |          |           |
      | |---------------------|                  |         |          |           |
      |                                          |         |          |           |
-     | use network-designated resolver          |         |          |           |
-     | for example.com (10)                     |         |          |           |
+     |  use network-designated resolver         |         |          |           |   
+     |  for example.com (10)                    |         |          |           |
      |----------------------------------------->|         |          |           |
      |                                          |         |          |           |
 ]]></artwork>
@@ -503,6 +498,15 @@
       network-designated encrypted resolvers are authoritative over the
       domains in DnsZones. If not, the client can take appropriate action like
       disconnecting from the network.</t>
+
+      <t>In order to deploy DNSSEC operationally for split-horizon domains,
+      the first three schemes described in <xref
+      target="I-D.krishnaswamy-dnsop-dnssec-split-view"></xref> can be used
+      but not the one discussed in Section 4.1.4. Alternatively, after
+      validating the network authority over the dnsZones domains <xref
+      target="Authority"></xref>, a DNSSEC-validating client can reconfigure
+      its stub resolver to disable DNSSEC validation for the domains in
+      dnsZones.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
