@@ -12,7 +12,7 @@ Expires: June 14, 2022                                            Citrix
 
 
                     Split-Horizon DNS Configuration
-                draft-reddy-add-enterprise-split-dns-07
+                draft-reddy-add-enterprise-split-dns-08
 
 Abstract
 
