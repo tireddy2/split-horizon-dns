@@ -31,7 +31,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="std" docName="draft-reddy-add-enterprise-split-dns-07"
+<rfc category="std" docName="draft-reddy-add-enterprise-split-dns-08"
      ipr="trust200902">
   <front>
     <title abbrev="Split-Horizon DNS Configuration">Split-Horizon DNS
