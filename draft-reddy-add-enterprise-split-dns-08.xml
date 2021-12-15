@@ -43,7 +43,6 @@
       <address>
         <postal>
           <street>Embassy Golf Link Business Park</street>
-
           <city>Bangalore</city>
 
           <region>Karnataka</region>
@@ -155,7 +154,6 @@
       <t>'Encrypted DNS' refers to a DNS protocol that provides an encrypted
       channel between a DNS client and server (e.g., DoT, DoH, or DoQ).</t>
 
-      <section title="Split Horizon taxonomy">
 	<t>Two new terms, Full Split Horizon and Lame Delegation Split Horizon, are
 	defined as summarized in the following table.
 	<figure>
@@ -196,6 +194,10 @@
 	resolvable, such as www.internal.example.com which resolves to
 	192.0.2.2.</t>
 
+	<t><list>
+	  <t>Note: Lame Delegation Split Horizon is not in scope for this document.  It is only documented for completeness.</t>
+	</list></t>
+
 	<t>Benefits:
 	<list style="symbols">
 	  <t>If the client receives an error when querying the public server, it can query the internal server.  While this exposes internal hostnames to the public server, this eases client configuration burden and can improve overall user satisfaction.</t>
@@ -203,7 +205,7 @@
 	<t>Complications:
 	<list style="symbols">
 	  <t>In cases where the internal DNS server cannot be queried, URLs referencing hostnames only resolvable by the internal DNS server will not be resolvable and cause application errors.  These errors can confuse users who see they are connected to the network, yet cannot resolve a hostname.</t>
-	  <t>Obtaining a CA-signed certificate (using <xref target="RFC8555"></xref> HTTP challenge or DNS challenge) is complicated by the domain not being accessible from the Internet.</t>
+	  <t>CA-signed certificates cannot be obtained for names that are not resolvable on the Internet. <xref target="cabforum"></xref> .</t>	  
 	</list></t>
       </section>
 
@@ -223,14 +225,13 @@
       </section>
 
 
-      </section>
 
 
 
 	    
     </section>
 
-    <section anchor="split-horizon" title="Split DNS">
+    <section anchor="split-horizon" title="Overview for Full Split Horizon">
       <t><xref target="RFC2826"></xref> "does not preclude private networks
       from operating their own private name spaces" but notes that if private
       networks "wish to make use of names uniquely defined for the global
@@ -614,11 +615,11 @@
       <?rfc include='reference.RFC.6762'?>
 
       <?rfc include='reference.RFC.8310'?>
+
     </references>
 
     <references title="Informative References">
       <?rfc include='reference.RFC.8499'?>
-            <?rfc include='reference.RFC.8555'?>
 
       <?rfc include='reference.RFC.8598'?>
 
@@ -634,9 +635,6 @@
 
       <?rfc include='reference.I-D.ietf-add-ddr' ?>
 
-      <!-- not yet in XML library           <?rfc include='reference.I-D.ietf-add-ddr'?> 
-           <?rfc include='reference.I-D.ietf-add-dnr'?> -->
-
       <reference anchor="INS"
                  target="https://www.vodafone.com/about/vodafone-foundation/focus-areas/instant-schools">
         <front>
@@ -651,6 +649,22 @@
         </front>
       </reference>
 
+
+      <reference anchor="cabforum"
+                 target="https://cabforum.org/wp-content/uploads/Guidance-Deprecated-Internal-Names.pdf">
+        <front>
+          <title>Internal Server Names and IP Address Requirements for SSL</title>
+	 
+          <author>
+            <organization>CA/B Forum</organization>
+          </author>
+
+          <date day="" month="June" year="2012" />
+        </front>
+      </reference>
+      
+
+      
       <!---->
     </references>
   </back>
