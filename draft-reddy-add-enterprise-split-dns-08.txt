@@ -5,10 +5,10 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: June 18, 2022                                            Citrix
+Expires: June 19, 2022                                            Citrix
                                                                 K. Smith
                                                                 Vodafone
-                                                       December 15, 2021
+                                                       December 16, 2021
 
 
                     Split-Horizon DNS Configuration
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on June 18, 2022.
+   This Internet-Draft will expire on June 19, 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy, et al.             Expires June 18, 2022                 [Page 1]
+Reddy, et al.             Expires June 19, 2022                 [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy, et al.             Expires June 18, 2022                 [Page 2]
+Reddy, et al.             Expires June 19, 2022                 [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
 
-Reddy, et al.             Expires June 18, 2022                 [Page 3]
+Reddy, et al.             Expires June 19, 2022                 [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
@@ -178,8 +178,8 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
    o  Can cause cache confusion.
 
-   o  Clients need to query the appropriate DNS to get the appropriate
-      answer.
+   o  Clients need to query the appropriate DNS server to get the
+      appropriate answer.
 
 2.2.  Lame Delegation Split Horizon
 
@@ -213,7 +213,7 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
       cannot resolve a hostname.
 
    o  CA-signed certificates cannot be obtained for names that are not
-      resolvable on the Internet. [cabforum] .
+      resolvable on the Internet [cabforum].
 
 
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
 
-Reddy, et al.             Expires June 18, 2022                 [Page 4]
+Reddy, et al.             Expires June 19, 2022                 [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
@@ -233,11 +233,8 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
    called example.com on the Internet and an internal DNS server also
    claims to be authoritative for example.com, but has no delegation
    from example.com on the Internet.  Someone might domain camp on a
-   typo-related domain name or a popular domain name providing the
-   ability to monitor queries and modify answers for that domain.
-
-      Issue: What is impact if a DNS operator claims to need resolution
-      of the top 50 most popular domain names.
+   popular domain name providing the ability to monitor queries and
+   modify answers for that domain.
 
 3.  Overview for Full Split Horizon
 
@@ -274,16 +271,17 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
    its internal network.  In that case, the client is instructed to send
    DNS queries for the enterprise public domain (e.g., "example.com") to
    the network-designated DNS servers.  A configuration for this
+   deployment scenario is referred to as a Split DNS configuration.
+   Another use case for split-horizon DNS is Cellular and Fixed-access
 
 
 
-Reddy, et al.             Expires June 18, 2022                 [Page 5]
+
+Reddy, et al.             Expires June 19, 2022                 [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
-   deployment scenario is referred to as a Split DNS configuration.
-   Another use case for split-horizon DNS is Cellular and Fixed-access
    networks (ISPs) typically offer private domains, including account
    status/controls, and free education initiatives [INS].
 
@@ -330,15 +328,16 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
    To comply with [RFC2826] the split-horizon DNS zone must either not
    exist in the global DNS hierarchy or must be authoritatively
    delegated to the split-horizon DNS server to answer.  The DNS root
+   zone (".") MUST be ignored if it appears in dnsZones.  Other generic
 
 
 
-Reddy, et al.             Expires June 18, 2022                 [Page 6]
+
+Reddy, et al.             Expires June 19, 2022                 [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
-   zone (".") MUST be ignored if it appears in dnsZones.  Other generic
    or global domains, such as Top-Level Domains (TLDs), similarly MUST
    be ignored if they appear in dnsZones.
 
@@ -385,17 +384,16 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
            follows the mechanism discussed in Section 8 of [RFC8310] to
            authenticate the DNS server certificate using the ADN.
 
+           +  If the server certificate does not validate and a secure
+              connection cannot be established to the network designated
 
 
 
-
-Reddy, et al.             Expires June 18, 2022                 [Page 7]
+Reddy, et al.             Expires June 19, 2022                 [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
-           +  If the server certificate does not validate and a secure
-              connection cannot be established to the network designated
               resolver, the client can proceed as discussed in step 2
               (A).
 
@@ -441,17 +439,16 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
    and "ns2.uk.ns2.example.com".  Note that these names can be added in
    addition to more traditional names that might already exist for those
    DNS servers (e.g., the common "service dot location" such as
+   "ns1.uk.example.com").  All of those names would be advertised to the
+   endpoints as described in [I-D.ietf-add-dnr].
 
 
 
 
-Reddy, et al.             Expires June 18, 2022                 [Page 8]
+Reddy, et al.             Expires June 19, 2022                 [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
-
-   "ns1.uk.example.com").  All of those names would be advertised to the
-   endpoints as described in [I-D.ietf-add-dnr].
 
    The endpoints compliant with this specification can then determine
    the network's internal nameservers are owned and managed by the same
@@ -498,17 +495,17 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
    Step 10:  As the network-provided nameservers are subdomains of those
       names retrieved from the public resolver and the network-
+      designated resolver's certificate includes at least one of the
+      names retrieved from the public resolver, the client has finished
+      validation that the nameservers signaled in [I-D.ietf-add-dnr] and
 
 
 
-Reddy, et al.             Expires June 18, 2022                 [Page 9]
+Reddy, et al.             Expires June 19, 2022                 [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
-      designated resolver's certificate includes at least one of the
-      names retrieved from the public resolver, the client has finished
-      validation that the nameservers signaled in [I-D.ietf-add-dnr] and
       [RFC8801] are owned and managed by the same entity that published
       the NS records on the Internet.  The endpoint will then use that
       information from [I-D.ietf-add-dnr] and [RFC8801] to resolve names
@@ -554,17 +551,17 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
      |                                          |         |          |           |
      | TLS connection                           |         |          |           |
      |-------------------------------------------------------------------------->|
+     | ---------------------------\             |         |          |           |
+     |-| validate TLS certificate |             |         |          |           |
+     | |--------------------------|             |         |          |           |
 
 
 
-Reddy, et al.             Expires June 18, 2022                [Page 10]
+Reddy, et al.             Expires June 19, 2022                [Page 10]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
-     | ---------------------------\             |         |          |           |
-     |-| validate TLS certificate |             |         |          |           |
-     | |--------------------------|             |         |          |           |
      |                                          |         |          |           |
      | NS? example.com  (8)                     |         |          |           |
      |-------------------------------------------------------------------------->|
@@ -613,7 +610,10 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
 
-Reddy, et al.             Expires June 18, 2022                [Page 11]
+
+
+
+Reddy, et al.             Expires June 19, 2022                [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
@@ -669,7 +669,7 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
 
-Reddy, et al.             Expires June 18, 2022                [Page 12]
+Reddy, et al.             Expires June 19, 2022                [Page 12]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
@@ -725,7 +725,7 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
 
-Reddy, et al.             Expires June 18, 2022                [Page 13]
+Reddy, et al.             Expires June 19, 2022                [Page 13]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
@@ -781,7 +781,7 @@ Authors' Addresses
 
 
 
-Reddy, et al.             Expires June 18, 2022                [Page 14]
+Reddy, et al.             Expires June 19, 2022                [Page 14]
 
 Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
@@ -837,4 +837,4 @@ Internet-Draft       Split-Horizon DNS Configuration       December 2021
 
 
 
-Reddy, et al.             Expires June 18, 2022                [Page 15]
+Reddy, et al.             Expires June 19, 2022                [Page 15]
