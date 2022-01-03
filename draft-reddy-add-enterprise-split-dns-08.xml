@@ -43,6 +43,7 @@
       <address>
         <postal>
           <street>Embassy Golf Link Business Park</street>
+
           <city>Bangalore</city>
 
           <region>Karnataka</region>
@@ -129,15 +130,16 @@
       proposed in <xref target="I-D.ietf-add-dnr"></xref> and <xref
       target="I-D.ietf-add-ddr"></xref>.</t>
 
-      <t>The scope of the specification is split-horizon DNS names, which are
-      not domains reserved for special use like ".local". Using these domains
-      are difficult because bookmarks, advertising, and human behavior would
-      need to change so that the special domains only work when connected to
-      the correct network, which is difficult for users to discern on most
-      endpoints. Furthermore, as special domains cannot obtain certificates
-      from a public CA, authenticated TLS connections to those servers are
-      fraught with (Trust on First Use) and certificate warnings, a
-      longstanding problem in the industry.</t>
+      <t>The scope of the specification is full split-horizon (<xref
+      target="full"></xref>) DNS names, which are not domains reserved for
+      special use like ".local". Using these domains are difficult because
+      bookmarks, advertising, and human behavior would need to change so that
+      the special domains only work when connected to the correct network,
+      which is difficult for users to discern on most endpoints. Furthermore,
+      as special domains cannot obtain certificates from a public CA,
+      authenticated TLS connections to those servers are fraught with (Trust
+      on First Use) and certificate warnings, a longstanding problem in the
+      industry.</t>
     </section>
 
     <section anchor="notation" title="Terminology">
@@ -154,127 +156,129 @@
       <t>'Encrypted DNS' refers to a DNS protocol that provides an encrypted
       channel between a DNS client and server (e.g., DoT, DoH, or DoQ).</t>
 
-	<t>Two new terms, Full Split Horizon and Lame Delegation Split Horizon, are
-	defined as summarized in the following table.
-	<figure>
-              <artwork><![CDATA[+--------------------+----------------------+--------------------------+
+      <t>Two new terms, Full Split Horizon and Lame Delegation Split Horizon,
+      are defined as summarized in the following table. <figure>
+          <artwork><![CDATA[+--------------------+----------------------+--------------------------+
 + split horizon type +   query on Internet  | query on private network |
 +--------------------+----------------------+--------------------------+
 + full               +  IP address <public> |   IP address <private>   |
 +--------------------+----------------------+--------------------------+
-+ lame delegation    +     no such host     |   IP adderss <private>   |
++ lame delegation    +     no such host     |   IP address <private>   |
 +--------------------+----------------------+--------------------------+]]></artwork>
-</figure></t>
+        </figure></t>
 
-<t>The term 'Domain Camping' is also defined.</t>
+      <t>The term 'Domain Camping' is also defined.</t>
 
-      <section title="Full Split Horizon">
-	<t>Full Split Horizon refers to a delegation on both the Internet-facing DNS server and the internal-facing DNS server, where an A or AAAA query results in a different answer.</t>
-	<t>Example:  When issued an "A" query for www.example.com, the Internet-facing DNS server answers with 203.0.113.1 and internal-facing DNS server answers with 192.0.2.1.</t>
-	<t>Benefits:
-	<list style="symbols">
-<t>URLs resolve equally well on both public and internal networks, but to different IP addresses, as desired by the DNS administrator.</t>
-	</list></t>
-	<t>Complications:
-	<list style="symbols">
-<t>Can cause cache confusion.</t>
-<t>Clients need to query the appropriate DNS server to get the appropriate answer.</t>
-	</list></t>
+      <section anchor="full" title="Full Split Horizon">
+        <t>Full Split Horizon refers to a delegation on both the
+        Internet-facing DNS server and the internal-facing DNS server, where
+        an A or AAAA query results in a different answer.</t>
+
+        <t>Example: When issued an "A" query for www.example.com, the
+        Internet-facing DNS server answers with 203.0.113.1 and
+        internal-facing DNS server answers with 192.0.2.1.</t>
+
+        <t>Benefits: <list style="symbols">
+            <t>URLs resolve equally well on both public and internal networks,
+            but to different IP addresses, as desired by the DNS
+            administrator.</t>
+          </list></t>
+
+        <t>Complications: <list style="symbols">
+            <t>Can cause cache confusion.</t>
+
+            <t>Clients need to query the appropriate DNS server to get the
+            appropriate answer.</t>
+          </list></t>
       </section>
 
       <section title="Lame Delegation Split Horizon">
-	<t>Lame Delegation Split Horizon (or "lame split") refers to a lame delegation on the Internet but a proper delegation on the internal servers.</t>
+        <t>Lame Delegation Split Horizon (or "lame split") refers to a lame
+        delegation on the Internet but a proper delegation on the internal
+        servers.</t>
 
-	<t>Example: On the public Internet, the zone
-	internal.example.com is not delegated at all, or
-	alternatively, the delegation is purposefully defective (e.g.,
-	NS record points to non-existent or non-responding
-	nameserver).  On the private network, that same zone
-	internal.example.com exists and FQDNs within it are
-	resolvable, such as www.internal.example.com which resolves to
-	192.0.2.2.</t>
+        <t>Example: On the public Internet, the zone internal.example.com is
+        not delegated at all, or alternatively, the delegation is purposefully
+        defective (e.g., NS record points to non-existent or non-responding
+        nameserver). On the private network, that same zone
+        internal.example.com exists and FQDNs within it are resolvable, such
+        as www.internal.example.com which resolves to 192.0.2.2.</t>
 
-	<t><list>
-	  <t>Note: Lame Delegation Split Horizon is not in scope for this document.  It is only documented for completeness.</t>
-	</list></t>
+        <t><list>
+            <t>Note: Lame Delegation Split Horizon is not in scope for this
+            document. It is only documented for completeness. Implementations
+            like iCloud Private Relay detect that the domain being used is not
+            a public Internet name and instructs the device to access the
+            domain directly over the local network <xref
+            target="private-relay"></xref>.</t>
+          </list></t>
 
-	<t>Benefits:
-	<list style="symbols">
-	  <t>If the client receives an error when querying the public server, it can query the internal server.  While this exposes internal hostnames to the public server, this eases client configuration burden and can improve overall user satisfaction.</t>
-	</list></t>
-	<t>Complications:
-	<list style="symbols">
-	  <t>In cases where the internal DNS server cannot be queried, URLs referencing hostnames only resolvable by the internal DNS server will not be resolvable and cause application errors.  These errors can confuse users who see they are connected to the network, yet cannot resolve a hostname.</t>
-	  <t>CA-signed certificates cannot be obtained for names that are not resolvable on the Internet <xref target="cabforum"></xref>.</t>
-	</list></t>
+        <t>Benefits: <list style="symbols">
+            <t>If the client receives an error when querying the public
+            server, it can query the internal server. While this exposes
+            internal host names to the public server, this eases client
+            configuration burden and can improve overall user
+            satisfaction.</t>
+          </list></t>
+
+        <t>Complications: <list style="symbols">
+            <t>In cases where the internal DNS server cannot be queried, URLs
+            referencing host names only resolvable by the internal DNS server
+            will not be resolvable and cause application errors. These errors
+            can confuse users who see they are connected to the network, yet
+            cannot resolve a host name.</t>
+
+            <t>CA-signed certificates cannot be obtained for names that are
+            not resolvable on the Internet <xref
+            target="cabforum"></xref>.</t>
+          </list></t>
       </section>
-
 
       <section title="Domain Camping">
-	<t>Domain Camping refers to operating a nameserver which
-	claims to be authoritative for a zone, but actually isn't.
-	For example, a domain called example.com on the Internet and
-	an internal DNS server also claims to be authoritative for
-	example.com, but has no delegation from example.com on the
-	Internet.  Someone might domain camp on a popular domain name
-	providing the ability to monitor queries and modify answers
-	for that domain.</t>
-
+        <t>Domain Camping refers to operating a nameserver which claims to be
+        authoritative for a zone, but actually isn't. For example, a domain
+        called example.com on the Internet and an internal DNS server also
+        claims to be authoritative for example.com, but has no delegation from
+        example.com on the Internet. Someone might domain camp on a popular
+        domain name providing the ability to monitor queries and modify
+        answers for that domain.</t>
       </section>
-
-
-
-
-
-	    
     </section>
 
     <section anchor="split-horizon" title="Overview for Full Split Horizon">
-      <t><xref target="RFC2826"></xref> "does not preclude private networks
-      from operating their own private name spaces" but notes that if private
-      networks "wish to make use of names uniquely defined for the global
-      Internet, they have to fetch that information from the global DNS naming
-      hierarchy".</t>
-
       <t>There are various DNS deployments outside of the global DNS,
       including "split horizon" deployments and DNS usages on private (or
-      virtual private) networks. In a split horizon, an authoritative server
-      gives different responses to queries from the Internet than they do to
-      network-designated DNS servers; while some deployments differentiate
-      internal queries from public queries by the source IP address, the
-      concerns in Section 3.1.1 of <xref target="RFC6950"></xref> relating to
-      trusting source IP addresses apply to such deployments.</t>
+      virtual private) networks. In a Full Split Horizon, an authoritative
+      server gives different responses to queries from the Internet than they
+      do to network-designated DNS servers; while some deployments
+      differentiate internal queries from public queries by the source IP
+      address, the concerns in Section 3.1.1 of <xref target="RFC6950"></xref>
+      relating to trusting source IP addresses apply to such deployments.</t>
 
       <t>When the internal address space range is private <xref
       target="RFC1918"></xref>, this makes it both easier for the server to
       discriminate public from private and harder for public entities to
       impersonate nodes in the private network. The use cases that motivate
-      split-horizon DNS typically involve restricting access to some network
-      services -- intranet resources such as internal web sites, development
-      servers, or directories, for example -- while preserving the ease of use
-      offered by domain names for internal users.</t>
+      Full Split Horizon DNS typically involves restricting access to internal
+      services to the devices attached and authenticated to the network.</t>
 
       <t>A typical use case is an Enterprise network that requires one or more
-      DNS domains to be resolved via network-designated DNS servers. This can
-      be a special domain, such as "corp.example.com" for an enterprise that
-      is publicly known to use "example.com". In this case, the endpoint needs
-      to be informed what the private domain names are and what the IP
-      addresses of the network-designated DNS servers are. An Enterprise can
-      also run a different version of its global domain on its internal
-      network. In that case, the client is instructed to send DNS queries for
-      the enterprise public domain (e.g., "example.com") to the
+      DNS domains to be resolved via network-designated DNS servers. An
+      Enterprise can run a different version of its global domain on its
+      internal network. In that case, the client is instructed to send DNS
+      queries for the enterprise public domain (e.g., "example.com") to the
       network-designated DNS servers. A configuration for this deployment
-      scenario is referred to as a Split DNS configuration. Another use case
-      for split-horizon DNS is Cellular and Fixed-access networks (ISPs)
-      typically offer private domains, including account status/controls, and
-      free education initiatives <xref target="INS"></xref>.</t>
+      scenario is referred to as a Full Split Horizon DNS configuration.
+      Another use case for Full Split Horizon DNS is Cellular and Fixed-access
+      networks (ISPs) typically offer value-added subscriber services,
+      including account status/controls, and free education initiatives <xref
+      target="INS"></xref>.</t>
     </section>
 
     <section anchor="dnsZones" title="Provisioning Domains dnsZones">
-      <t>As discussed in <xref target="split-horizon"></xref>, internal
-      resources in a network tend to have private DNS names. A network can
-      also run a different version of its global domain on its internal
-      network, and require the use of network-designated DNS servers to get
+      <t>As discussed in <xref target="split-horizon"></xref>, a network can
+      run a different version of its global domain on its internal network,
+      and require the use of network-designated DNS servers to get
       resolved.</t>
 
       <t>Provisioning Domains (PvDs) are defined in <xref
@@ -283,11 +287,10 @@
       resolution and proxy configuration. The PvD Key dnsZones is defined in
       <xref target="RFC8801"></xref>. The PvD Key dnsZones adds support for
       DNS domains for which the network claims authority, and which are
-      intended to be resolved using network-designated DNS servers. The
-      private domains in dnsZones are only reachable by devices attached and
-      authenticated to the network. The global domains specified in the
-      dnsZones key have a different version in the internal network. DNS
-      resolution for other domains remains unchanged.</t>
+      intended to be resolved using network-designated DNS servers. The global
+      domains specified in the dnsZones key have a different version in the
+      internal network. DNS resolution for other domains remains
+      unchanged.</t>
 
       <t>For each dnsZones entry, the client can use the network-designated
       DNS servers to resolve the listed domains and its subdomains. Other
@@ -319,79 +322,144 @@
         <t>The client can use the mechanism described in <xref
         target="I-D.ietf-add-dnr"></xref> to discover the network-designated
         resolvers. To determine if the network-designated encrypted resolvers
-        are authoritative over the domains in dnsZones, the client performs
-        the following steps for each domain in dnsZones:</t>
+        are authoritative over the domains in dnsZones, the client can use any
+        one of the mechanisms discussed in <xref target="public"></xref>,
+        <xref target="dnssec"></xref> and <xref target="cert"></xref>.</t>
 
-        <t><list style="numbers">
-            <t>The client sends an NS query for the domain in dnsZones. This
-            query MUST only be sent over encrypted DNS session to a public
-            resolver that is configured independently. A DNSSEC-validating
-            client SHOULD apply the same validation policy to the NS query as
-            it does to other queries. A client that does not validate DNSSEC
-            SHOULD apply the same policy (if any) to the NS query as it does
-            to other queries.</t>
+        <section anchor="public"
+                 title="Authority based on a pre-configured public resolver">
+          <t>The client uses the following steps for each domain in
+          dnsZones:</t>
 
-            <t>The client checks that the NS RRset matches any one of the
-            Authentication Domain Names (ADNs) of the discovered
-            network-designated encrypted DNS resolvers. <list style="letters">
-                <t>If the match fails and no ADN of the discovered
-                network-designated encrypted DNS resolvers is a subdomain of
-                NS RRset, the client determines the network is not
-                authoritative for the indicated domain. It might log an error,
-                reject the network entirely (because the network lied about
-                its authority over a domain) or other action.</t>
+          <t><list style="numbers">
+              <t>The client sends an NS query for the domain in dnsZones. This
+              query must only be sent over encrypted DNS session to a public
+              resolver that is configured independently. A DNSSEC-validating
+              client SHOULD apply the same validation policy to the NS query
+              as it does to other queries. A client that does not validate
+              DNSSEC SHOULD apply the same policy (if any) to the NS query as
+              it does to other queries. It is the choice of a client to either
+              perform full DNSSEC validation of answers or to trust the public
+              resolver to do DNSSEC validation and inspect the AD (Authentic
+              Data) bit in the returned message to determine whether an answer
+              is authentic or not.</t>
 
-                <t>If the match fails but any one of the ADNs of the
-                discovered network-designated encrypted DNS resolvers is a
-                subdomain of NS RRset, the client can then establish a TLS
-                connection to that network-designated resolver. The client
-                follows the mechanism discussed in Section 8 of <xref
-                target="RFC8310"></xref> to authenticate the DNS server
-                certificate using the ADN and checks if at least one of the
-                values in subjectAltName matches NS RRset. If the server
-                certificate validation and match succeeds, the client can
-                subsequently resolve the domains in that subtree using the
-                network-designated resolver. If the server certificate does
-                not validate or match fails, the client can proceed as
-                discussed in step 2 (A).</t>
+              <t>The client checks that the NS RRset matches any one of the
+              Authentication Domain Names (ADNs) of the discovered
+              network-designated encrypted DNS resolvers. <list
+                  style="letters">
+                  <t>If the match fails and no ADN of the discovered
+                  network-designated encrypted DNS resolvers is a subdomain of
+                  NS RRset, the client determines the network is not
+                  authoritative for the indicated domain. It might log an
+                  error, reject the network entirely (because the network lied
+                  about its authority over a domain) or other action.</t>
 
-                <t>If the match succeeds, the client can then establish a TLS
-                connection to that network-designated resolver. The client
-                follows the mechanism discussed in Section 8 of <xref
-                target="RFC8310"></xref> to authenticate the DNS server
-                certificate using the ADN.<list style="symbols">
-                    <t>If the server certificate does not validate and a
-                    secure connection cannot be established to the network
-                    designated resolver, the client can proceed as discussed
-                    in step 2 (A).</t>
+                  <t>If the match fails but any one of the ADNs of the
+                  discovered network-designated encrypted DNS resolvers is a
+                  subdomain of NS RRset, the client can then establish a TLS
+                  connection to that network-designated resolver. The client
+                  follows the mechanism discussed in Section 8 of <xref
+                  target="RFC8310"></xref> to authenticate the DNS server
+                  certificate using the ADN and checks if at least one of the
+                  values in subjectAltName matches NS RRset. If the server
+                  certificate validation and match succeeds, the client can
+                  subsequently resolve the domains in that subtree using the
+                  network-designated resolver. If the server certificate does
+                  not validate or match fails, the client can proceed as
+                  discussed in step 2 (A).</t>
 
-                    <t>If the server certificate validation is successful and
-                    a secure connection is established, the client can
-                    subsequently resolve the domains in that subtree using the
-                    network-designated resolver.</t>
-                  </list></t>
-              </list></t>
+                  <t>If the match succeeds, the client can then establish a
+                  TLS connection to that network-designated resolver. The
+                  client follows the mechanism discussed in Section 8 of <xref
+                  target="RFC8310"></xref> to authenticate the DNS server
+                  certificate using the ADN.<list style="symbols">
+                      <t>If the server certificate does not validate and a
+                      secure connection cannot be established to the network
+                      designated resolver, the client can proceed as discussed
+                      in step 2 (A).</t>
 
-            <t>As an exception to this rule, the client need not perform the
-            above validation for domains reserved for special use <xref
-            target="RFC6761"></xref> or <xref target="RFC6762"></xref> such as
-            ".home.arpa" or ".local".</t>
+                      <t>If the server certificate validation is successful
+                      and a secure connection is established, the client can
+                      subsequently resolve the domains in that subtree using
+                      the network-designated resolver.</t>
+                    </list></t>
+                </list></t>
+            </list></t>
+        </section>
 
-            <t>Authenticated denial of existence using NSEC3 or NSEC records
-            can be used by a client to identify that the domain name does not
-            exist in the global DNS.</t>
-          </list></t>
+        <section anchor="dnssec" title="DNSSEC verification">
+          <t>The proposed mechanism below requires a DNSSEC-validating stub
+          implementation (Section 2 of <xref target="RFC4033"></xref>). The
+          client can either send the queries in recursive or iterative mode
+          but performs signature validation on its own. Note that <xref
+          target="RFC7901"></xref> defines an EDNS0 extension that allows a
+          validating stub implementation to send a single query, requesting a
+          complete validation path along with the regular query answer. The
+          reduction in DNSSEC queries potentially lowers the latency and
+          reduces the need to send multiple queries at once.</t>
 
-        <t>For example, if in a network the private domain names are defined
-        under "internal.corp1.example.com". The dnsZones PvD Key would
-        indicate that "*.internal.corp1.example.com" are private domain names.
-        The client can trigger a NS query of "internal.corp1.example.com" and
-        the NS RRset returns that the nameserver is "ns1.corp2.example.com".
-        The client would then connect to the network-designated encrypted
-        resolver whose name is "ns1.corp2.example.com", authenticate it using
-        server certificate validation in TLS handshake, and use it for
-        resolving the domains in the subtree of
-        "*.internal.corp1.example.com".</t>
+          <t>Clients that validate the DNSSEC signatures can perform the
+          following steps for each domain in dnsZones:</t>
+
+          <t><list style="numbers">
+              <t>The client sends an NS query for the domain in dnsZones. This
+              query is sent to the network-designated resolvers. The response
+              records MUST be validated using DNSSEC as described in <xref
+              target="RFC6698"></xref>.</t>
+
+              <t>The client checks that the NS RRset matches any one of the
+              Authentication Domain Names (ADNs) of the discovered
+              network-designated encrypted DNS resolvers. <list
+                  style="letters">
+                  <t>If the match fails, the client determines the network is
+                  not authoritative for the indicated domain. It might log an
+                  error, reject the network entirely (because the network lied
+                  about its authority over a domain) or other action.</t>
+
+                  <t>If the match succeeds, the client can then establish a
+                  TLS connection to that network-designated resolver. The
+                  client follows the mechanism discussed in Section 8 of <xref
+                  target="RFC8310"></xref> to authenticate the DNS server
+                  certificate using the ADN.<list style="symbols">
+                      <t>If the server certificate does not validate and a
+                      secure connection cannot be established to the network
+                      designated resolver, the client can proceed as discussed
+                      in step 2 (A).</t>
+
+                      <t>If the server certificate validation is successful
+                      and a secure connection is established, the client can
+                      subsequently resolve the domains in that subtree using
+                      the network-designated resolver.</t>
+                    </list></t>
+                </list></t>
+            </list></t>
+
+          <t>Note that the deployment of DNSSEC-validating stub implementation
+          is limited at the time of this writing specification.</t>
+        </section>
+
+        <section anchor="cert" title="Certificate verification">
+          <t>The client uses the mechanism described in <xref
+          target="I-D.ietf-add-dnr"></xref> to discover the ADNs of the
+          network-designated resolvers. The client performs the following
+          steps for each of the ADN:</t>
+
+          <t><list style="numbers">
+              <t>The client establishes a TLS connection to the ADN. The
+              client follows the mechanism discussed in Section 8 of <xref
+              target="RFC8310"></xref> to authenticate the DNS server
+              certificate using the ADN. If the server certificate does not
+              validate, it might log an error, reject the network entirely or
+              other action.</t>
+
+              <t>If the server certificate validation succeeds, the client
+              checks if the domains in dnsZones match the values in the
+              subjectAltName. If the match succeeds, the client can
+              subsequently resolve the matched domains in that subtree using
+              the network-designated resolver.</t>
+            </list></t>
+        </section>
       </section>
     </section>
 
@@ -477,63 +545,63 @@
 
       <figure anchor="poex"
               title="An Example of Split-Horizon DNS Configuration">
-        <artwork><![CDATA[+---------+                   +-------------------+  +------------+ +---------+ +---------+
-| client  |                   | Network           |  | Network    | | Router  | | public  |
-|         |                   | encrypted resolvr |  | PvD server | |         | | resolvr |
-+---------+                   +-------------------+  +------------+ +---------+ +---------+
-     |                                          |         |          |           |
-     | Router Solicitation (1)                  |         |          |           |
-     |-------------------------------------------------------------->|           |
-     |                                          |         |          |           |
-     |       Router Advertisement with DNR hostnames & PvD FQDN (2)  |           |
-     |<--------------------------------------------------------------|           |
-     | -------------------------------------\   |         |          |           |
-     |-| now knows DNR hostnames & PvD FQDN |   |         |          |           |
-     | |------------------------------------|   |         |          |           |
-     |                                          |         |          |           |
-     | TLS connection (3)                       |         |          |           |
-     |----------------------------------------->|         |          |           |
-     | ---------------------------\             |         |          |           |
-     |-| validate TLS certificate |             |         |          |           |
-     | |--------------------------|             |         |          |           |
-     |                                          |         |          |           |
-     | resolve pvd.uk.example.com  (4)          |         |          |           |
-     |----------------------------------------->|         |          |           |
-     |                                          |         |          |           |
-     |                         AAAA records (5) |         |          |           |
-     |<-----------------------------------------|         |          |           |
-     |                                          |         |          |           |
-     | https://pvd.uk.example.com/.well-known/pvd (6)     |          |           |
-     |--------------------------------------------------->|          |           |
-     |                                          |         |          |           |
-     |       200 OK (JSON Additional Information) (7)     |          |           |
-     |<---------------------------------------------------|          |           |
-     | -----------------------\                 |         |          |           |
-     |-| dnsZones=example.com |                 |         |          |           |
-     | |----------------------|                 |         |          |           |
-     |                                          |         |          |           |
-     | TLS connection                           |         |          |           |
-     |-------------------------------------------------------------------------->|
-     | ---------------------------\             |         |          |           |
-     |-| validate TLS certificate |             |         |          |           |
-     | |--------------------------|             |         |          |           |
-     |                                          |         |          |           |
-     | NS? example.com  (8)                     |         |          |           |
-     |-------------------------------------------------------------------------->|
-     |                                          |         |          |           |
-     |                               NS=ns1.example.com, ns2.example.com (9)     |
-     |<--------------------------------------------------------------------------|
-     | -------------------------------\         |         |          |           |
-     |-| ns1.uk.ns1.example.com is    |         |         |          |           |
-     | | subdomain of ns1.example.com |         |         |          |           |
-     | ----------------------\--------|         |         |          |           |
-     |-| finished validation |                  |         |          |           |
-     | |---------------------|                  |         |          |           |
-     |                                          |         |          |           |
-     |  use network-designated resolver         |         |          |           |   
-     |  for example.com (10)                    |         |          |           |
-     |----------------------------------------->|         |          |           |
-     |                                          |         |          |           |
+        <artwork><![CDATA[+---------+                    +---------------------+  +------------+ +---------+ +---------+
+| client  |                    | Network             |  | Network    | | Router  | | public  |
+|         |                    | encrypted resolvr   |  | PvD server | |         | | resolvr |
++---------+                    +---------------------+  +------------+ +---------+ +---------+
+     |                                             |         |          |           |
+     | Router Solicitation (1)                     |         |          |           |
+     |----------------------------------------------------------------->|           |
+     |                                             |         |          |           |
+     |       Router Advertisement with DNR hostnames & PvD FQDN (2)     |           |
+     |<----------------------------------=------------------------------|           |
+     | -------------------------------------\      |         |          |           |
+     |-| now knows DNR hostnames & PvD FQDN |      |         |          |           |
+     | |------------------------------------|      |         |          |           |
+     |                                             |         |          |           |
+     | TLS connection to ns1.uk.ns1.example.com (3)|         |          |           |      
+     |----------------------------------------- -->|         |          |           |
+     | ---------------------------\                |         |          |           |
+     |-| validate TLS certificate |                |         |          |           |
+     | |--------------------------|                |         |          |           |
+     |                                             |         |          |           |
+     | resolve pvd.uk.example.com  (4)             |         |          |           |
+     |-------------------------------------------->|         |          |           |
+     |                                             |         |          |           |
+     |                         AAAA records (5)    |         |          |           |
+     |<--------------------------------------------|         |          |           |
+     |                                             |         |          |           |
+     | https://pvd.uk.example.com/.well-known/pvd (6)        |          |           |
+     |------------------------------------------------------>|          |           |
+     |                                             |         |          |           |
+     |       200 OK (JSON Additional Information) (7)        |          |           |
+     |<------------------------------------------------------|          |           |
+     | -----------------------\                    |         |          |           |
+     |-| dnsZones=example.com |                    |         |          |           |
+     | |----------------------|                    |         |          |           |
+     |                                             |         |          |           |
+     | TLS connection                              |         |          |           |
+     |----------------------------------------------------------------------------->|
+     | ---------------------------\                |         |          |           |
+     |-| validate TLS certificate |                |         |          |           |
+     | |--------------------------|                |         |          |           |
+     |                                             |         |          |           |
+     | NS? example.com  (8)                        |         |          |           |
+     |----------------------------------------------------------------------------->|
+     |                                             |         |          |           |
+     |                               NS=ns1.example.com, ns2.example.com (9)        | 
+     |<-----------------------------------------------------------------------------|
+     | -------------------------------\            |         |          |           |
+     |-| ns1.uk.ns1.example.com is    |            |         |          |           |
+     | | subdomain of ns1.example.com |            |         |          |           |
+     | ----------------------\--------|            |         |          |           |
+     |-| finished validation |                     |         |          |           |
+     | |---------------------|                     |         |          |           |
+     |                                             |         |          |           |
+     |  use network-designated resolver            |         |          |           |   
+     |  for example.com (10)                       |         |          |           |
+     |-------------------------------------------->|         |          |           |
+     |                                             |         |          |           |
 ]]></artwork>
       </figure>
     </section>
@@ -549,15 +617,15 @@
       <t>When the VPN tunnel is IPsec, the encrypted DNS resolver hosted by
       the VPN service provider can be securely discovered by the endpoint
       using the ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types
-      defined in <xref target="I-D.btw-add-ipsecme-ike"></xref>. For
+      defined in <xref target="I-D.ietf-ipsecme-add-ike"></xref>. For
       split-tunnel VPN configurations, the endpoint uses the discovered
       encrypted DNS server to resolve domain names for which the VPN provider
       claims authority. For non-split-tunnel VPN configurations, the endpoint
       uses the discovered encrypted DNS server to resolve both global and
       private domain names. For split-tunnel VPN configurations, the IKE
-      client can use the steps discussed in <xref target="Authority"></xref>
-      to determine if the VPN service provider is authoritative over the
-      INTERNAL_DNS_DOMAIN domains.</t>
+      client can use any one of the mechanisms discussed in <xref
+      target="Authority"></xref> to determine if the VPN service provider is
+      authoritative over the Full Split Horizon DNS domains.</t>
 
       <t>Other VPN tunnel types have similar configuration capabilities, not
       detailed here.</t>
@@ -566,9 +634,9 @@
     <section anchor="Security" title="Security Considerations">
       <t>The content of dnsZones may be passed to another (DNS) program for
       processing. As with any network input, the content SHOULD be considered
-      untrusted and handled accordingly. The client must perform the steps
-      discussed in <xref target="Authority"></xref> to determine if the
-      network-designated encrypted resolvers are authoritative over the
+      untrusted and handled accordingly. The client must perform the
+      mechanisms discussed in <xref target="Authority"></xref> to determine if
+      the network-designated encrypted resolvers are authoritative over the
       domains in dnsZones. If not, the client can take appropriate action like
       disconnecting from the network.</t>
 
@@ -614,10 +682,15 @@
 
       <?rfc include='reference.RFC.8310'?>
 
+      <?rfc include='reference.RFC.6698'?>
     </references>
 
     <references title="Informative References">
       <?rfc include='reference.RFC.8499'?>
+
+      <?rfc include='reference.RFC.4033'?>
+
+      <?rfc include='reference.RFC.7901'?>
 
       <?rfc include='reference.RFC.8598'?>
 
@@ -627,7 +700,7 @@
 
       <?rfc include='reference.I-D.ietf-add-dnr'?>
 
-      <?rfc include='reference.I-D.btw-add-ipsecme-ike'?>
+      <?rfc include='reference.I-D.ietf-ipsecme-add-ike'?>
 
       <?rfc include='reference.I-D.krishnaswamy-dnsop-dnssec-split-view'?>
 
@@ -647,12 +720,12 @@
         </front>
       </reference>
 
-
       <reference anchor="cabforum"
                  target="https://cabforum.org/wp-content/uploads/Guidance-Deprecated-Internal-Names.pdf">
         <front>
-          <title>Internal Server Names and IP Address Requirements for SSL</title>
-	 
+          <title>Internal Server Names and IP Address Requirements for
+          SSL</title>
+
           <author>
             <organization>CA/B Forum</organization>
           </author>
@@ -660,9 +733,21 @@
           <date day="" month="June" year="2012" />
         </front>
       </reference>
-      
 
-      
+      <reference anchor="private-relay"
+                 target="https://www.computerworld.com/article/3645848/how-apples-icloud-private-relay-supports-enterprise-vpn.html">
+        <front>
+          <title>How Apple's iCloud Private Relay supports enterprise
+          VPN</title>
+
+          <author>
+            <organization>CA/B Forum</organization>
+          </author>
+
+          <date day="" month="December" year="2021" />
+        </front>
+      </reference>
+
       <!---->
     </references>
   </back>
