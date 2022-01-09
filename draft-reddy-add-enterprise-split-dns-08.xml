@@ -505,8 +505,8 @@
 
           <t><list style="symbols">
               <t>It requires the use of certificates with multiple dNSName
-              identifiers but CAs and ACME protocol <xref
-              target="RFC8555"></xref> allow it.</t>
+              identifiers which are supported by both CAs and ACME protocol <xref
+              target="RFC8555"></xref>.</t>
             </list></t>
         </section>
       </section>
