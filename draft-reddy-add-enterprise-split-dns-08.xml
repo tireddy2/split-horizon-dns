@@ -386,6 +386,24 @@
                     </list></t>
                 </list></t>
             </list></t>
+
+          <t>The mechanism has the following list of advantages in no
+          particular order:</t>
+
+          <t><list style="symbols">
+              <t>As of the time of writing this specification OS and Browsers
+              have multiple pre-configured public resolvers and any one of the
+              pre-configured public resolver can be used.</t>
+            </list></t>
+
+          <t>The mechanism has the following list of caveats in no particular
+          order:</t>
+
+          <t><list style="symbols">
+              <t>If the attached network blocks access to the public resolver,
+              the client will have to either use a different network or use
+              the network-designated resolver to resolve all domains.</t>
+            </list></t>
         </section>
 
         <section anchor="dnssec" title="DNSSEC verification">
@@ -435,8 +453,21 @@
                 </list></t>
             </list></t>
 
-          <t>Note that the deployment of DNSSEC-validating stub implementation
-          is limited at the time of this writing specification.</t>
+          <t>The mechanism has the following list of advantages in no
+          particular order:</t>
+
+          <t><list style="symbols">
+              <t>This approach does not require the client to access a public
+              resolver to prove the authority over the domains.</t>
+            </list></t>
+
+          <t>The mechanism has the following list of caveats in no particular
+          order:</t>
+
+          <t><list style="symbols">
+              <t>The deployment of DNSSEC-validating stub implementation is
+              limited at the time of this writing specification.</t>
+            </list></t>
         </section>
 
         <section anchor="cert" title="Certificate verification">
@@ -458,6 +489,24 @@
               subjectAltName. If the match succeeds, the client can
               subsequently resolve the matched domains in that subtree using
               the network-designated resolver.</t>
+            </list></t>
+
+          <t>The mechanism has the following list of advantages in no
+          particular order:</t>
+
+          <t><list style="symbols">
+              <t>It does not require the client to access a public resolver or
+              requires the use of DNSSEC-validating stub implementation to
+              prove the authority over the domains. </t>
+            </list></t>
+
+          <t>The mechanism has the following list of caveats in no particular
+          order:</t>
+
+          <t><list style="symbols">
+              <t>It requires the use of certificates with multiple dNSName
+              identifiers but CAs and ACME protocol <xref
+              target="RFC8555"></xref> allow it.</t>
             </list></t>
         </section>
       </section>
@@ -697,6 +746,8 @@
       <?rfc include='reference.RFC.6950' ?>
 
       <?rfc include='reference.RFC.7556' ?>
+
+      <?rfc include='reference.RFC.8555' ?>
 
       <?rfc include='reference.I-D.ietf-add-dnr'?>
 
