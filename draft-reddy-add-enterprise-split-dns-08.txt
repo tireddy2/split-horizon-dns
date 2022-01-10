@@ -5,10 +5,10 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: July 12, 2022                                            Citrix
+Expires: July 13, 2022                                            Citrix
                                                                 K. Smith
                                                                 Vodafone
-                                                         January 8, 2022
+                                                         January 9, 2022
 
 
                     Split-Horizon DNS Configuration
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 12, 2022.
+   This Internet-Draft will expire on July 13, 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy, et al.             Expires July 12, 2022                 [Page 1]
+Reddy, et al.             Expires July 13, 2022                 [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy, et al.             Expires July 12, 2022                 [Page 2]
+Reddy, et al.             Expires July 13, 2022                 [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 12, 2022                 [Page 3]
+Reddy, et al.             Expires July 13, 2022                 [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -221,7 +221,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 12, 2022                 [Page 4]
+Reddy, et al.             Expires July 13, 2022                 [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -277,7 +277,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 12, 2022                 [Page 5]
+Reddy, et al.             Expires July 13, 2022                 [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -333,7 +333,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 12, 2022                 [Page 6]
+Reddy, et al.             Expires July 13, 2022                 [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -389,7 +389,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 12, 2022                 [Page 7]
+Reddy, et al.             Expires July 13, 2022                 [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -445,7 +445,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 12, 2022                 [Page 8]
+Reddy, et al.             Expires July 13, 2022                 [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -501,7 +501,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 12, 2022                 [Page 9]
+Reddy, et al.             Expires July 13, 2022                 [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -520,7 +520,8 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
    order:
 
    o  It requires the use of certificates with multiple dNSName
-      identifiers but CAs and ACME protocol [RFC8555] allow it.
+      identifiers which are supported by both CAs and ACME protocol
+      [RFC8555].
 
 5.  An example of Split-Horizon DNS Configuration
 
@@ -552,15 +553,17 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
    the network, obtain an IPv6 address, and using [I-D.ietf-add-dnr]
    will discover the resolvers "ns1.uk.ns1.example.com" and
    "ns2.uk.ns2.example.com" and their IP addresses.  Using [RFC8801]
-   (which utilizes IPv6 Router Advertisments), the endpoint will also
-   discover the PvD FQDN is "pvd.uk.example.com".
 
 
 
-Reddy, et al.             Expires July 12, 2022                [Page 10]
+
+Reddy, et al.             Expires July 13, 2022                [Page 10]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
+
+   (which utilizes IPv6 Router Advertisments), the endpoint will also
+   discover the PvD FQDN is "pvd.uk.example.com".
 
    Continuing with the UK site as the example, the endpoint performs the
    following steps corresponding with the call flow diagram numbers:
@@ -607,17 +610,17 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
    above.
 
 +---------+                    +---------------------+  +------------+ +---------+ +---------+
-| client  |                    | Network             |  | Network    | | Router  | | public  |
-|         |                    | encrypted resolvr   |  | PvD server | |         | | resolvr |
-+---------+                    +---------------------+  +------------+ +---------+ +---------+
 
 
 
-Reddy, et al.             Expires July 12, 2022                [Page 11]
+Reddy, et al.             Expires July 13, 2022                [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
+| client  |                    | Network             |  | Network    | | Router  | | public  |
+|         |                    | encrypted resolvr   |  | PvD server | |         | | resolvr |
++---------+                    +---------------------+  +------------+ +---------+ +---------+
      |                                             |         |          |           |
      | Router Solicitation (1)                     |         |          |           |
      |----------------------------------------------------------------->|           |
@@ -663,17 +666,17 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
      | -------------------------------\            |         |          |           |
      |-| ns1.uk.ns1.example.com is    |            |         |          |           |
      | | subdomain of ns1.example.com |            |         |          |           |
-     | ----------------------\--------|            |         |          |           |
-     |-| finished validation |                     |         |          |           |
-     | |---------------------|                     |         |          |           |
 
 
 
-Reddy, et al.             Expires July 12, 2022                [Page 12]
+Reddy, et al.             Expires July 13, 2022                [Page 12]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
+     | ----------------------\--------|            |         |          |           |
+     |-| finished validation |                     |         |          |           |
+     | |---------------------|                     |         |          |           |
      |                                             |         |          |           |
      |  use network-designated resolver            |         |          |           |
      |  for example.com (10)                       |         |          |           |
@@ -719,17 +722,16 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
    In order to deploy DNSSEC operationally for split-horizon domains,
    the first three schemes described in
    [I-D.krishnaswamy-dnsop-dnssec-split-view] can be used but not the
-   one discussed in Section 4.1.4.  Alternatively, after validating the
-   network authority over the dnsZones domains Section 4.1, a DNSSEC-
 
 
 
-
-Reddy, et al.             Expires July 12, 2022                [Page 13]
+Reddy, et al.             Expires July 13, 2022                [Page 13]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
+   one discussed in Section 4.1.4.  Alternatively, after validating the
+   network authority over the dnsZones domains Section 4.1, a DNSSEC-
    validating client can reconfigure its stub resolver to disable DNSSEC
    validation for the domains in dnsZones.
 
@@ -775,16 +777,18 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
               DOI 10.17487/RFC6762, February 2013,
               <https://www.rfc-editor.org/info/rfc6762>.
 
-   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
-              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
-              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
 
 
-Reddy, et al.             Expires July 12, 2022                [Page 14]
+
+Reddy, et al.             Expires July 13, 2022                [Page 14]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
    [RFC8310]  Dickinson, S., Gillmor, D., and T. Reddy, "Usage Profiles
               for DNS over TLS and DNS over DTLS", RFC 8310,
@@ -833,11 +837,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-
-
-
-
-Reddy, et al.             Expires July 12, 2022                [Page 15]
+Reddy, et al.             Expires July 13, 2022                [Page 15]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -893,7 +893,7 @@ Authors' Addresses
 
 
 
-Reddy, et al.             Expires July 12, 2022                [Page 16]
+Reddy, et al.             Expires July 13, 2022                [Page 16]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -949,4 +949,4 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 12, 2022                [Page 17]
+Reddy, et al.             Expires July 13, 2022                [Page 17]
