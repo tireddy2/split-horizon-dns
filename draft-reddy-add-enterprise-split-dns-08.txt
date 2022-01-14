@@ -261,8 +261,9 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
    The client resolves the NS record using any resolution method of its
    choice (e.g. querying one of the network-provided resolvers,
    performing iterative resolution locally), and performs full DNSSEC
-   validation locally [RFC6698].  If the result is "Unsigned Zone",
-   clients SHOULD retry using the method in Section 3.1.1.
+   validation locally [RFC6698].  If the result is "Insecure" (Section 5
+   of [RFC4034]), clients SHOULD retry using the method in
+   Section 3.1.1.
 
 4.  An example of Split-Horizon DNS Configuration
 
@@ -273,7 +274,6 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
    To add support for the mechanism described in this document, the
    network and endpoints first need to support [I-D.ietf-add-dnr] and
-   [RFC8801].  Then, for each site, the administrator would add DNS
 
 
 
@@ -282,6 +282,7 @@ Reddy, et al.             Expires July 17, 2022                 [Page 5]
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
+   [RFC8801].  Then, for each site, the administrator would add DNS
    servers named "ns1.example.com" or "ns2.example.com" (the names
    published on the Internet).  Those names would be advertised to the
    endpoints as described in [I-D.ietf-add-dnr].
@@ -329,7 +330,6 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
       information from [I-D.ietf-add-dnr] and [RFC8801] to resolve names
       within dnsZones.
 
-+---------+                 +---------------------+  +------------+ +---------+ +---------+
 
 
 
@@ -338,6 +338,7 @@ Reddy, et al.             Expires July 17, 2022                 [Page 6]
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
++---------+                 +---------------------+  +------------+ +---------+ +---------+
 | client  |                 | Network             |  | Network    | | Router  | | public  |
 |         |                 | encrypted resolvr   |  | PvD server | |         | | resolvr |
 +---------+                 +---------------------+  +------------+ +---------+ +---------+
@@ -385,7 +386,6 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
      |<--------------------------------------------------------------------------|
      | -------------------------------\         |         |          |           |
      |-| both DNR ADNs are authorized |         |         |          |           |
-     | ----------------------\--------|         |         |          |           |
 
 
 
@@ -394,6 +394,7 @@ Reddy, et al.             Expires July 17, 2022                 [Page 7]
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
+     | ----------------------\--------|         |         |          |           |
      |-| finished validation |                  |         |          |           |
      | |---------------------|                  |         |          |           |
      |                                          |         |          |           |
@@ -440,8 +441,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
    This specification does not alter DNSSEC validation behavior.  To
    ensure compatibility with validating clients, network operators MUST
-   ensure that names under the split horizon are correctly signed or
-   place them in an unsigned zone.
+
 
 
 
@@ -449,6 +449,9 @@ Reddy, et al.             Expires July 17, 2022                 [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
+
+   ensure that names under the split horizon are correctly signed or
+   place them in an unsigned zone.
 
 7.  IANA Considerations
 
@@ -479,6 +482,11 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
               Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
               2000, <https://www.rfc-editor.org/info/rfc2826>.
 
+   [RFC4034]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "Resource Records for the DNS Security Extensions",
+              RFC 4034, DOI 10.17487/RFC4034, March 2005,
+              <https://www.rfc-editor.org/info/rfc4034>.
+
    [RFC6698]  Hoffman, P. and J. Schlyter, "The DNS-Based Authentication
               of Named Entities (DANE) Transport Layer Security (TLS)
               Protocol: TLSA", RFC 6698, DOI 10.17487/RFC6698, August
@@ -487,14 +495,6 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
    [RFC6761]  Cheshire, S. and M. Krochmal, "Special-Use Domain Names",
               RFC 6761, DOI 10.17487/RFC6761, February 2013,
               <https://www.rfc-editor.org/info/rfc6761>.
-
-   [RFC6762]  Cheshire, S. and M. Krochmal, "Multicast DNS", RFC 6762,
-              DOI 10.17487/RFC6762, February 2013,
-              <https://www.rfc-editor.org/info/rfc6762>.
-
-   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
-              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
-              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
 
 
@@ -505,6 +505,14 @@ Reddy, et al.             Expires July 17, 2022                 [Page 9]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
+
+   [RFC6762]  Cheshire, S. and M. Krochmal, "Multicast DNS", RFC 6762,
+              DOI 10.17487/RFC6762, February 2013,
+              <https://www.rfc-editor.org/info/rfc6762>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
    [RFC8310]  Dickinson, S., Gillmor, D., and T. Reddy, "Usage Profiles
               for DNS over TLS and DNS over DTLS", RFC 8310,
@@ -546,14 +554,6 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
               Practices", draft-krishnaswamy-dnsop-dnssec-split-view-04
               (work in progress), March 2007.
 
-   [INS]      The Unicode Consortium, "Vodafone Foundation Instant
-              Schools for Sub-Saharan Africa",
-              <https://www.vodafone.com/about/vodafone-foundation/focus-
-              areas/instant-schools>.
-
-
-
-
 
 
 
@@ -561,6 +561,11 @@ Reddy, et al.             Expires July 17, 2022                [Page 10]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
+
+   [INS]      The Unicode Consortium, "Vodafone Foundation Instant
+              Schools for Sub-Saharan Africa",
+              <https://www.vodafone.com/about/vodafone-foundation/focus-
+              areas/instant-schools>.
 
    [private-relay]
               CA/B Forum, "How Apple's iCloud Private Relay supports
@@ -604,11 +609,6 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
               (ACME)", RFC 8555, DOI 10.17487/RFC8555, March 2019,
               <https://www.rfc-editor.org/info/rfc8555>.
 
-   [RFC8598]  Pauly, T. and P. Wouters, "Split DNS Configuration for the
-              Internet Key Exchange Protocol Version 2 (IKEv2)",
-              RFC 8598, DOI 10.17487/RFC8598, May 2019,
-              <https://www.rfc-editor.org/info/rfc8598>.
-
 
 
 
@@ -617,6 +617,11 @@ Reddy, et al.             Expires July 17, 2022                [Page 11]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
+
+   [RFC8598]  Pauly, T. and P. Wouters, "Split DNS Configuration for the
+              Internet Key Exchange Protocol Version 2 (IKEv2)",
+              RFC 8598, DOI 10.17487/RFC8598, May 2019,
+              <https://www.rfc-editor.org/info/rfc8598>.
 
    [RFC8806]  Kumari, W. and P. Hoffman, "Running a Root Server Local to
               a Resolver", RFC 8806, DOI 10.17487/RFC8806, June 2020,
@@ -649,11 +654,6 @@ Authors' Addresses
    UK
 
    Email: kevin.smith@vodafone.com
-
-
-
-
-
 
 
 

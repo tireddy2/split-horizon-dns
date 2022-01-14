@@ -261,8 +261,8 @@
           of its choice (e.g. querying one of the network-provided resolvers,
           performing iterative resolution locally), and performs full DNSSEC
           validation locally <xref target="RFC6698"></xref>.  If the result
-          is "Unsigned Zone", clients SHOULD retry using the method in <xref
-          target="public"/>.</t>
+          is "Insecure" (Section 5 of <xref target="RFC4034"/>), clients SHOULD
+          retry using the method in <xref target="public"/>.</t>
         </section>
       </section>
     </section>
@@ -461,6 +461,8 @@
       <?rfc include='reference.RFC.8310'?>
 
       <?rfc include='reference.RFC.6698'?>
+
+      <?rfc include='reference.RFC.4034'?>
     </references>
 
     <references title="Informative References">
