@@ -190,13 +190,10 @@
         a nameserver claims a zone that does not exist in the global DNS.  This
         is a form of domain camping because it seizes a portion of the parent
         zone without permission.  The use of nonexistent TLDs for local
-        services is a form of NXDOMAIN camping on the root zone.
-        </t>
+        services is a form of NXDOMAIN camping on the root zone.</t>
 
-        <t>Domain camping can be used as an attack vector to impersonate a
-        targeted domain. Any form of domain camping likely violates
-        the IAB's guidance regarding "the Unique DNS Root"
-        <xref target="RFC2826"/>.</t>
+        <t>Any form of domain camping likely violates the IAB's guidance
+        regarding "the Unique DNS Root" <xref target="RFC2826"/>.</t>
       </section>
     </section>
 
@@ -241,11 +238,10 @@
         strategies are described in <xref target="public"/> and <xref
         target="dnssec"/>.</t>
 
-        <t>Note that this confirmation of authority applies only to the specific
-        resolvers whose ADNs appear in each RRSet. If a network offers multiple
-        encrypted resolvers via DNR, each dnsZone entry may be authorized for
-        a distinct subset of the resolvers. If TLS certificate validation
-        fails for the ADN, that resolver MUST NOT be considered authorized.</t>
+        <t>Note that each dnsZones entry is authorized only for the specific
+        resolvers whose ADNs appear in its NS RRSet. If a network offers
+        multiple encrypted resolvers via DNR, each dnsZones entry may be
+        authorized for a distinct subset of the network-provided resolvers.</t>
 
         <section anchor="public"
                  title="Confirmation using a pre-configured public resolver">
@@ -261,8 +257,9 @@
           of its choice (e.g. querying one of the network-provided resolvers,
           performing iterative resolution locally), and performs full DNSSEC
           validation locally <xref target="RFC6698"></xref>.  If the result
-          is "Insecure" (Section 5 of <xref target="RFC4034"/>), clients SHOULD
-          retry using the method in <xref target="public"/>.</t>
+          is "Insecure" (Section 5 of <xref target="RFC4034"/>), the client
+          SHOULD retry using a different method, such as the one in
+          <xref target="public"/>.</t>
         </section>
       </section>
     </section>

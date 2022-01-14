@@ -5,10 +5,10 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: July 17, 2022                                            Citrix
+Expires: July 18, 2022                                            Citrix
                                                                 K. Smith
                                                                 Vodafone
-                                                        January 13, 2022
+                                                        January 14, 2022
 
 
                     Split-Horizon DNS Configuration
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 17, 2022.
+   This Internet-Draft will expire on July 18, 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy, et al.             Expires July 17, 2022                 [Page 1]
+Reddy, et al.             Expires July 18, 2022                 [Page 1]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy, et al.             Expires July 17, 2022                 [Page 2]
+Reddy, et al.             Expires July 18, 2022                 [Page 2]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -165,7 +165,7 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 17, 2022                 [Page 3]
+Reddy, et al.             Expires July 18, 2022                 [Page 3]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -186,9 +186,8 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
    parent zone without permission.  The use of nonexistent TLDs for
    local services is a form of NXDOMAIN camping on the root zone.
 
-   Domain camping can be used as an attack vector to impersonate a
-   targeted domain.  Any form of domain camping likely violates the
-   IAB's guidance regarding "the Unique DNS Root" [RFC2826].
+   Any form of domain camping likely violates the IAB's guidance
+   regarding "the Unique DNS Root" [RFC2826].
 
 3.  Provisioning Domains dnsZones
 
@@ -221,7 +220,8 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
 
-Reddy, et al.             Expires July 17, 2022                 [Page 4]
+
+Reddy, et al.             Expires July 18, 2022                 [Page 4]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
@@ -241,12 +241,10 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
    tampering by the local network.  Suitable tamperproof resolution
    strategies are described in Section 3.1.1 and Section 3.1.2.
 
-   Note that this confirmation of authority applies only to the specific
-   resolvers whose ADNs appear in each RRSet.  If a network offers
-   multiple encrypted resolvers via DNR, each dnsZone entry may be
-   authorized for a distinct subset of the resolvers.  If TLS
-   certificate validation fails for the ADN, that resolver MUST NOT be
-   considered authorized.
+   Note that each dnsZones entry is authorized only for the specific
+   resolvers whose ADNs appear in its NS RRSet.  If a network offers
+   multiple encrypted resolvers via DNR, each dnsZones entry may be
+   authorized for a distinct subset of the network-provided resolvers.
 
 3.1.1.  Confirmation using a pre-configured public resolver
 
@@ -262,8 +260,8 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
    choice (e.g. querying one of the network-provided resolvers,
    performing iterative resolution locally), and performs full DNSSEC
    validation locally [RFC6698].  If the result is "Insecure" (Section 5
-   of [RFC4034]), clients SHOULD retry using the method in
-   Section 3.1.1.
+   of [RFC4034]), the client SHOULD retry using a different method, such
+   as the one in Section 3.1.1.
 
 4.  An example of Split-Horizon DNS Configuration
 
@@ -274,16 +272,16 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
    To add support for the mechanism described in this document, the
    network and endpoints first need to support [I-D.ietf-add-dnr] and
+   [RFC8801].  Then, for each site, the administrator would add DNS
+   servers named "ns1.example.com" or "ns2.example.com" (the names
 
 
 
-Reddy, et al.             Expires July 17, 2022                 [Page 5]
+Reddy, et al.             Expires July 18, 2022                 [Page 5]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
-   [RFC8801].  Then, for each site, the administrator would add DNS
-   servers named "ns1.example.com" or "ns2.example.com" (the names
    published on the Internet).  Those names would be advertised to the
    endpoints as described in [I-D.ietf-add-dnr].
 
@@ -330,16 +328,16 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
       information from [I-D.ietf-add-dnr] and [RFC8801] to resolve names
       within dnsZones.
 
++---------+                 +---------------------+  +------------+ +---------+ +---------+
+| client  |                 | Network             |  | Network    | | Router  | | public  |
 
 
 
-Reddy, et al.             Expires July 17, 2022                 [Page 6]
+Reddy, et al.             Expires July 18, 2022                 [Page 6]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
-+---------+                 +---------------------+  +------------+ +---------+ +---------+
-| client  |                 | Network             |  | Network    | | Router  | | public  |
 |         |                 | encrypted resolvr   |  | PvD server | |         | | resolvr |
 +---------+                 +---------------------+  +------------+ +---------+ +---------+
      |                                          |         |          |           |
@@ -386,16 +384,16 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
      |<--------------------------------------------------------------------------|
      | -------------------------------\         |         |          |           |
      |-| both DNR ADNs are authorized |         |         |          |           |
+     | ----------------------\--------|         |         |          |           |
+     |-| finished validation |                  |         |          |           |
 
 
 
-Reddy, et al.             Expires July 17, 2022                 [Page 7]
+Reddy, et al.             Expires July 18, 2022                 [Page 7]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
 
-     | ----------------------\--------|         |         |          |           |
-     |-| finished validation |                  |         |          |           |
      | |---------------------|                  |         |          |           |
      |                                          |         |          |           |
      |  use network-designated resolver         |         |          |           |
@@ -441,17 +439,16 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
    This specification does not alter DNSSEC validation behavior.  To
    ensure compatibility with validating clients, network operators MUST
+   ensure that names under the split horizon are correctly signed or
+   place them in an unsigned zone.
 
 
 
 
-Reddy, et al.             Expires July 17, 2022                 [Page 8]
+Reddy, et al.             Expires July 18, 2022                 [Page 8]
 
 Internet-Draft       Split-Horizon DNS Configuration        January 2022
 
-
-   ensure that names under the split horizon are correctly signed or
-   place them in an unsigned zone.
 
 7.  IANA Considerations
 
@@ -496,19 +493,18 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
               RFC 6761, DOI 10.17487/RFC6761, February 2013,
               <https://www.rfc-editor.org/info/rfc6761>.
 
-
-
-
-
-
-Reddy, et al.             Expires July 17, 2022                 [Page 9]
-
-Internet-Draft       Split-Horizon DNS Configuration        January 2022
-
-
    [RFC6762]  Cheshire, S. and M. Krochmal, "Multicast DNS", RFC 6762,
               DOI 10.17487/RFC6762, February 2013,
               <https://www.rfc-editor.org/info/rfc6762>.
+
+
+
+
+
+Reddy, et al.             Expires July 18, 2022                 [Page 9]
+
+Internet-Draft       Split-Horizon DNS Configuration        January 2022
+
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -554,18 +550,17 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
               Practices", draft-krishnaswamy-dnsop-dnssec-split-view-04
               (work in progress), March 2007.
 
-
-
-
-Reddy, et al.             Expires July 17, 2022                [Page 10]
-
-Internet-Draft       Split-Horizon DNS Configuration        January 2022
-
-
    [INS]      The Unicode Consortium, "Vodafone Foundation Instant
               Schools for Sub-Saharan Africa",
               <https://www.vodafone.com/about/vodafone-foundation/focus-
               areas/instant-schools>.
+
+
+
+Reddy, et al.             Expires July 18, 2022                [Page 10]
+
+Internet-Draft       Split-Horizon DNS Configuration        January 2022
+
 
    [private-relay]
               CA/B Forum, "How Apple's iCloud Private Relay supports
@@ -609,19 +604,19 @@ Internet-Draft       Split-Horizon DNS Configuration        January 2022
               (ACME)", RFC 8555, DOI 10.17487/RFC8555, March 2019,
               <https://www.rfc-editor.org/info/rfc8555>.
 
-
-
-
-
-Reddy, et al.             Expires July 17, 2022                [Page 11]
-
-Internet-Draft       Split-Horizon DNS Configuration        January 2022
-
-
    [RFC8598]  Pauly, T. and P. Wouters, "Split DNS Configuration for the
               Internet Key Exchange Protocol Version 2 (IKEv2)",
               RFC 8598, DOI 10.17487/RFC8598, May 2019,
               <https://www.rfc-editor.org/info/rfc8598>.
+
+
+
+
+
+Reddy, et al.             Expires July 18, 2022                [Page 11]
+
+Internet-Draft       Split-Horizon DNS Configuration        January 2022
+
 
    [RFC8806]  Kumari, W. and P. Hoffman, "Running a Root Server Local to
               a Resolver", RFC 8806, DOI 10.17487/RFC8806, June 2020,
@@ -669,4 +664,9 @@ Authors' Addresses
 
 
 
-Reddy, et al.             Expires July 17, 2022                [Page 12]
+
+
+
+
+
+Reddy, et al.             Expires July 18, 2022                [Page 12]
