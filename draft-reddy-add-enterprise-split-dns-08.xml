@@ -93,6 +93,14 @@
       </address>
     </author>
 
+    <author fullname="Benjamin Schwartz" initials="B." surname="Schwartz">
+      <organization abbrev="Google">Google LLC</organization>
+
+      <address>
+        <email>bemasc@google.com</email>
+      </address>
+    </author>
+
     <date />
 
     <workgroup>ADD</workgroup>
@@ -430,10 +438,9 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>Thanks to Mohamed Boucadair, Jim Reid, Ben Schwartz, Tommy Pauly,
+      <t>Thanks to Mohamed Boucadair, Jim Reid, Tommy Pauly,
       Paul Vixie, Paul Wouters and Vinny Parla for the discussion and
-      comments. The authors would like to give special thanks to Ben Schwartz
-      for his help.</t>
+      comments.</t>
     </section>
   </middle>
 
