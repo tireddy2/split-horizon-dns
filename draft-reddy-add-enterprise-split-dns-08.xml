@@ -107,12 +107,12 @@
 
     <abstract>
       <t>When split-horizon DNS is deployed by a network, certain domains can
-      be resolved authoritatively by the network-provided DNS resolver.
-      DNS clients that don't always use this resolver might wish to do so
-      for these domains. This specification enables networks to inform DNS
-      clients about domains that are inside the split horizon DNS, and
-      describes how clients can confirm the local resolver's authority over
-      these domains.</t>
+      be resolved authoritatively by the network-provided DNS resolver. DNS
+      clients that don't always use this resolver might wish to do so for
+      these domains. This specification enables networks to inform DNS clients
+      about domains that are inside the split-horizon DNS, and describes how
+      clients can confirm the local resolver's authority over these
+      domains.</t>
     </abstract>
   </front>
 
@@ -122,43 +122,46 @@
       implementation can apply: (1) answer from a local database, (2) query
       the relevant authorities and their parents, or (3) ask a server to query
       those authorities and return the final answer. Implementations that use
-      these behaviors are called "authoritative nameservers", "full resolvers",
-      and "forwarders" (or "stub resolvers"). However, an implementation can
-      also implement a mixture of these behaviors, depending on a local policy,
-      for each query.  We term such an implementation a "hybrid resolver".</t>
+      these behaviors are called "authoritative nameservers", "full
+      resolvers", and "forwarders" (or "stub resolvers"). However, an
+      implementation can also implement a mixture of these behaviors,
+      depending on a local policy, for each query. We term such an
+      implementation a "hybrid resolver".</t>
 
       <t>Most DNS resolvers are hybrids of some kind. For example, stub
       resolvers frequently support a local "hosts file" that preempts query
       forwarding, and most DNS forwarders and full resolvers can also serve
-      responses from a local zone file.  Other standardized hybrid resolution
-      behaviors include Local Root <xref target="RFC8806"/>, mDNS <xref
-      target="RFC6762"/>, and NXDOMAIN synthesis for .onion <xref
-      target="RFC7686"/>.</t>
+      responses from a local zone file. Other standardized hybrid resolution
+      behaviors include Local Root <xref target="RFC8806"></xref>, mDNS <xref
+      target="RFC6762"></xref>, and NXDOMAIN synthesis for .onion <xref
+      target="RFC7686"></xref>.</t>
 
       <t>In many network environments, the network offers clients a DNS server
-      (e.g. in DHCP OFFER, IPv6 Router Advertisement). Although this server is
-      formally specified as a recursive resolver (e.g. Section 5.1 of
-      <xref target="RFC6106"/>), some networks provide a hybrid resolver instead.
-      If this resolver acts as an authoritative server for some names,
-      we say that the network has "split horizon DNS", because those names
-      resolve in this way only from inside the network.</t>
+      (e.g. DHCP OFFER, IPv6 Router Advertisement). Although this server is
+      formally specified as a recursive resolver (e.g. Section 5.1 of <xref
+      target="RFC6106"></xref>), some networks provide a hybrid resolver
+      instead. If this resolver acts as an authoritative server for some
+      names, we say that the network has "split-horizon DNS", because those
+      names resolve in this way only from inside the network.</t>
 
       <t>Network clients that use pure stub resolution, sending all queries to
       the network-provided resolver, will always receive the split-horizon
       results. Conversely, clients that send all queries to a different
-      resolver or implement pure full resolution locally will never receive them.
-      Clients with either pure resolution behavior are out of scope for this
-      specification. Instead, this specification enables hybrid clients to
-      access split-horizon results from a network-provided hybrid resolver,
-      while using a different resolution method for some or all other names.</t>
+      resolver or implement pure full resolution locally will never receive
+      them. Clients with either pure resolution behavior are out of scope for
+      this specification. Instead, this specification enables hybrid clients
+      to access split-horizon results from a network-provided hybrid resolver,
+      while using a different resolution method for some or all other
+      names.</t>
 
       <t>To achieve the required security properties, clients must be able to
       authenticate the DNS servers provided by the network, for example using
-      the techniques proposed in <xref target="I-D.ietf-add-dnr"></xref> and <xref
-      target="I-D.ietf-add-ddr"></xref>, and prove that they are authorized to
-      serve the offered split-horizon names. As a result, use of this
-      specification is limited to servers that support authenticated encryption
-      and split-horizon names that are properly rooted in the global DNS.</t>
+      the techniques proposed in <xref target="I-D.ietf-add-dnr"></xref> and
+      <xref target="I-D.ietf-add-ddr"></xref>, and prove that they are
+      authorized to serve the offered split-horizon DNS names. As a result,
+      use of this specification is limited to servers that support
+      authenticated encryption and split-horizon DNS names that are properly
+      rooted in the global DNS.</t>
     </section>
 
     <section anchor="notation" title="Terminology">
@@ -179,10 +182,11 @@
       defined.</t>
 
       <section title="Authorized Split Horizon">
-        <t>A split horizon configuration for some name is considered "authorized"
-        if any parent of that name has given the local network permission to
-        serve its own responses for that name. Such authorizations generally
-        extend to the entire subtree of names below the authorization point.</t>
+        <t>A split horizon configuration for some name is considered
+        "authorized" if any parent of that name has given the local network
+        permission to serve its own responses for that name. Such
+        authorizations generally extend to the entire subtree of names below
+        the authorization point.</t>
       </section>
 
       <section title="Domain Camping">
@@ -194,14 +198,14 @@
         domain name providing the ability to monitor queries and modify
         answers for that domain.</t>
 
-        <t>A common variation on domain camping is "NXDOMAIN camping", in which
-        a nameserver claims a zone that does not exist in the global DNS.  This
-        is a form of domain camping because it seizes a portion of the parent
-        zone without permission.  The use of nonexistent TLDs for local
-        services is a form of NXDOMAIN camping on the root zone.</t>
+        <t>A common variation on domain camping is "NXDOMAIN camping", in
+        which a nameserver claims a zone that does not exist in the global
+        DNS. This is a form of domain camping because it seizes a portion of
+        the parent zone without permission. The use of nonexistent TLDs for
+        local services is a form of NXDOMAIN camping on the root zone.</t>
 
         <t>Any form of domain camping likely violates the IAB's guidance
-        regarding "the Unique DNS Root" <xref target="RFC2826"/>.</t>
+        regarding "the Unique DNS Root" <xref target="RFC2826"></xref>.</t>
       </section>
     </section>
 
@@ -210,14 +214,14 @@
       target="RFC7556"></xref> as sets of network configuration information
       that clients can use to access networks, including rules for DNS
       resolution and proxy configuration. The PvD Key dnsZones is defined in
-      <xref target="RFC8801"></xref>. The PvD Key dnsZones notifies clients
-      of names for which one of the network-provided resolvers is authoritative.
+      <xref target="RFC8801"></xref>. The PvD Key dnsZones notifies clients of
+      names for which one of the network-provided resolvers is authoritative.
       Attempting to resolve these names via another resolver might fail or
       return results that are not correct for this network.</t>
 
-      <t>Each dnsZones entry indicates a claim of authority over a domain
-      and its subdomains. For example, if the dnsZones entry is
-      "example.test", this covers "example.test", "www.example.test", and
+      <t>Each dnsZones entry indicates a claim of authority over a domain and
+      its subdomains. For example, if the dnsZones entry is "example.test",
+      this covers "example.test", "www.example.test", and
       "mail.eng.example.test", but not "otherexample.test" or
       "example.test.net".</t>
 
@@ -231,25 +235,28 @@
       object SHOULD include the "dnsZones" key to define the DNS domains for
       which the network claims authority.</t>
 
-      <section anchor="Authority" title="Confirming Authority over the Domains">
+      <section anchor="Authority"
+               title="Confirming Authority over the Domains">
         <t>To comply with <xref target="RFC2826"></xref>, each dnsZones entry
         must be authorized in the global DNS hierarchy. To prevent domain
-        camping, clients SHOULD confirm this authorization before making use of
-        the entry.</t>
-        
-        <t>To enable confirmation, the client MUST discover and validate the Authentication Domain Names (ADNs) of the network-designated resolvers
-        using a method such as DNR <xref target="I-D.ietf-add-dnr"/>. The
-        client MUST also perform an NS query for each dnsZones entry and
-        confirm that at least one of the ADNs appears in each NS RRSet.  This
+        camping, clients SHOULD confirm this authorization before making use
+        of the entry.</t>
+
+        <t>To enable confirmation, the client MUST discover and validate the
+        Authentication Domain Names (ADNs) of the network-designated resolvers
+        using a method such as DNR <xref target="I-D.ietf-add-dnr"></xref>.
+        The client MUST also perform an NS query for each dnsZones entry and
+        confirm that at least one of the ADNs appears in each NS RRSet. This
         NS query SHOULD be conducted in a manner that is not vulnerable to
         tampering by the local network. Suitable tamperproof resolution
-        strategies are described in <xref target="public"/> and <xref
-        target="dnssec"/>.</t>
+        strategies are described in <xref target="public"></xref> and <xref
+        target="dnssec"></xref>.</t>
 
         <t>Note that each dnsZones entry is authorized only for the specific
         resolvers whose ADNs appear in its NS RRSet. If a network offers
         multiple encrypted resolvers via DNR, each dnsZones entry may be
-        authorized for a distinct subset of the network-provided resolvers.</t>
+        authorized for a distinct subset of the network-provided
+        resolvers.</t>
 
         <section anchor="public"
                  title="Confirmation using a pre-configured public resolver">
@@ -261,13 +268,13 @@
         </section>
 
         <section anchor="dnssec" title="Confirmation using DNSSEC">
-          <t>The client resolves the NS record using any resolution method
-          of its choice (e.g. querying one of the network-provided resolvers,
+          <t>The client resolves the NS record using any resolution method of
+          its choice (e.g. querying one of the network-provided resolvers,
           performing iterative resolution locally), and performs full DNSSEC
-          validation locally <xref target="RFC6698"></xref>.  If the result
-          is "Insecure" (Section 5 of <xref target="RFC4034"/>), the client
-          SHOULD retry using a different method, such as the one in
-          <xref target="public"/>.</t>
+          validation locally <xref target="RFC6698"></xref>. If the result is
+          "Insecure" (Section 5 of <xref target="RFC4034"></xref>), the client
+          SHOULD retry using a different method, such as the one in <xref
+          target="public"></xref>.</t>
         </section>
       </section>
     </section>
@@ -282,28 +289,28 @@
       network and endpoints first need to support <xref
       target="I-D.ietf-add-dnr"></xref> and <xref target="RFC8801"></xref>.
       Then, for each site, the administrator would add DNS servers named
-      "ns1.example.com" or "ns2.example.com" (the names published on
-      the Internet). Those names would be advertised to the endpoints as
-      described in <xref target="I-D.ietf-add-dnr"></xref>.</t>
+      "ns1.example.com" or "ns2.example.com" (the names published on the
+      Internet). Those names would be advertised to the endpoints as described
+      in <xref target="I-D.ietf-add-dnr"></xref>.</t>
 
       <t>The endpoints compliant with this specification can then determine
       the network's internal nameservers are owned and managed by the same
       entity that has published the NS records on the Internet as shown in
-      <xref target="poex"/>:</t>
+      <xref target="poex"></xref>:</t>
 
       <t><list style="hanging">
           <t hangText="Steps 1-2:">The client joins the network, obtains an IP
           address, and discovers the resolvers "ns1.example.com" and
-          "ns2.example.com" and their IP addresses using DNR
-          <xref target="I-D.ietf-add-dnr"></xref>. Using <xref
-          target="RFC8801"></xref>, the client also discovers the PvD
-          FQDN is "pvd.example.com".</t>
+          "ns2.example.com" and their IP addresses using DNR <xref
+          target="I-D.ietf-add-dnr"></xref>. Using <xref
+          target="RFC8801"></xref>, the client also discovers the PvD FQDN is
+          "pvd.example.com".</t>
 
           <t hangText="Steps 3-7:">The client establishes an encrypted DNS
-          connection with "ns1.example.com", validates its TLS
-          certificate, and queries it for "pvd.example.com" to retrieve the
-          PvD JSON object. Note that <xref target="RFC8801"></xref> in Section
-          4.1 mandates the PvD FQDN MUST be resolved using the DNS servers
+          connection with "ns1.example.com", validates its TLS certificate,
+          and queries it for "pvd.example.com" to retrieve the PvD JSON
+          object. Note that <xref target="RFC8801"></xref> in Section 4.1
+          mandates the PvD FQDN MUST be resolved using the DNS servers
           indicated by the associated PvD. The PvD contains:<figure>
               <artwork><![CDATA[ {
     "identifier": "pvd.example.com",   
@@ -319,8 +326,8 @@
           for the domains in dnsZones. The NS lookup for "example.com" will
           return "ns1.example.com" and "ns2.example.com".</t>
 
-          <t hangText="Step 10:">As the network-provided nameservers are
-          the same as the names retrieved from the public resolver and the
+          <t hangText="Step 10:">As the network-provided nameservers are the
+          same as the names retrieved from the public resolver and the
           network-designated resolver's certificate includes at least one of
           the names retrieved from the public resolver, the client has
           finished validation that the nameservers signaled in <xref
@@ -427,10 +434,10 @@
       domains in dnsZones. If they are not, the client SHOULD ignore those
       dnsZones.</t>
 
-      <t>This specification does not alter DNSSEC validation behavior. To
+      <t>This specification does not alter DNSSEC validation behaviour. To
       ensure compatibility with validating clients, network operators MUST
-      ensure that names under the split horizon are correctly signed or
-      place them in an unsigned zone.</t>
+      ensure that names under the split horizon are correctly signed or place
+      them in an unsigned zone.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
@@ -438,9 +445,8 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>Thanks to Mohamed Boucadair, Jim Reid, Tommy Pauly,
-      Paul Vixie, Paul Wouters and Vinny Parla for the discussion and
-      comments.</t>
+      <t>Thanks to Mohamed Boucadair, Jim Reid, Tommy Pauly, Paul Vixie, Paul
+      Wouters and Vinny Parla for the discussion and comments.</t>
     </section>
   </middle>
 
