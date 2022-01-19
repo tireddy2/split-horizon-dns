@@ -239,15 +239,15 @@
                title="Confirming Authority over the Domains">
         <t>To comply with <xref target="RFC2826"></xref>, each dnsZones entry
         must be authorized in the global DNS hierarchy. To prevent domain
-        camping, clients SHOULD confirm this authorization before making use
+        camping, clients must confirm this authorization before making use
         of the entry.</t>
 
-        <t>To enable confirmation, the client MUST discover and validate the
+        <t>To enable confirmation, the client must discover and validate the
         Authentication Domain Names (ADNs) of the network-designated resolvers
         using a method such as DNR <xref target="I-D.ietf-add-dnr"></xref>.
-        The client MUST also perform an NS query for each dnsZones entry and
+        The client must also perform an NS query for each dnsZones entry and
         confirm that at least one of the ADNs appears in each NS RRSet. This
-        NS query SHOULD be conducted in a manner that is not vulnerable to
+        NS query must be conducted in a manner that is not vulnerable to
         tampering by the local network. Suitable tamperproof resolution
         strategies are described in <xref target="public"></xref> and <xref
         target="dnssec"></xref>.</t>
@@ -264,17 +264,26 @@
           pre-configured resolver that is external to the network, over a
           secure transport. Clients SHOULD apply whatever acceptance rules
           they would otherwise apply when using this resolver (e.g. checking
-          the AD bit, revalidating DNSSEC).</t>
+          the AD bit, validating RRSIGs).</t>
         </section>
 
         <section anchor="dnssec" title="Confirmation using DNSSEC">
           <t>The client resolves the NS record using any resolution method of
           its choice (e.g. querying one of the network-provided resolvers,
           performing iterative resolution locally), and performs full DNSSEC
-          validation locally <xref target="RFC6698"></xref>. If the result is
-          "Insecure" (Section 5 of <xref target="RFC4034"></xref>), the client
-          SHOULD retry using a different method, such as the one in <xref
-          target="public"></xref>.</t>
+          validation locally <xref target="RFC6698"></xref>.  The result is
+          processed based on its DNSSEC validation state (Section 4.3 of
+          <xref target="RFC4035"/>):
+          <list style="symbols">
+            <t>"Secure": the NS record is used for confirmation.</t>
+            <t>"Bogus" or "Indeterminate": the record is rejected and
+              confirmation is considered to have failed.</t>
+            <t>"Insecure": the client SHOULD retry the confirmation process
+              using a different method, such as the one in
+              <xref target="public"/>, to ensure compatibility with unsigned
+              names.</t>
+            </list>
+          </t>
         </section>
       </section>
     </section>
@@ -472,7 +481,7 @@
 
       <?rfc include='reference.RFC.6698'?>
 
-      <?rfc include='reference.RFC.4034'?>
+      <?rfc include='reference.RFC.4035'?>
     </references>
 
     <references title="Informative References">
