@@ -239,8 +239,8 @@
                title="Confirming Authority over the Domains">
         <t>To comply with <xref target="RFC2826"></xref>, each dnsZones entry
         must be authorized in the global DNS hierarchy. To prevent domain
-        camping, clients must confirm this authorization before making use
-        of the entry.</t>
+        camping, clients must confirm this authorization before making use of
+        the entry.</t>
 
         <t>To enable confirmation, the client must discover and validate the
         Authentication Domain Names (ADNs) of the network-designated resolvers
@@ -271,19 +271,19 @@
           <t>The client resolves the NS record using any resolution method of
           its choice (e.g. querying one of the network-provided resolvers,
           performing iterative resolution locally), and performs full DNSSEC
-          validation locally <xref target="RFC6698"></xref>.  The result is
-          processed based on its DNSSEC validation state (Section 4.3 of
-          <xref target="RFC4035"/>):
-          <list style="symbols">
-            <t>"Secure": the NS record is used for confirmation.</t>
-            <t>"Bogus" or "Indeterminate": the record is rejected and
+          validation locally <xref target="RFC6698"></xref>. The result is
+          processed based on its DNSSEC validation state (Section 4.3 of <xref
+          target="RFC4035"></xref>): <list style="symbols">
+              <t>"Secure": the NS record is used for confirmation.</t>
+
+              <t>"Bogus" or "Indeterminate": the record is rejected and
               confirmation is considered to have failed.</t>
-            <t>"Insecure": the client SHOULD retry the confirmation process
-              using a different method, such as the one in
-              <xref target="public"/>, to ensure compatibility with unsigned
+
+              <t>"Insecure": the client SHOULD retry the confirmation process
+              using a different method, such as the one in <xref
+              target="public"></xref>, to ensure compatibility with unsigned
               names.</t>
-            </list>
-          </t>
+            </list></t>
         </section>
       </section>
     </section>
@@ -440,7 +440,7 @@
       untrusted and handled accordingly. The client must perform the
       mechanisms discussed in <xref target="Authority"></xref> to determine if
       the network-designated encrypted resolvers are authoritative over the
-      domains in dnsZones. If they are not, the client SHOULD ignore those
+      domains in dnsZones. If they are not, the client must ignore those
       dnsZones.</t>
 
       <t>This specification does not alter DNSSEC validation behaviour. To
