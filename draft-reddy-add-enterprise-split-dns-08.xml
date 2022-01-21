@@ -471,13 +471,7 @@
 
       <?rfc include='reference.RFC.2826'?>
 
-      <?rfc include='reference.RFC.1918'?>
-
-      <?rfc include='reference.RFC.6761'?>
-
       <?rfc include='reference.RFC.6762'?>
-
-      <?rfc include='reference.RFC.8310'?>
 
       <?rfc include='reference.RFC.6698'?>
 
@@ -487,17 +481,9 @@
     <references title="Informative References">
       <?rfc include='reference.RFC.8499'?>
 
-      <?rfc include='reference.RFC.4033'?>
-
-      <?rfc include='reference.RFC.7901'?>
-
       <?rfc include='reference.RFC.8598'?>
 
-      <?rfc include='reference.RFC.6950' ?>
-
       <?rfc include='reference.RFC.7556' ?>
-
-      <?rfc include='reference.RFC.8555' ?>
 
       <?rfc include='reference.RFC.7686' ?>
 
@@ -509,51 +495,7 @@
 
       <?rfc include='reference.I-D.ietf-ipsecme-add-ike'?>
 
-      <?rfc include='reference.I-D.krishnaswamy-dnsop-dnssec-split-view'?>
-
       <?rfc include='reference.I-D.ietf-add-ddr' ?>
-
-      <reference anchor="INS"
-                 target="https://www.vodafone.com/about/vodafone-foundation/focus-areas/instant-schools">
-        <front>
-          <title>Vodafone Foundation Instant Schools for Sub-Saharan
-          Africa</title>
-
-          <author>
-            <organization>The Unicode Consortium</organization>
-          </author>
-
-          <date day="" month="" year="" />
-        </front>
-      </reference>
-
-      <reference anchor="cabforum"
-                 target="https://cabforum.org/wp-content/uploads/Guidance-Deprecated-Internal-Names.pdf">
-        <front>
-          <title>Internal Server Names and IP Address Requirements for
-          SSL</title>
-
-          <author>
-            <organization>CA/B Forum</organization>
-          </author>
-
-          <date day="" month="June" year="2012" />
-        </front>
-      </reference>
-
-      <reference anchor="private-relay"
-                 target="https://www.computerworld.com/article/3645848/how-apples-icloud-private-relay-supports-enterprise-vpn.html">
-        <front>
-          <title>How Apple's iCloud Private Relay supports enterprise
-          VPN</title>
-
-          <author>
-            <organization>CA/B Forum</organization>
-          </author>
-
-          <date day="" month="December" year="2021" />
-        </front>
-      </reference>
 
       <!---->
     </references>
