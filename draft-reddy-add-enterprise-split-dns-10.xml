@@ -275,10 +275,10 @@
 
       <section anchor="validating"
                title="Validating Claims of DNS Authority">
-        <t>The client validates each of the learned DNS claims learned above
+        <t>The client validates each of the learned DNS claim of authority learned above
 	using a public resolver or DNSSEC.</t>
 	
-	<t>Each learned DNS claim is authorized only for the specific
+	<t>Each learned DNS claim of authority is authorized only for the specific
         resolvers whose names appear in its NS RRSet. If a network offers
         multiple encrypted resolvers (for example via DNR or via host
 	configuration), each DNS zone entry may be authorized for distinct

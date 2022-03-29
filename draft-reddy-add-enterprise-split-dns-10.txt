@@ -5,12 +5,12 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: September 29, 2022                                       Citrix
+Expires: September 30, 2022                                       Citrix
                                                                 K. Smith
                                                                 Vodafone
                                                              B. Schwartz
                                                                   Google
-                                                          March 28, 2022
+                                                          March 29, 2022
 
 
                    Validating Claims of DNS Authority
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on September 29, 2022.
+   This Internet-Draft will expire on September 30, 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy, et al.          Expires September 29, 2022               [Page 1]
+Reddy, et al.          Expires September 30, 2022               [Page 1]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy, et al.          Expires September 29, 2022               [Page 2]
+Reddy, et al.          Expires September 30, 2022               [Page 2]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -165,7 +165,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022               [Page 3]
+Reddy, et al.          Expires September 30, 2022               [Page 3]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -221,7 +221,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022               [Page 4]
+Reddy, et al.          Expires September 30, 2022               [Page 4]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -269,22 +269,22 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 5.  Validating Claims of DNS Authority
 
-   The client validates each of the learned DNS claims learned above
-   using a public resolver or DNSSEC.
+   The client validates each of the learned DNS claim of authority
+   learned above using a public resolver or DNSSEC.
 
-   Each learned DNS claim is authorized only for the specific resolvers
-   whose names appear in its NS RRSet.  If a network offers multiple
+   Each learned DNS claim of authority is authorized only for the
+   specific resolvers whose names appear in its NS RRSet.  If a network
 
 
 
-Reddy, et al.          Expires September 29, 2022               [Page 5]
+Reddy, et al.          Expires September 30, 2022               [Page 5]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
-   encrypted resolvers (for example via DNR or via host configuration),
-   each DNS zone entry may be authorized for distinct subset(s) of the
-   network-provided resolvers.
+   offers multiple encrypted resolvers (for example via DNR or via host
+   configuration), each DNS zone entry may be authorized for distinct
+   subset(s) of the network-provided resolvers.
 
    A zone is termed a "Validated Split-Horizon zone" after successful
    validation by a public resolver or by DNSSEC.
@@ -333,7 +333,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022               [Page 6]
+Reddy, et al.          Expires September 30, 2022               [Page 6]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -389,7 +389,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022               [Page 7]
+Reddy, et al.          Expires September 30, 2022               [Page 7]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -445,7 +445,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022               [Page 8]
+Reddy, et al.          Expires September 30, 2022               [Page 8]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -501,7 +501,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022               [Page 9]
+Reddy, et al.          Expires September 30, 2022               [Page 9]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -557,7 +557,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022              [Page 10]
+Reddy, et al.          Expires September 30, 2022              [Page 10]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -613,7 +613,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022              [Page 11]
+Reddy, et al.          Expires September 30, 2022              [Page 11]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -669,7 +669,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022              [Page 12]
+Reddy, et al.          Expires September 30, 2022              [Page 12]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -725,7 +725,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 29, 2022              [Page 13]
+Reddy, et al.          Expires September 30, 2022              [Page 13]
 
 Internet-Draft     Validating Claims of DNS Authority         March 2022
 
@@ -781,4 +781,4 @@ Authors' Addresses
 
 
 
-Reddy, et al.          Expires September 29, 2022              [Page 14]
+Reddy, et al.          Expires September 30, 2022              [Page 14]
