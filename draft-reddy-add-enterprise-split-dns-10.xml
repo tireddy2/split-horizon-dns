@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+     which is available here: http://xml.resource.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+     There has to be one entity for each item to be referenced. 
+     An alternate method (rfc include) is described in the references. -->
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs), 
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space 
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc category="std" docName="draft-reddy-add-enterprise-split-dns-10"
+     ipr="trust200902">
+  <front>
+    <title abbrev="Validating Claims of DNS Authority">Validating Claims of DNS Authority</title>
+    
+    <author fullname="Tirumaleswar Reddy" initials="T." surname="Reddy">
+      <organization>Akamai</organization>
+
+      <address>
+        <postal>
+          <street>Embassy Golf Link Business Park</street>
+
+          <city>Bangalore</city>
+
+          <region>Karnataka</region>
+
+          <code>560071</code>
+
+          <country>India</country>
+        </postal>
+
+        <email>kondtir@gmail.com</email>
+      </address>
+    </author>
+
+    <author fullname="Dan Wing" initials="D." surname="Wing">
+      <organization abbrev="Citrix">Citrix Systems, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>4988 Great America Pkwy</street>
+
+          <city>Santa Clara</city>
+
+          <region>CA</region>
+
+          <code>95054</code>
+
+          <country>USA</country>
+        </postal>
+
+        <email>danwing@gmail.com</email>
+      </address>
+    </author>
+
+    <author fullname="Kevin Smith" initials="K." surname="Smith">
+      <organization abbrev="Vodafone">Vodafone Group</organization>
+
+      <address>
+        <postal>
+          <street>One Kingdom Street</street>
+
+          <city>London</city>
+
+          <country>UK</country>
+        </postal>
+
+        <email>kevin.smith@vodafone.com</email>
+      </address>
+    </author>
+
+    <author fullname="Benjamin Schwartz" initials="B." surname="Schwartz">
+      <organization abbrev="Google">Google LLC</organization>
+
+      <address>
+        <email>bemasc@google.com</email>
+      </address>
+    </author>
+
+    <date />
+
+    <workgroup>ADD</workgroup>
+
+    <abstract>
+      <t>When split-horizon DNS is deployed by a network, certain domains can
+      be resolved authoritatively by the network-provided DNS resolver. DNS
+      clients that don't always use this resolver might wish to do so for
+      these domains. This specification describes how clients
+      can confirm the local resolver's authority over these 
+      domains.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>To resolve a DNS query, there are three essential behaviors that an
+      implementation can apply: (1) answer from a local database, (2) query
+      the relevant authorities and their parents, or (3) ask a server to query
+      those authorities and return the final answer. Implementations that use
+      these behaviors are called "authoritative nameservers", "full
+      resolvers", and "forwarders" (or "stub resolvers"). However, an
+      implementation can also implement a mixture of these behaviors,
+      depending on a local policy, for each query. We term such an
+      implementation a "hybrid resolver".</t>
+
+      <t>Most DNS resolvers are hybrids of some kind. For example, stub
+      resolvers frequently support a local "hosts file" that preempts query
+      forwarding, and most DNS forwarders and full resolvers can also serve
+      responses from a local zone file. Other standardized hybrid resolution
+      behaviors include Local Root <xref target="RFC8806"></xref>, mDNS <xref
+      target="RFC6762"></xref>, and NXDOMAIN synthesis for .onion <xref
+      target="RFC7686"></xref>.</t>
+
+      <t>In many network environments, the network offers clients a DNS server
+      (e.g. DHCP OFFER, IPv6 Router Advertisement). Although this server is
+      formally specified as a recursive resolver (e.g. Section 5.1 of <xref
+      target="RFC6106"></xref>), some networks provide a hybrid resolver
+      instead. If this resolver acts as an authoritative server for some
+      names, we say that the network has "split-horizon DNS", because those
+      names resolve in this way only from inside the network.</t>
+
+      <t>Network clients that use pure stub resolution, sending all queries to
+      the network-provided resolver, will always receive the split-horizon
+      results. Conversely, clients that send all queries to a different
+      resolver or implement pure full resolution locally will never receive
+      them. Clients with either pure resolution behavior are out of scope for
+      this specification. Instead, this specification enables hybrid clients
+      to access split-horizon results from a network-provided hybrid resolver,
+      while using a different resolution method for some or all other
+      names.</t>
+
+      <t>To achieve the required security properties, clients must be able to
+      authenticate the DNS servers provided by the network, for example using
+      the techniques proposed in <xref target="I-D.ietf-add-dnr"></xref> and
+      <xref target="I-D.ietf-add-ddr"></xref>, and prove that they are
+      authorized to serve the offered split-horizon DNS names. As a result,
+      use of this specification is limited to servers that support
+      authenticated encryption and split-horizon DNS names that are properly
+      rooted in the global DNS.</t>
+    </section>
+
+    <section anchor="notation" title="Terminology">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+      "OPTIONAL" in this document are to be interpreted as described in BCP 14
+      <xref target="RFC2119"></xref><xref target="RFC8174"></xref> when, and
+      only when, they appear in all capitals, as shown here.</t>
+
+      <t>This document makes use of the terms defined in <xref
+      target="RFC8499"></xref>. The term "Global DNS" is defined in
+      <xref target="RFC8499"></xref>.</t>
+
+      <t>'Encrypted DNS' refers to a DNS protocol that provides an encrypted
+      channel between a DNS client and server (e.g., DoT, DoH, or DoQ).</t>
+
+      <t>The terms 'Validated Split-Horizon' and 'Domain Camping' are also
+      defined.</t>
+
+      <section title="Validated Split-Horizon">
+        <t>A split horizon configuration for some name is considered
+        "validated" if any parent of that name has given the local network
+        permission to serve its own responses for that name. Such
+        validation generally extend to the entire subtree of names below
+        the authorization point.</t>
+      </section>
+
+      <section title="Domain Camping">
+        <t>Domain Camping refers to operating a nameserver which claims to be
+        authoritative for a zone, but actually isn't. For example, a domain
+        called example.com on the Internet and an internal DNS server also
+        claims to be authoritative for example.com, but has no delegation from
+        example.com on the Internet. Someone might domain camp on a popular
+        domain name providing the ability to monitor queries and modify
+        answers for that domain.</t>
+
+        <t>A common variation on domain camping is "NXDOMAIN camping", in
+        which a nameserver claims a zone that does not exist in the global
+        DNS. This is a form of domain camping because it seizes a portion of
+        the parent zone without permission. The use of nonexistent TLDs for
+        local services is a form of NXDOMAIN camping on the root zone.</t>
+
+        <t>Any form of domain camping likely violates the IAB's guidance
+        regarding "the Unique DNS Root" <xref target="RFC2826"></xref>.</t>
+      </section>
+    </section>
+
+    <section title="Scope">
+      <t>The protocol in this document allows the domain owner to
+      create a split-horizon DNS.  Other entities which do not own the
+      domain are detected by the client.  Thus, DNS filtering is not
+      enabled by this protocol.</t>
+    </section>
+    
+    <section anchor="learning" title="Learning Local Claims of DNS Authority">
+
+      <t>As a first step, the host joins a network and determines if that
+      network contains a local DNS server which claims authority over a
+      zone.  Two methods of performing that function are described below,
+      host configuration and provisioning domains.</t>
+
+
+    <section anchor="hostconfig" title="Host Configuration">
+    <t>A host can be configured with DNS information when it joins a 
+    network, including when it brings up VPN (which is also considered
+    joining a(n additional) network, detailed in <xref target="vpn"/>).  Existing implementations determine
+    the host has joined a certain network via SSID, IP subnet assigned,
+    DNS server IP address or name, and other similar mechanisms. For
+    example, one existing implementation determines the host has joined
+    an internal network because the DHCP-assigned IP address belongs to the 
+    company's IP address (as assigned by the regional IP addressing authority)
+    and the DHCP-advertised DNS IP address is one used by IT at that
+    network.  Other mechanisms exist in other products but are not
+    interesting to this specification; rather what is interesting is this
+    step to determine "we have joined the internal corporate network" occurred
+    and the DNS server is configured as authoritative for certain DNS zones
+    (e.g., *.example.com).</t>
+    <t>Because a rogue network can simulate all or most of 
+    the above characteristics this specification details how to validate these claims
+    in <xref target="validating"></xref>.</t>
+    </section>
+
+
+    <section anchor="dnsZones" title="Provisioning Domains dnsZones">
+      <t>Provisioning Domains (PvDs) are defined in <xref
+      target="RFC7556"></xref> as sets of network configuration information
+      that clients can use to access networks, including rules for DNS
+      resolution and proxy configuration. The PvD Key dnsZones is defined in
+      <xref target="RFC8801"></xref>. The PvD Key dnsZones notifies clients of
+      names for which one of the network-provided resolvers is authoritative.
+      Attempting to resolve these names via another resolver might fail or
+      return results that are not correct for this network.</t>
+
+      <t>Each dnsZones entry indicates a claim of authority over a domain and
+      its subdomains. For example, if the dnsZones entry is "example.test",
+      this covers "example.test", "www.example.test", and
+      "mail.eng.example.test", but not "otherexample.test" or
+      "example.test.net".</t>
+
+      <t><xref target="RFC8801"></xref> defines a mechanism for discovering
+      multiple Explicit PvDs on a single network and their Additional
+      Information by means of an HTTP-over-TLS query using a URI derived from
+      the PvD ID. This set of additional configuration information is referred
+      to as a Web Provisioning Domain (Web PvD). The PvD RA option defined in
+      <xref target="RFC8801"></xref> SHOULD set the H-flag to indicate that
+      Additional Information is available. This Additional Information JSON
+      object SHOULD include the "dnsZones" key to define the DNS domains for
+      which the network claims authority.</t>
+
+      </section> <!-- provisioning domains -->
+
+</section>  <!-- Learning -->
+
+      <section anchor="validating"
+               title="Validating Claims of DNS Authority">
+        <t>The client validates each of the learned DNS claims learned above
+	using a public resolver or DNSSEC.</t>
+	
+	<t>Each learned DNS claim is authorized only for the specific
+        resolvers whose names appear in its NS RRSet. If a network offers
+        multiple encrypted resolvers (for example via DNR or via host
+	configuration), each DNS zone entry may be authorized for distinct
+	subset(s) of the network-provided resolvers.</t>
+
+	<t>A zone is termed a "Validated Split-Horizon zone" after successful
+	validation by a public resolver or by DNSSEC.</t>
+
+        <section anchor="validating-public"
+                 title="Using Pre-configured Public Resolver">
+          <t>The client sends an NS query for the domain in dnsZones to a
+          pre-configured resolver that is external to the network, over a
+          secure transport. Clients SHOULD apply whatever acceptance rules
+          they would otherwise apply when using this resolver (e.g. checking
+          the AD bit, validating RRSIGs).</t>
+        </section> <!-- validating-public -->
+
+        <section anchor="validating-dnssec" title="Using DNSSEC">
+          <t>The client resolves the NS record using any resolution method of
+          its choice (e.g. querying one of the network-provided resolvers,
+          performing iterative resolution locally), and performs full DNSSEC
+          validation locally <xref target="RFC6698"></xref>. The result is
+          processed based on its DNSSEC validation state (Section 4.3 of <xref
+          target="RFC4035"></xref>):
+	  <list style="hanging">
+              <t hangText="Secure:"> the NS record is used for validation.</t>
+
+              <t hangText="Bogus or Indeterminate:"> the record is rejected and
+              validation is considered to have failed.</t>
+
+              <t hangText="Insecure:"> the client SHOULD retry the validation process
+              using a different method, such as the one in <xref
+              target="validating-public"></xref>, to ensure compatibility with unsigned
+              names.</t>
+            </list></t>
+        </section> <!-- validating-DNSSEC -->
+      </section> <!-- Validating -->
+
+    
+    <section title="Examples of Split-Horizon DNS Configuration">
+      <t>Two examples are shown below.  The first example showing an
+      company with an internal-only DNS server resolving the entire
+      zone for that company (e.g., *.example.com) the second
+      example resolving only a subdomain of the company's zone (e.g.,
+      *.internal.example.com).</t>
+
+      <section anchor="internal-only" title="Split-Horizon Entire Zone">
+      <t>Consider an organization that operates "example.com", and runs a
+      different version of its global domain on its internal network. Today,
+      on the Internet it publishes two NS records, "ns1.example.com" and
+      "ns2.example.com".</t>
+
+      <t>The host and network first need mutual support one of the mechanisms
+      described in <xref target="learning">learning</xref>.  Shown in
+      <xref target="fig-learn"/> is learning using DNR and PvD.</t>
+
+      <t>Validation is then perfomed using either <xref
+      target="fig-verify-public">Public DNS</xref> or <xref
+      target="fig-verify-dnssec">DNSSEC</xref>.</t>
+      
+      <t>Note steps 1-7 determine the local network claims which could also
+      be determined with a priori host configuration and probing the local
+      network (<xref target="learning"/>).</t>
+
+      <t><list style="hanging">
+        <t hangText="steps 1-7:">The client determines the network's
+	DNS claims using other standards.  Step 1 the host
+	discovers the network resolvers "ns1.example.com" and
+          "ns2.example.com" and their IP addresses using DNR <xref
+          target="I-D.ietf-add-dnr"></xref>. In step 2  using <xref
+          target="RFC8801"></xref> the client also discovers the PvD FQDN is
+          "pvd.example.com".  In step 3 The client establishes an encrypted DNS
+          connection with "ns1.example.com", validates its TLS certificate,
+          and queries it for "pvd.example.com" to retrieve the PvD JSON
+          object. Note that <xref target="RFC8801"></xref> in Section 4.1
+          mandates the PvD FQDN MUST be resolved using the DNS servers
+          indicated by the associated PvD. The PvD contains:<figure>
+              <artwork><![CDATA[ {
+    "identifier": "pvd.example.com",   
+    "expires": "2020-05-23T06:00:00Z",
+    "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
+    "dnsZones:": ["example.com"]
+  }]]></artwork>
+            </figure>The JSON keys "identifier", "expires", and "prefixes" are
+          defined in <xref target="RFC8801"></xref>.</t>
+        </list></t>
+
+	
+      <figure anchor="fig-learn"
+              title="Learning Local Claims of DNS Authority">
+        <artwork><![CDATA[
++---------+            +--------------------+  +------------+ +--------+
+| client  |            | Network            |  | Network    | | Router |
+|         |            | encrypted resolver |  | PvD server | |        |
++---------+            +--------------------+  +------------+ +--------+
+     |                                     |         |            |
+     | Router Solicitation or              |         |            |
+     | DHCPv4/DHCPv6 (1)                   |         |            |
+     |----------------------------------------------------------->|
+     |                                     |         |            |
+     |  Response with DNR hostnames &      |         |            |
+     |  PvD FQDN (2)                       |         |            |
+     |<-----------------------------------------------------------|
+     | ----------------------------\       |         |            |
+     |-| now knows DNR hostnames & |       |         |            |
+     | | PvD FQDN                  |       |         |            |
+     | |---------------------------/       |         |            |
+     |                                     |         |            |
+     | TLS connection to ns1.example.com (3)         |            |
+     |------------------------------------>|         |            |
+     | ---------------------------\        |         |            |
+     |-| validate TLS certificate |        |         |            |
+     | |--------------------------|        |         |            |
+     |                                     |         |            |
+     | resolve pvd.example.com  (4)        |         |            |
+     |------------------------------------>|         |            |
+     |                                     |         |            |
+     |            A or AAAA records (5)    |         |            |
+     |<------------------------------------|         |            |
+     |                                     |         |            |
+     | https://pvd.example.com/.well-known/pvd (6)   |            |
+     |---------------------------------------------->|            |
+     |                                     |         |            |
+     |  200 OK (JSON Additional Information) (7)     |            |
+     |<----------------------------------------------|            |
+     | -----------------------\            |         |            |
+     |-| dnsZones=example.com |            |         |            |
+     | |----------------------|            |         |            |
+]]></artwork>
+      </figure>
+
+      <section title="Verification using Public Resolver">
+      <t>The figure below shows the steps performed to verify the local claims of DNS authority using a public resolver.</t>
+
+      <t><list style="hanging">
+        <t hangText="Steps 8-9:">The client uses an encrypted DNS
+          connection to a public resolver (e.g., 1.1.1.1) to issue NS queries
+          for the domains in dnsZones. The NS lookup for "example.com" will
+          return "ns1.example.com" and "ns2.example.com".</t>
+
+          <t hangText="Step 10:">As the network-provided nameservers are the
+          same as the names retrieved from the public resolver and the
+          network-designated resolver's certificate includes at least one of
+          the names retrieved from the public resolver, the client has
+          finished validation that the nameservers signaled in <xref
+          target="I-D.ietf-add-dnr"></xref> and <xref target="RFC8801"></xref>
+          are owned and managed by the same entity that published the NS
+          records on the Internet. The endpoint will then use that information
+          from <xref target="I-D.ietf-add-dnr"></xref> and <xref
+          target="RFC8801"></xref> to resolve names within dnsZones.</t>
+	</list></t>
+	  
+<figure anchor="fig-verify-public"
+              title="Verifying Claims using Public Resolver">
+        <artwork><![CDATA[
++---------+                  +--------------------+  +----------+
+| client  |                  | Network            |  |  public  |
+|         |                  | encrypted resolver |  | resolver |
++---------+                  +--------------------+  +----------+
+     |                                          |         |
+     | TLS connection                           |         |
+     |--------------------------------------------------->|
+     | ---------------------------\             |         |
+     |-| validate TLS certificate |             |         |
+     | |--------------------------|             |         |
+     |                                          |         |
+     | NS? example.com  (8)                     |         |
+     |--------------------------------------------------->|
+     |                                          |         |
+     |  NS=ns1.example.com, ns2.example.com (9) |         |
+     |<---------------------------------------------------|
+     | -------------------------------\         |         |
+     |-| both DNR ADNs are authorized |         |         |
+     | ----------------------\--------|         |         |
+     |-| finished validation |                  |         |
+     | |---------------------|                  |         |
+     |                                          |         |
+     |  use network-designated resolver         |         |
+     |  for example.com (10)                    |         |
+     |----------------------------------------->|         |
+     |                                          |         |
+]]></artwork>
+      </figure>
+
+
+</section> <!-- public -->
+
+<section title="Verification using DNSSEC">
+          <t>The figure below shows the steps performed to verify the local claims of DNS authority using DNSSEC.</t>
+
+      <t><list style="hanging">
+        <t hangText="Steps 8-9:">The client queries the network
+	encrypted resolver
+          connection to a public resolver (e.g., 1.1.1.1) to issue NS queries
+          for the domains in dnsZones. The NS lookup for "example.com" will
+          return "ns1.example.com" and "ns2.example.com".</t>
+
+          <t hangText="Step 10:">As the network-provided nameservers are the
+          same as the names retrieved from the public resolver and the
+          network-designated resolver's certificate includes at least one of
+          the names retrieved from the public resolver, the client has
+          finished validation that the nameservers signaled in <xref
+          target="I-D.ietf-add-dnr"></xref> and <xref target="RFC8801"></xref>
+          are owned and managed by the same entity that published the NS
+          records on the Internet. The endpoint will then use that information
+          from <xref target="I-D.ietf-add-dnr"></xref> and <xref
+          target="RFC8801"></xref> to resolve names within dnsZones.</t>
+	</list></t>
+
+<figure anchor="fig-verify-dnssec"
+              title="Verifying Claims using DNSSEC">
+        <artwork><![CDATA[
++---------+                  +--------------------+
+| client  |                  | Network            |
+|         |                  | encrypted resolver |
++---------+                  +--------------------+ 
+     |                                          |    
+     |  RRSIG? example.com  (8)                 |         
+     |----------------------------------------->|
+     |  RRSIG=abcdef (9)                        |
+     |<-----------------------------------------|     
+     |                                          |
+     |  DNSKEY? example.com  (10)               |
+     |----------------------------------------->|
+     |  DNSKEY==abcdef (11)                     |
+     |<-----------------------------------------|
+     |                                          |
+     |  NS=ns1.example.com,ns2.example.com (12) |
+     |<-----------------------------------------|
+     | -------------------------------\         |
+     |-| both DNR ADNs are authorized |         |
+     | ----------------------\--------|         |
+     |-| finished validation |                  |
+     | |---------------------|                  |
+     |                                          |
+     |  use encrypted network-designated        | 
+     |  resolver for example.com (10)           |
+     |----------------------------------------->|
+]]></artwork>
+      </figure>
+</section>  <!-- DNSSEC -->
+
+</section>  <!-- internal-only resolving all names -->
+
+
+<section title="Split-Horizon Only Subdomain of Zone">
+  <t>A subdomain can also be used for all internal DNS names
+  (e.g., the zone internal.example.com exists only on the internal DNS
+  server).  For successful validation described in this document the
+  the internal DNS server will need a certificate signed by a CA trusted
+  by the client.  If a publicly-signed certificate is used, this means
+  the internal zone name will exist in
+  <xref target="RFC9162">Certificate Transparancy</xref> logs.  However,
+  individual host names   (e.g., www.internal.example.com) will not be listed in Certificate Transparancy
+  logs for the validation described in this document.</t>
+
+  <t>For such a name internal.example.com the message flows work
+  identically as with <xref target="internal-only"></xref>, the only
+  difference that queries for example.com (e.g., www.example.com)
+  which are not within internal.example.com are sent to the normal
+  resolver rather than to the internal resolver.</t>
+</section> <!-- specific zone -->  
+
+</section>
+
+
+
+
+    <section anchor="vpn" title="Split-Horizon DNS Configuration for IKEv2">
+      <t>The split-tunnel Virtual Private Network (VPN) configuration allows
+      the endpoint to access resources that reside in the VPN <xref
+      target="RFC8598"></xref> via the tunnel; other traffic not destined to
+      the VPN does not traverse the tunnel. In contrast, a non-split-tunnel
+      VPN configuration causes all traffic to traverse the tunnel into the
+      VPN.</t>
+
+      <t>When the VPN tunnel is IPsec, the encrypted DNS resolver hosted by
+      the VPN service provider can be securely discovered by the endpoint
+      using the ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types
+      defined in <xref target="I-D.ietf-ipsecme-add-ike"></xref>. For
+      split-tunnel VPN configurations, the endpoint uses the discovered
+      encrypted DNS server to resolve domain names for which the VPN provider
+      claims authority. For non-split-tunnel VPN configurations, the endpoint
+      uses the discovered encrypted DNS server to resolve both global and
+      private domain names. For split-tunnel VPN configurations, the IKE
+      client can use any one of the mechanisms discussed in <xref
+      target="validating"></xref> to determine if the VPN service provider is
+      authoritative over the Split-Horizon DNS domains.</t>
+
+      <t>Other VPN tunnel types have similar configuration capabilities, not
+      detailed here.</t>
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t>When using dnsZones (<xref target="dnsZones"/>) the content of dnsZones may be passed to another (DNS) program for
+      processing. As with any network input, the content SHOULD be considered
+      untrusted and handled accordingly. The client must perform the
+      mechanisms discussed in <xref target="validating"></xref> to determine if
+      the network-designated encrypted resolvers are authoritative over the
+      domains in dnsZones. If they are not, the client must ignore those
+      dnsZones.</t>
+
+      <t>This specification does not alter DNSSEC validation behaviour. To
+      ensure compatibility with validating clients, network operators MUST
+      ensure that names under the split-horizon are correctly signed or place
+      them in an unsigned zone.</t>
+    </section>
+
+    <section anchor="IANA" title="IANA Considerations">
+      <t>This document has no IANA actions.</t>
+    </section>
+
+    <section title="Acknowledgements">
+      <t>Thanks to Mohamed Boucadair, Jim Reid, Tommy Pauly, Paul Vixie, Paul
+      Wouters and Vinny Parla for the discussion and comments.</t>
+    </section>
+
+  </middle>
+
+  <!--  *****BACK MATTER ***** -->
+
+  <back>
+    <references title="Normative References">
+      <?rfc include='reference.RFC.2119'?>
+
+      <?rfc include='reference.RFC.8174'?>
+
+      <?rfc include='reference.RFC.8801'?>
+
+      <?rfc include='reference.RFC.2826'?>
+
+      <?rfc include='reference.RFC.6762'?>
+
+      <?rfc include='reference.RFC.6698'?>
+
+      <?rfc include='reference.RFC.4035'?>
+    </references>
+
+    <references title="Informative References">
+      <?rfc include='reference.RFC.8499'?>
+
+      <?rfc include='reference.RFC.9162'?>
+
+      <?rfc include='reference.RFC.8598'?>
+
+      <?rfc include='reference.RFC.7556' ?>
+
+      <?rfc include='reference.RFC.7686' ?>
+
+      <?rfc include='reference.RFC.8806' ?>
+
+      <?rfc include='reference.RFC.6106' ?>
+
+      <?rfc include='reference.I-D.ietf-add-dnr'?>
+
+      <?rfc include='reference.I-D.ietf-ipsecme-add-ike'?>
+
+      <?rfc include='reference.I-D.ietf-add-ddr' ?>
+
+      <!---->
+    </references>
+  </back>
+</rfc>

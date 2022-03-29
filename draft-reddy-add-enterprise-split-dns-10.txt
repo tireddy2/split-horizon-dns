@@ -1,0 +1,784 @@
+
+
+
+
+ADD                                                             T. Reddy
+Internet-Draft                                                    Akamai
+Intended status: Standards Track                                 D. Wing
+Expires: September 29, 2022                                       Citrix
+                                                                K. Smith
+                                                                Vodafone
+                                                             B. Schwartz
+                                                                  Google
+                                                          March 28, 2022
+
+
+                   Validating Claims of DNS Authority
+                draft-reddy-add-enterprise-split-dns-10
+
+Abstract
+
+   When split-horizon DNS is deployed by a network, certain domains can
+   be resolved authoritatively by the network-provided DNS resolver.
+   DNS clients that don't always use this resolver might wish to do so
+   for these domains.  This specification describes how clients can
+   confirm the local resolver's authority over these domains.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on September 29, 2022.
+
+Copyright Notice
+
+   Copyright (c) 2022 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (https://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+
+
+
+Reddy, et al.          Expires September 29, 2022               [Page 1]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
+     2.1.  Validated Split-Horizon . . . . . . . . . . . . . . . . .   4
+     2.2.  Domain Camping  . . . . . . . . . . . . . . . . . . . . .   4
+   3.  Scope . . . . . . . . . . . . . . . . . . . . . . . . . . . .   4
+   4.  Learning Local Claims of DNS Authority  . . . . . . . . . . .   4
+     4.1.  Host Configuration  . . . . . . . . . . . . . . . . . . .   4
+     4.2.  Provisioning Domains dnsZones . . . . . . . . . . . . . .   5
+   5.  Validating Claims of DNS Authority  . . . . . . . . . . . . .   5
+     5.1.  Using Pre-configured Public Resolver  . . . . . . . . . .   6
+     5.2.  Using DNSSEC  . . . . . . . . . . . . . . . . . . . . . .   6
+   6.  Examples of Split-Horizon DNS Configuration . . . . . . . . .   6
+     6.1.  Split-Horizon Entire Zone . . . . . . . . . . . . . . . .   6
+       6.1.1.  Verification using Public Resolver  . . . . . . . . .   8
+       6.1.2.  Verification using DNSSEC . . . . . . . . . . . . . .   9
+     6.2.  Split-Horizon Only Subdomain of Zone  . . . . . . . . . .  11
+   7.  Split-Horizon DNS Configuration for IKEv2 . . . . . . . . . .  11
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
+   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  12
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  12
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  12
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  13
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
+
+1.  Introduction
+
+   To resolve a DNS query, there are three essential behaviors that an
+   implementation can apply: (1) answer from a local database, (2) query
+   the relevant authorities and their parents, or (3) ask a server to
+   query those authorities and return the final answer.  Implementations
+   that use these behaviors are called "authoritative nameservers",
+   "full resolvers", and "forwarders" (or "stub resolvers").  However,
+   an implementation can also implement a mixture of these behaviors,
+   depending on a local policy, for each query.  We term such an
+   implementation a "hybrid resolver".
+
+   Most DNS resolvers are hybrids of some kind.  For example, stub
+   resolvers frequently support a local "hosts file" that preempts query
+   forwarding, and most DNS forwarders and full resolvers can also serve
+
+
+
+Reddy, et al.          Expires September 29, 2022               [Page 2]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+   responses from a local zone file.  Other standardized hybrid
+   resolution behaviors include Local Root [RFC8806], mDNS [RFC6762],
+   and NXDOMAIN synthesis for .onion [RFC7686].
+
+   In many network environments, the network offers clients a DNS server
+   (e.g.  DHCP OFFER, IPv6 Router Advertisement).  Although this server
+   is formally specified as a recursive resolver (e.g.  Section 5.1 of
+   [RFC6106]), some networks provide a hybrid resolver instead.  If this
+   resolver acts as an authoritative server for some names, we say that
+   the network has "split-horizon DNS", because those names resolve in
+   this way only from inside the network.
+
+   Network clients that use pure stub resolution, sending all queries to
+   the network-provided resolver, will always receive the split-horizon
+   results.  Conversely, clients that send all queries to a different
+   resolver or implement pure full resolution locally will never receive
+   them.  Clients with either pure resolution behavior are out of scope
+   for this specification.  Instead, this specification enables hybrid
+   clients to access split-horizon results from a network-provided
+   hybrid resolver, while using a different resolution method for some
+   or all other names.
+
+   To achieve the required security properties, clients must be able to
+   authenticate the DNS servers provided by the network, for example
+   using the techniques proposed in [I-D.ietf-add-dnr] and
+   [I-D.ietf-add-ddr], and prove that they are authorized to serve the
+   offered split-horizon DNS names.  As a result, use of this
+   specification is limited to servers that support authenticated
+   encryption and split-horizon DNS names that are properly rooted in
+   the global DNS.
+
+2.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119][RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   This document makes use of the terms defined in [RFC8499].  The term
+   "Global DNS" is defined in [RFC8499].
+
+   'Encrypted DNS' refers to a DNS protocol that provides an encrypted
+   channel between a DNS client and server (e.g., DoT, DoH, or DoQ).
+
+   The terms 'Validated Split-Horizon' and 'Domain Camping' are also
+   defined.
+
+
+
+
+Reddy, et al.          Expires September 29, 2022               [Page 3]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+2.1.  Validated Split-Horizon
+
+   A split horizon configuration for some name is considered "validated"
+   if any parent of that name has given the local network permission to
+   serve its own responses for that name.  Such validation generally
+   extend to the entire subtree of names below the authorization point.
+
+2.2.  Domain Camping
+
+   Domain Camping refers to operating a nameserver which claims to be
+   authoritative for a zone, but actually isn't.  For example, a domain
+   called example.com on the Internet and an internal DNS server also
+   claims to be authoritative for example.com, but has no delegation
+   from example.com on the Internet.  Someone might domain camp on a
+   popular domain name providing the ability to monitor queries and
+   modify answers for that domain.
+
+   A common variation on domain camping is "NXDOMAIN camping", in which
+   a nameserver claims a zone that does not exist in the global DNS.
+   This is a form of domain camping because it seizes a portion of the
+   parent zone without permission.  The use of nonexistent TLDs for
+   local services is a form of NXDOMAIN camping on the root zone.
+
+   Any form of domain camping likely violates the IAB's guidance
+   regarding "the Unique DNS Root" [RFC2826].
+
+3.  Scope
+
+   The protocol in this document allows the domain owner to create a
+   split-horizon DNS.  Other entities which do not own the domain are
+   detected by the client.  Thus, DNS filtering is not enabled by this
+   protocol.
+
+4.  Learning Local Claims of DNS Authority
+
+   As a first step, the host joins a network and determines if that
+   network contains a local DNS server which claims authority over a
+   zone.  Two methods of performing that function are described below,
+   host configuration and provisioning domains.
+
+4.1.  Host Configuration
+
+   A host can be configured with DNS information when it joins a
+   network, including when it brings up VPN (which is also considered
+   joining a(n additional) network, detailed in Section 7).  Existing
+   implementations determine the host has joined a certain network via
+   SSID, IP subnet assigned, DNS server IP address or name, and other
+   similar mechanisms.  For example, one existing implementation
+
+
+
+Reddy, et al.          Expires September 29, 2022               [Page 4]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+   determines the host has joined an internal network because the DHCP-
+   assigned IP address belongs to the company's IP address (as assigned
+   by the regional IP addressing authority) and the DHCP-advertised DNS
+   IP address is one used by IT at that network.  Other mechanisms exist
+   in other products but are not interesting to this specification;
+   rather what is interesting is this step to determine "we have joined
+   the internal corporate network" occurred and the DNS server is
+   configured as authoritative for certain DNS zones (e.g.,
+   *.example.com).
+
+   Because a rogue network can simulate all or most of the above
+   characteristics this specification details how to validate these
+   claims in Section 5.
+
+4.2.  Provisioning Domains dnsZones
+
+   Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
+   network configuration information that clients can use to access
+   networks, including rules for DNS resolution and proxy configuration.
+   The PvD Key dnsZones is defined in [RFC8801].  The PvD Key dnsZones
+   notifies clients of names for which one of the network-provided
+   resolvers is authoritative.  Attempting to resolve these names via
+   another resolver might fail or return results that are not correct
+   for this network.
+
+   Each dnsZones entry indicates a claim of authority over a domain and
+   its subdomains.  For example, if the dnsZones entry is
+   "example.test", this covers "example.test", "www.example.test", and
+   "mail.eng.example.test", but not "otherexample.test" or
+   "example.test.net".
+
+   [RFC8801] defines a mechanism for discovering multiple Explicit PvDs
+   on a single network and their Additional Information by means of an
+   HTTP-over-TLS query using a URI derived from the PvD ID.  This set of
+   additional configuration information is referred to as a Web
+   Provisioning Domain (Web PvD).  The PvD RA option defined in
+   [RFC8801] SHOULD set the H-flag to indicate that Additional
+   Information is available.  This Additional Information JSON object
+   SHOULD include the "dnsZones" key to define the DNS domains for which
+   the network claims authority.
+
+5.  Validating Claims of DNS Authority
+
+   The client validates each of the learned DNS claims learned above
+   using a public resolver or DNSSEC.
+
+   Each learned DNS claim is authorized only for the specific resolvers
+   whose names appear in its NS RRSet.  If a network offers multiple
+
+
+
+Reddy, et al.          Expires September 29, 2022               [Page 5]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+   encrypted resolvers (for example via DNR or via host configuration),
+   each DNS zone entry may be authorized for distinct subset(s) of the
+   network-provided resolvers.
+
+   A zone is termed a "Validated Split-Horizon zone" after successful
+   validation by a public resolver or by DNSSEC.
+
+5.1.  Using Pre-configured Public Resolver
+
+   The client sends an NS query for the domain in dnsZones to a pre-
+   configured resolver that is external to the network, over a secure
+   transport.  Clients SHOULD apply whatever acceptance rules they would
+   otherwise apply when using this resolver (e.g. checking the AD bit,
+   validating RRSIGs).
+
+5.2.  Using DNSSEC
+
+   The client resolves the NS record using any resolution method of its
+   choice (e.g. querying one of the network-provided resolvers,
+   performing iterative resolution locally), and performs full DNSSEC
+   validation locally [RFC6698].  The result is processed based on its
+   DNSSEC validation state (Section 4.3 of [RFC4035]):
+
+   Secure:  the NS record is used for validation.
+
+   Bogus or Indeterminate:  the record is rejected and validation is
+      considered to have failed.
+
+   Insecure:  the client SHOULD retry the validation process using a
+      different method, such as the one in Section 5.1, to ensure
+      compatibility with unsigned names.
+
+6.  Examples of Split-Horizon DNS Configuration
+
+   Two examples are shown below.  The first example showing an company
+   with an internal-only DNS server resolving the entire zone for that
+   company (e.g., *.example.com) the second example resolving only a
+   subdomain of the company's zone (e.g., *.internal.example.com).
+
+6.1.  Split-Horizon Entire Zone
+
+   Consider an organization that operates "example.com", and runs a
+   different version of its global domain on its internal network.
+   Today, on the Internet it publishes two NS records, "ns1.example.com"
+   and "ns2.example.com".
+
+
+
+
+
+
+Reddy, et al.          Expires September 29, 2022               [Page 6]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+   The host and network first need mutual support one of the mechanisms
+   described in learning (Section 4).  Shown in Figure 1 is learning
+   using DNR and PvD.
+
+   Validation is then perfomed using either Public DNS (Figure 2) or
+   DNSSEC (Figure 3).
+
+   Note steps 1-7 determine the local network claims which could also be
+   determined with a priori host configuration and probing the local
+   network (Section 4).
+
+   steps 1-7:  The client determines the network's DNS claims using
+      other standards.  Step 1 the host discovers the network resolvers
+      "ns1.example.com" and "ns2.example.com" and their IP addresses
+      using DNR [I-D.ietf-add-dnr].  In step 2 using [RFC8801] the
+      client also discovers the PvD FQDN is "pvd.example.com".  In step
+      3 The client establishes an encrypted DNS connection with
+      "ns1.example.com", validates its TLS certificate, and queries it
+      for "pvd.example.com" to retrieve the PvD JSON object.  Note that
+      [RFC8801] in Section 4.1 mandates the PvD FQDN MUST be resolved
+      using the DNS servers indicated by the associated PvD.  The PvD
+      contains:
+
+    {
+       "identifier": "pvd.example.com",
+       "expires": "2020-05-23T06:00:00Z",
+       "prefixes": ["2001:db8:1::/48", "2001:db8:4::/48"],
+       "dnsZones:": ["example.com"]
+     }
+
+      The JSON keys "identifier", "expires", and "prefixes" are defined
+      in [RFC8801].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reddy, et al.          Expires September 29, 2022               [Page 7]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
++---------+            +--------------------+  +------------+ +--------+
+| client  |            | Network            |  | Network    | | Router |
+|         |            | encrypted resolver |  | PvD server | |        |
++---------+            +--------------------+  +------------+ +--------+
+     |                                     |         |            |
+     | Router Solicitation or              |         |            |
+     | DHCPv4/DHCPv6 (1)                   |         |            |
+     |----------------------------------------------------------->|
+     |                                     |         |            |
+     |  Response with DNR hostnames &      |         |            |
+     |  PvD FQDN (2)                       |         |            |
+     |<-----------------------------------------------------------|
+     | ----------------------------\       |         |            |
+     |-| now knows DNR hostnames & |       |         |            |
+     | | PvD FQDN                  |       |         |            |
+     | |---------------------------/       |         |            |
+     |                                     |         |            |
+     | TLS connection to ns1.example.com (3)         |            |
+     |------------------------------------>|         |            |
+     | ---------------------------\        |         |            |
+     |-| validate TLS certificate |        |         |            |
+     | |--------------------------|        |         |            |
+     |                                     |         |            |
+     | resolve pvd.example.com  (4)        |         |            |
+     |------------------------------------>|         |            |
+     |                                     |         |            |
+     |            A or AAAA records (5)    |         |            |
+     |<------------------------------------|         |            |
+     |                                     |         |            |
+     | https://pvd.example.com/.well-known/pvd (6)   |            |
+     |---------------------------------------------->|            |
+     |                                     |         |            |
+     |  200 OK (JSON Additional Information) (7)     |            |
+     |<----------------------------------------------|            |
+     | -----------------------\            |         |            |
+     |-| dnsZones=example.com |            |         |            |
+     | |----------------------|            |         |            |
+
+             Figure 1: Learning Local Claims of DNS Authority
+
+6.1.1.  Verification using Public Resolver
+
+   The figure below shows the steps performed to verify the local claims
+   of DNS authority using a public resolver.
+
+   Steps 8-9:  The client uses an encrypted DNS connection to a public
+      resolver (e.g., 1.1.1.1) to issue NS queries for the domains in
+
+
+
+
+Reddy, et al.          Expires September 29, 2022               [Page 8]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+      dnsZones.  The NS lookup for "example.com" will return
+      "ns1.example.com" and "ns2.example.com".
+
+   Step 10:  As the network-provided nameservers are the same as the
+      names retrieved from the public resolver and the network-
+      designated resolver's certificate includes at least one of the
+      names retrieved from the public resolver, the client has finished
+      validation that the nameservers signaled in [I-D.ietf-add-dnr] and
+      [RFC8801] are owned and managed by the same entity that published
+      the NS records on the Internet.  The endpoint will then use that
+      information from [I-D.ietf-add-dnr] and [RFC8801] to resolve names
+      within dnsZones.
+
+   +---------+                  +--------------------+  +----------+
+   | client  |                  | Network            |  |  public  |
+   |         |                  | encrypted resolver |  | resolver |
+   +---------+                  +--------------------+  +----------+
+        |                                          |         |
+        | TLS connection                           |         |
+        |--------------------------------------------------->|
+        | ---------------------------\             |         |
+        |-| validate TLS certificate |             |         |
+        | |--------------------------|             |         |
+        |                                          |         |
+        | NS? example.com  (8)                     |         |
+        |--------------------------------------------------->|
+        |                                          |         |
+        |  NS=ns1.example.com, ns2.example.com (9) |         |
+        |<---------------------------------------------------|
+        | -------------------------------\         |         |
+        |-| both DNR ADNs are authorized |         |         |
+        | ----------------------\--------|         |         |
+        |-| finished validation |                  |         |
+        | |---------------------|                  |         |
+        |                                          |         |
+        |  use network-designated resolver         |         |
+        |  for example.com (10)                    |         |
+        |----------------------------------------->|         |
+        |                                          |         |
+
+             Figure 2: Verifying Claims using Public Resolver
+
+6.1.2.  Verification using DNSSEC
+
+   The figure below shows the steps performed to verify the local claims
+   of DNS authority using DNSSEC.
+
+
+
+
+
+Reddy, et al.          Expires September 29, 2022               [Page 9]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+   Steps 8-9:  The client queries the network encrypted resolver
+      connection to a public resolver (e.g., 1.1.1.1) to issue NS
+      queries for the domains in dnsZones.  The NS lookup for
+      "example.com" will return "ns1.example.com" and "ns2.example.com".
+
+   Step 10:  As the network-provided nameservers are the same as the
+      names retrieved from the public resolver and the network-
+      designated resolver's certificate includes at least one of the
+      names retrieved from the public resolver, the client has finished
+      validation that the nameservers signaled in [I-D.ietf-add-dnr] and
+      [RFC8801] are owned and managed by the same entity that published
+      the NS records on the Internet.  The endpoint will then use that
+      information from [I-D.ietf-add-dnr] and [RFC8801] to resolve names
+      within dnsZones.
+
+   +---------+                  +--------------------+
+   | client  |                  | Network            |
+   |         |                  | encrypted resolver |
+   +---------+                  +--------------------+
+        |                                          |
+        |  RRSIG? example.com  (8)                 |
+        |----------------------------------------->|
+        |  RRSIG=abcdef (9)                        |
+        |<-----------------------------------------|
+        |                                          |
+        |  DNSKEY? example.com  (10)               |
+        |----------------------------------------->|
+        |  DNSKEY==abcdef (11)                     |
+        |<-----------------------------------------|
+        |                                          |
+        |  NS=ns1.example.com,ns2.example.com (12) |
+        |<-----------------------------------------|
+        | -------------------------------\         |
+        |-| both DNR ADNs are authorized |         |
+        | ----------------------\--------|         |
+        |-| finished validation |                  |
+        | |---------------------|                  |
+        |                                          |
+        |  use encrypted network-designated        |
+        |  resolver for example.com (10)           |
+        |----------------------------------------->|
+
+                  Figure 3: Verifying Claims using DNSSEC
+
+
+
+
+
+
+
+
+Reddy, et al.          Expires September 29, 2022              [Page 10]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+6.2.  Split-Horizon Only Subdomain of Zone
+
+   A subdomain can also be used for all internal DNS names (e.g., the
+   zone internal.example.com exists only on the internal DNS server).
+   For successful validation described in this document the the internal
+   DNS server will need a certificate signed by a CA trusted by the
+   client.  If a publicly-signed certificate is used, this means the
+   internal zone name will exist in Certificate Transparancy [RFC9162]
+   logs.  However, individual host names (e.g.,
+   www.internal.example.com) will not be listed in Certificate
+   Transparancy logs for the validation described in this document.
+
+   For such a name internal.example.com the message flows work
+   identically as with Section 6.1, the only difference that queries for
+   example.com (e.g., www.example.com) which are not within
+   internal.example.com are sent to the normal resolver rather than to
+   the internal resolver.
+
+7.  Split-Horizon DNS Configuration for IKEv2
+
+   The split-tunnel Virtual Private Network (VPN) configuration allows
+   the endpoint to access resources that reside in the VPN [RFC8598] via
+   the tunnel; other traffic not destined to the VPN does not traverse
+   the tunnel.  In contrast, a non-split-tunnel VPN configuration causes
+   all traffic to traverse the tunnel into the VPN.
+
+   When the VPN tunnel is IPsec, the encrypted DNS resolver hosted by
+   the VPN service provider can be securely discovered by the endpoint
+   using the ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types
+   defined in [I-D.ietf-ipsecme-add-ike].  For split-tunnel VPN
+   configurations, the endpoint uses the discovered encrypted DNS server
+   to resolve domain names for which the VPN provider claims authority.
+   For non-split-tunnel VPN configurations, the endpoint uses the
+   discovered encrypted DNS server to resolve both global and private
+   domain names.  For split-tunnel VPN configurations, the IKE client
+   can use any one of the mechanisms discussed in Section 5 to determine
+   if the VPN service provider is authoritative over the Split-Horizon
+   DNS domains.
+
+   Other VPN tunnel types have similar configuration capabilities, not
+   detailed here.
+
+8.  Security Considerations
+
+   When using dnsZones (Section 4.2) the content of dnsZones may be
+   passed to another (DNS) program for processing.  As with any network
+   input, the content SHOULD be considered untrusted and handled
+   accordingly.  The client must perform the mechanisms discussed in
+
+
+
+Reddy, et al.          Expires September 29, 2022              [Page 11]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+   Section 5 to determine if the network-designated encrypted resolvers
+   are authoritative over the domains in dnsZones.  If they are not, the
+   client must ignore those dnsZones.
+
+   This specification does not alter DNSSEC validation behaviour.  To
+   ensure compatibility with validating clients, network operators MUST
+   ensure that names under the split-horizon are correctly signed or
+   place them in an unsigned zone.
+
+9.  IANA Considerations
+
+   This document has no IANA actions.
+
+10.  Acknowledgements
+
+   Thanks to Mohamed Boucadair, Jim Reid, Tommy Pauly, Paul Vixie, Paul
+   Wouters and Vinny Parla for the discussion and comments.
+
+11.  References
+
+11.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
+              Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
+              2000, <https://www.rfc-editor.org/info/rfc2826>.
+
+   [RFC4035]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "Protocol Modifications for the DNS Security
+              Extensions", RFC 4035, DOI 10.17487/RFC4035, March 2005,
+              <https://www.rfc-editor.org/info/rfc4035>.
+
+   [RFC6698]  Hoffman, P. and J. Schlyter, "The DNS-Based Authentication
+              of Named Entities (DANE) Transport Layer Security (TLS)
+              Protocol: TLSA", RFC 6698, DOI 10.17487/RFC6698, August
+              2012, <https://www.rfc-editor.org/info/rfc6698>.
+
+   [RFC6762]  Cheshire, S. and M. Krochmal, "Multicast DNS", RFC 6762,
+              DOI 10.17487/RFC6762, February 2013,
+              <https://www.rfc-editor.org/info/rfc6762>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+
+
+Reddy, et al.          Expires September 29, 2022              [Page 12]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+   [RFC8801]  Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
+              Shao, "Discovering Provisioning Domain Names and Data",
+              RFC 8801, DOI 10.17487/RFC8801, July 2020,
+              <https://www.rfc-editor.org/info/rfc8801>.
+
+11.2.  Informative References
+
+   [I-D.ietf-add-ddr]
+              Pauly, T., Kinnear, E., Wood, C. A., McManus, P., and T.
+              Jensen, "Discovery of Designated Resolvers", draft-ietf-
+              add-ddr-05 (work in progress), January 2022.
+
+   [I-D.ietf-add-dnr]
+              Boucadair, M., Reddy, T., Wing, D., Cook, N., and T.
+              Jensen, "DHCP and Router Advertisement Options for the
+              Discovery of Network-designated Resolvers (DNR)", draft-
+              ietf-add-dnr-06 (work in progress), March 2022.
+
+   [I-D.ietf-ipsecme-add-ike]
+              Boucadair, M., Reddy, T., Wing, D., and V. Smyslov,
+              "Internet Key Exchange Protocol Version 2 (IKEv2)
+              Configuration for Encrypted DNS", draft-ietf-ipsecme-add-
+              ike-01 (work in progress), March 2022.
+
+   [RFC6106]  Jeong, J., Park, S., Beloeil, L., and S. Madanapalli,
+              "IPv6 Router Advertisement Options for DNS Configuration",
+              RFC 6106, DOI 10.17487/RFC6106, November 2010,
+              <https://www.rfc-editor.org/info/rfc6106>.
+
+   [RFC7556]  Anipko, D., Ed., "Multiple Provisioning Domain
+              Architecture", RFC 7556, DOI 10.17487/RFC7556, June 2015,
+              <https://www.rfc-editor.org/info/rfc7556>.
+
+   [RFC7686]  Appelbaum, J. and A. Muffett, "The ".onion" Special-Use
+              Domain Name", RFC 7686, DOI 10.17487/RFC7686, October
+              2015, <https://www.rfc-editor.org/info/rfc7686>.
+
+   [RFC8499]  Hoffman, P., Sullivan, A., and K. Fujiwara, "DNS
+              Terminology", BCP 219, RFC 8499, DOI 10.17487/RFC8499,
+              January 2019, <https://www.rfc-editor.org/info/rfc8499>.
+
+   [RFC8598]  Pauly, T. and P. Wouters, "Split DNS Configuration for the
+              Internet Key Exchange Protocol Version 2 (IKEv2)",
+              RFC 8598, DOI 10.17487/RFC8598, May 2019,
+              <https://www.rfc-editor.org/info/rfc8598>.
+
+
+
+
+
+
+Reddy, et al.          Expires September 29, 2022              [Page 13]
+
+Internet-Draft     Validating Claims of DNS Authority         March 2022
+
+
+   [RFC8806]  Kumari, W. and P. Hoffman, "Running a Root Server Local to
+              a Resolver", RFC 8806, DOI 10.17487/RFC8806, June 2020,
+              <https://www.rfc-editor.org/info/rfc8806>.
+
+   [RFC9162]  Laurie, B., Messeri, E., and R. Stradling, "Certificate
+              Transparency Version 2.0", RFC 9162, DOI 10.17487/RFC9162,
+              December 2021, <https://www.rfc-editor.org/info/rfc9162>.
+
+Authors' Addresses
+
+   Tirumaleswar Reddy
+   Akamai
+   Embassy Golf Link Business Park
+   Bangalore, Karnataka  560071
+   India
+
+   Email: kondtir@gmail.com
+
+
+   Dan Wing
+   Citrix Systems, Inc.
+   4988 Great America Pkwy
+   Santa Clara, CA  95054
+   USA
+
+   Email: danwing@gmail.com
+
+
+   Kevin Smith
+   Vodafone Group
+   One Kingdom Street
+   London
+   UK
+
+   Email: kevin.smith@vodafone.com
+
+
+   Benjamin Schwartz
+   Google LLC
+
+   Email: bemasc@google.com
+
+
+
+
+
+
+
+
+
+
+Reddy, et al.          Expires September 29, 2022              [Page 14]
