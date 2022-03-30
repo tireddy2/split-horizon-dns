@@ -5,15 +5,15 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: September 30, 2022                                       Citrix
+Expires: October 1, 2022                                          Citrix
                                                                 K. Smith
                                                                 Vodafone
                                                              B. Schwartz
                                                                   Google
-                                                          March 29, 2022
+                                                          March 30, 2022
 
 
-                   Validating Claims of DNS Authority
+     Establishing Local DNS Authority in Split-Horizon Environments
                 draft-reddy-add-enterprise-split-dns-10
 
 Abstract
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on September 30, 2022.
+   This Internet-Draft will expire on October 1, 2022.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Reddy, et al.          Expires September 30, 2022               [Page 1]
+Reddy, et al.            Expires October 1, 2022                [Page 1]
 
-Internet-Draft     Validating Claims of DNS Authority         March 2022
+Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
    carefully, as they describe your rights and restrictions with respect
@@ -67,29 +67,31 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   4
      2.1.  Validated Split-Horizon . . . . . . . . . . . . . . . . .   4
-     2.2.  Domain Camping  . . . . . . . . . . . . . . . . . . . . .   4
    3.  Scope . . . . . . . . . . . . . . . . . . . . . . . . . . . .   4
-   4.  Learning Local Claims of DNS Authority  . . . . . . . . . . .   4
-     4.1.  Host Configuration  . . . . . . . . . . . . . . . . . . .   4
-     4.2.  Provisioning Domains dnsZones . . . . . . . . . . . . . .   5
-   5.  Validating Claims of DNS Authority  . . . . . . . . . . . . .   5
-     5.1.  Using Pre-configured Public Resolver  . . . . . . . . . .   6
-     5.2.  Using DNSSEC  . . . . . . . . . . . . . . . . . . . . . .   6
-   6.  Examples of Split-Horizon DNS Configuration . . . . . . . . .   6
-     6.1.  Split-Horizon Entire Zone . . . . . . . . . . . . . . . .   6
-       6.1.1.  Verification using Public Resolver  . . . . . . . . .   8
-       6.1.2.  Verification using DNSSEC . . . . . . . . . . . . . .   9
-     6.2.  Split-Horizon Only Subdomain of Zone  . . . . . . . . . .  11
-   7.  Split-Horizon DNS Configuration for IKEv2 . . . . . . . . . .  11
-   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
-   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  12
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  12
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .  12
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  13
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
+   4.  Local Domain Hint Mechanisms  . . . . . . . . . . . . . . . .   4
+     4.1.  DHCP Options  . . . . . . . . . . . . . . . . . . . . . .   4
+     4.2.  Host Configuration  . . . . . . . . . . . . . . . . . . .   5
+     4.3.  Provisioning Domains dnsZones . . . . . . . . . . . . . .   6
+     4.4.  Split DNS Configuration for IKEv2 . . . . . . . . . . . .   6
+   5.  Establishing Local DNS Authority  . . . . . . . . . . . . . .   6
+   6.  Validating Authority over Local Domain Hints  . . . . . . . .   6
+     6.1.  Using Pre-configured Public Resolver  . . . . . . . . . .   7
+     6.2.  Using DNSSEC  . . . . . . . . . . . . . . . . . . . . . .   7
+   7.  Examples of Split-Horizon DNS Configuration . . . . . . . . .   7
+     7.1.  Split-Horizon Entire Zone . . . . . . . . . . . . . . . .   8
+       7.1.1.  Verification using Public Resolver  . . . . . . . . .   9
+       7.1.2.  Verification using DNSSEC . . . . . . . . . . . . . .  10
+     7.2.  Split-Horizon Only Subdomain of Zone  . . . . . . . . . .  12
+   8.  Validation with IKEv2 . . . . . . . . . . . . . . . . . . . .  12
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  12
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
+   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  12
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  13
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  13
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  13
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  15
 
 1.  Introduction
 
@@ -103,17 +105,18 @@ Table of Contents
    depending on a local policy, for each query.  We term such an
    implementation a "hybrid resolver".
 
+
+
+
+
+Reddy, et al.            Expires October 1, 2022                [Page 2]
+
+Internet-Draft      Establishing Local DNS Authority          March 2022
+
+
    Most DNS resolvers are hybrids of some kind.  For example, stub
    resolvers frequently support a local "hosts file" that preempts query
    forwarding, and most DNS forwarders and full resolvers can also serve
-
-
-
-Reddy, et al.          Expires September 30, 2022               [Page 2]
-
-Internet-Draft     Validating Claims of DNS Authority         March 2022
-
-
    responses from a local zone file.  Other standardized hybrid
    resolution behaviors include Local Root [RFC8806], mDNS [RFC6762],
    and NXDOMAIN synthesis for .onion [RFC7686].
@@ -136,14 +139,36 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
    hybrid resolver, while using a different resolution method for some
    or all other names.
 
-   To achieve the required security properties, clients must be able to
-   authenticate the DNS servers provided by the network, for example
-   using the techniques proposed in [I-D.ietf-add-dnr] and
-   [I-D.ietf-add-ddr], and prove that they are authorized to serve the
-   offered split-horizon DNS names.  As a result, use of this
-   specification is limited to servers that support authenticated
-   encryption and split-horizon DNS names that are properly rooted in
-   the global DNS.
+   There are several existing mechanisms for a network to provide
+   clients with "local domain hints", listing domain names that have
+   special treatment in this network (Section 4).  However, none of the
+   local domain hint mechanisms enable clients to determine whether this
+   special treatment is authorized by the domain owner.  Instead, these
+   specifications require clients to make their own determinations about
+   whether to trust and rely on these hints.
+
+   This specification describes a protocol between domains, networks,
+   and clients that allows the network to establish its authority over a
+   domain to a client (Section 5).  Clients can use this protocol to
+   confirm that a local domain hint was authorized by the domain
+   (Section 6), which might influence its processing of that hint.
+
+   This specification relies on securely identified local DNS servers
+   and globally valid NS records.  Use of this specification is
+   therefore limited to servers that support authenticated encryption
+   and split-horizon DNS names that are properly rooted in the global
+   DNS.
+
+
+
+
+
+
+
+Reddy, et al.            Expires October 1, 2022                [Page 3]
+
+Internet-Draft      Establishing Local DNS Authority          March 2022
+
 
 2.  Terminology
 
@@ -159,42 +184,15 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
    'Encrypted DNS' refers to a DNS protocol that provides an encrypted
    channel between a DNS client and server (e.g., DoT, DoH, or DoQ).
 
-   The terms 'Validated Split-Horizon' and 'Domain Camping' are also
-   defined.
-
-
-
-
-Reddy, et al.          Expires September 30, 2022               [Page 3]
-
-Internet-Draft     Validating Claims of DNS Authority         March 2022
-
+   The term 'Validated Split-Horizon' is also defined.
 
 2.1.  Validated Split-Horizon
 
    A split horizon configuration for some name is considered "validated"
-   if any parent of that name has given the local network permission to
-   serve its own responses for that name.  Such validation generally
-   extend to the entire subtree of names below the authorization point.
-
-2.2.  Domain Camping
-
-   Domain Camping refers to operating a nameserver which claims to be
-   authoritative for a zone, but actually isn't.  For example, a domain
-   called example.com on the Internet and an internal DNS server also
-   claims to be authoritative for example.com, but has no delegation
-   from example.com on the Internet.  Someone might domain camp on a
-   popular domain name providing the ability to monitor queries and
-   modify answers for that domain.
-
-   A common variation on domain camping is "NXDOMAIN camping", in which
-   a nameserver claims a zone that does not exist in the global DNS.
-   This is a form of domain camping because it seizes a portion of the
-   parent zone without permission.  The use of nonexistent TLDs for
-   local services is a form of NXDOMAIN camping on the root zone.
-
-   Any form of domain camping likely violates the IAB's guidance
-   regarding "the Unique DNS Root" [RFC2826].
+   if the network client has confirmed that a parent of that name has
+   authorized the local network to serve its own responses for that
+   name.  Such authorization generally extends to the entire subtree of
+   names below the authorization point.
 
 3.  Scope
 
@@ -203,29 +201,63 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
    detected by the client.  Thus, DNS filtering is not enabled by this
    protocol.
 
-4.  Learning Local Claims of DNS Authority
+4.  Local Domain Hint Mechanisms
 
-   As a first step, the host joins a network and determines if that
-   network contains a local DNS server which claims authority over a
-   zone.  Two methods of performing that function are described below,
-   host configuration and provisioning domains.
+   There are various mechanisms by which a network client might learn
+   "local domain hints", which indicate a special treatment for
+   particular domain names upon joining a network.  This section
+   provides a review of some common and standardized mechanisms for
+   receiving domain hints.
 
-4.1.  Host Configuration
+4.1.  DHCP Options
+
+   There are several DHCP options that convey local domain hints of
+   different kinds.  The most directly relevant is "RDNSS Selection"
+   [RFC6731], which provides "a list of domains ... about which the
+   RDNSS has special knowledge", along with a "High", "Medium", or "Low"
+   preference for each name.  The specification notes the difficulty of
+   relying on these hints without validation:
+
+
+
+
+Reddy, et al.            Expires October 1, 2022                [Page 4]
+
+Internet-Draft      Establishing Local DNS Authority          March 2022
+
+
+      Trustworthiness of an interface and configuration information
+      received over the interface is implementation and/or node
+      deployment dependent, and the details of determining that trust
+      are beyond the scope of this specification.
+
+   Other local domain hints in DHCP include the "Domain Name" [RFC2132],
+   "Access Network Domain Name" [RFC5986], "Client FQDN"
+   [RFC4702][RFC4704], and "Name Service Search" [RFC2937] options.
+   This specification may help clients to interpret these hints.  For
+   example, a rogue DHCP server could use the "Client FQDN" option to
+   assign a client the name "www.example.com" in order to prevent the
+   client from reaching the true "www.example.com".  A client could use
+   this specification to check the network's authority over this name,
+   and adjust its behavior to avoid this attack if authority is not
+   established.
+
+   The Domain Search option [RFC3397] [RFC3646], which offers clients a
+   way to expand short names into Fully Qualified Domain Names, is not a
+   "local domain hint" by this definition, because it does not modify
+   the processing of any specific domain.  (The specification notes that
+   this option can be a "fruitful avenue of attack for a rogue DHCP
+   server", and provides a number of cautions against accepting it
+   unconditionally.)
+
+4.2.  Host Configuration
 
    A host can be configured with DNS information when it joins a
    network, including when it brings up VPN (which is also considered
-   joining a(n additional) network, detailed in Section 7).  Existing
+   joining a(n additional) network, detailed in Section 8).  Existing
    implementations determine the host has joined a certain network via
    SSID, IP subnet assigned, DNS server IP address or name, and other
    similar mechanisms.  For example, one existing implementation
-
-
-
-Reddy, et al.          Expires September 30, 2022               [Page 4]
-
-Internet-Draft     Validating Claims of DNS Authority         March 2022
-
-
    determines the host has joined an internal network because the DHCP-
    assigned IP address belongs to the company's IP address (as assigned
    by the regional IP addressing authority) and the DHCP-advertised DNS
@@ -238,66 +270,95 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
    Because a rogue network can simulate all or most of the above
    characteristics this specification details how to validate these
-   claims in Section 5.
+   claims in Section 6.
 
-4.2.  Provisioning Domains dnsZones
+
+
+
+
+
+Reddy, et al.            Expires October 1, 2022                [Page 5]
+
+Internet-Draft      Establishing Local DNS Authority          March 2022
+
+
+4.3.  Provisioning Domains dnsZones
 
    Provisioning Domains (PvDs) are defined in [RFC7556] as sets of
    network configuration information that clients can use to access
    networks, including rules for DNS resolution and proxy configuration.
-   The PvD Key dnsZones is defined in [RFC8801].  The PvD Key dnsZones
-   notifies clients of names for which one of the network-provided
-   resolvers is authoritative.  Attempting to resolve these names via
-   another resolver might fail or return results that are not correct
-   for this network.
+   The PvD Key "dnsZones" is defined in [RFC8801] as a list of "DNS
+   zones searchable and accessible" in this provisioning domain.
+   Attempting to resolve these names via another resolver might fail or
+   return results that are not correct for this network.
 
-   Each dnsZones entry indicates a claim of authority over a domain and
-   its subdomains.  For example, if the dnsZones entry is
-   "example.test", this covers "example.test", "www.example.test", and
-   "mail.eng.example.test", but not "otherexample.test" or
-   "example.test.net".
+4.4.  Split DNS Configuration for IKEv2
 
-   [RFC8801] defines a mechanism for discovering multiple Explicit PvDs
-   on a single network and their Additional Information by means of an
-   HTTP-over-TLS query using a URI derived from the PvD ID.  This set of
-   additional configuration information is referred to as a Web
-   Provisioning Domain (Web PvD).  The PvD RA option defined in
-   [RFC8801] SHOULD set the H-flag to indicate that Additional
-   Information is available.  This Additional Information JSON object
-   SHOULD include the "dnsZones" key to define the DNS domains for which
-   the network claims authority.
+   In IKEv2 VPNs, the INTERNAL_DNS_DOMAIN configuration attribute can be
+   used to indicate that a domain is "internal" to the VPN [RFC8598].
+   To prevent abuse, the specification notes various possible
+   restrictions on the use of this attribute:
 
-5.  Validating Claims of DNS Authority
+      "If a client is configured by local policy to only accept a
+      limited set of INTERNAL_DNS_DOMAIN values, the client MUST ignore
+      any other INTERNAL_DNS_DOMAIN values."
 
-   The client validates each of the learned DNS claim of authority
-   learned above using a public resolver or DNSSEC.
+      "IKE clients MAY want to require whitelisted domains for Top-Level
+      Domains (TLDs) and Second-Level Domains (SLDs) to further prevent
+      malicious DNS redirections for well-known domains."
 
-   Each learned DNS claim of authority is authorized only for the
-   specific resolvers whose names appear in its NS RRSet.  If a network
+   Within these guidelines, a client could adopt a local policy of
+   accepting INTERNAL_DNS_DOMAIN values only when it can validate the
+   local DNS server's authority over those names as described in this
+   specification.
+
+5.  Establishing Local DNS Authority
+
+   To establish its authority over some DNS zone, a participating
+   network MUST offer one or more encrypted resolvers via DNR
+   [I-D.ietf-add-dnr] or an equivalent mechanism (see Section 8).  At
+   least one of these resolvers' Authentication Domain Names (ADNs) MUST
+   appear in an NS record for that zone.  This arrangement establishes
+   this resolver's authority over the zone.
+
+6.  Validating Authority over Local Domain Hints
+
+   To validate the network's authority over a domain name, participating
+   clients MUST resolve the NS record for that name.  If the resolution
+   result is NODATA, the client MUST remove the last label and repeat
+   the query until a response other than NODATA is received.
+
+   Once the NS record has been resolved, the client MUST check if each
+   local encrypted resolver's Authentication Domain Name appears in the
 
 
 
-Reddy, et al.          Expires September 30, 2022               [Page 5]
+Reddy, et al.            Expires October 1, 2022                [Page 6]
 
-Internet-Draft     Validating Claims of DNS Authority         March 2022
+Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
-   offers multiple encrypted resolvers (for example via DNR or via host
-   configuration), each DNS zone entry may be authorized for distinct
-   subset(s) of the network-provided resolvers.
+   NS record.  The client SHALL regard each such resolver as
+   authoritative for the zone of this NS record.
+
+   Each validation of authority applies only to the specific resolvers
+   whose names appear in the NS RRSet.  If a network offers multiple
+   encrypted resolvers, each DNS entry may be authorized for a distinct
+   subset of the network-provided resolvers.
 
    A zone is termed a "Validated Split-Horizon zone" after successful
-   validation by a public resolver or by DNSSEC.
+   validation using a "tamperproof" NS resolution method, i.e. a method
+   that is not subject to interference by the local network operator.
+   Two possible tamperproof resolution methods are presented below.
 
-5.1.  Using Pre-configured Public Resolver
+6.1.  Using Pre-configured Public Resolver
 
-   The client sends an NS query for the domain in dnsZones to a pre-
-   configured resolver that is external to the network, over a secure
-   transport.  Clients SHOULD apply whatever acceptance rules they would
-   otherwise apply when using this resolver (e.g. checking the AD bit,
-   validating RRSIGs).
+   The client sends the NS query to a pre-configured resolver that is
+   external to the network, over a secure transport.  Clients SHOULD
+   apply whatever acceptance rules they would otherwise apply when using
+   this resolver (e.g. checking the AD bit, validating RRSIGs).
 
-5.2.  Using DNSSEC
+6.2.  Using DNSSEC
 
    The client resolves the NS record using any resolution method of its
    choice (e.g. querying one of the network-provided resolvers,
@@ -305,38 +366,40 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
    validation locally [RFC6698].  The result is processed based on its
    DNSSEC validation state (Section 4.3 of [RFC4035]):
 
-   Secure:  the NS record is used for validation.
+   Secure:  the response is used for validation.
 
-   Bogus or Indeterminate:  the record is rejected and validation is
+   Bogus or Indeterminate:  the response is rejected and validation is
       considered to have failed.
 
    Insecure:  the client SHOULD retry the validation process using a
-      different method, such as the one in Section 5.1, to ensure
+      different method, such as the one in Section 6.1, to ensure
       compatibility with unsigned names.
 
-6.  Examples of Split-Horizon DNS Configuration
+7.  Examples of Split-Horizon DNS Configuration
 
    Two examples are shown below.  The first example showing an company
    with an internal-only DNS server resolving the entire zone for that
    company (e.g., *.example.com) the second example resolving only a
    subdomain of the company's zone (e.g., *.internal.example.com).
 
-6.1.  Split-Horizon Entire Zone
+
+
+
+
+
+
+
+Reddy, et al.            Expires October 1, 2022                [Page 7]
+
+Internet-Draft      Establishing Local DNS Authority          March 2022
+
+
+7.1.  Split-Horizon Entire Zone
 
    Consider an organization that operates "example.com", and runs a
    different version of its global domain on its internal network.
    Today, on the Internet it publishes two NS records, "ns1.example.com"
    and "ns2.example.com".
-
-
-
-
-
-
-Reddy, et al.          Expires September 30, 2022               [Page 6]
-
-Internet-Draft     Validating Claims of DNS Authority         March 2022
-
 
    The host and network first need mutual support one of the mechanisms
    described in learning (Section 4).  Shown in Figure 1 is learning
@@ -382,16 +445,9 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-
-
-
-
-
-
-
-Reddy, et al.          Expires September 30, 2022               [Page 7]
+Reddy, et al.            Expires October 1, 2022                [Page 8]
 
-Internet-Draft     Validating Claims of DNS Authority         March 2022
+Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 +---------+            +--------------------+  +------------+ +--------+
@@ -434,7 +490,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
              Figure 1: Learning Local Claims of DNS Authority
 
-6.1.1.  Verification using Public Resolver
+7.1.1.  Verification using Public Resolver
 
    The figure below shows the steps performed to verify the local claims
    of DNS authority using a public resolver.
@@ -445,9 +501,9 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 30, 2022               [Page 8]
+Reddy, et al.            Expires October 1, 2022                [Page 9]
 
-Internet-Draft     Validating Claims of DNS Authority         March 2022
+Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
       dnsZones.  The NS lookup for "example.com" will return
@@ -492,7 +548,7 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
              Figure 2: Verifying Claims using Public Resolver
 
-6.1.2.  Verification using DNSSEC
+7.1.2.  Verification using DNSSEC
 
    The figure below shows the steps performed to verify the local claims
    of DNS authority using DNSSEC.
@@ -501,9 +557,9 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 30, 2022               [Page 9]
+Reddy, et al.            Expires October 1, 2022               [Page 10]
 
-Internet-Draft     Validating Claims of DNS Authority         March 2022
+Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
    Steps 8-9:  The client queries the network encrypted resolver
@@ -557,97 +613,75 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
 
 
 
-Reddy, et al.          Expires September 30, 2022              [Page 10]
+Reddy, et al.            Expires October 1, 2022               [Page 11]
 
-Internet-Draft     Validating Claims of DNS Authority         March 2022
+Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
-6.2.  Split-Horizon Only Subdomain of Zone
+7.2.  Split-Horizon Only Subdomain of Zone
 
    A subdomain can also be used for all internal DNS names (e.g., the
    zone internal.example.com exists only on the internal DNS server).
    For successful validation described in this document the the internal
    DNS server will need a certificate signed by a CA trusted by the
    client.  If a publicly-signed certificate is used, this means the
-   internal zone name will exist in Certificate Transparancy [RFC9162]
+   internal zone name will exist in Certificate Transparency [RFC9162]
    logs.  However, individual host names (e.g.,
    www.internal.example.com) will not be listed in Certificate
    Transparancy logs for the validation described in this document.
 
    For such a name internal.example.com the message flows work
-   identically as with Section 6.1, the only difference that queries for
+   identically as with Section 7.1, the only difference that queries for
    example.com (e.g., www.example.com) which are not within
    internal.example.com are sent to the normal resolver rather than to
    the internal resolver.
 
-7.  Split-Horizon DNS Configuration for IKEv2
-
-   The split-tunnel Virtual Private Network (VPN) configuration allows
-   the endpoint to access resources that reside in the VPN [RFC8598] via
-   the tunnel; other traffic not destined to the VPN does not traverse
-   the tunnel.  In contrast, a non-split-tunnel VPN configuration causes
-   all traffic to traverse the tunnel into the VPN.
+8.  Validation with IKEv2
 
    When the VPN tunnel is IPsec, the encrypted DNS resolver hosted by
    the VPN service provider can be securely discovered by the endpoint
    using the ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types
-   defined in [I-D.ietf-ipsecme-add-ike].  For split-tunnel VPN
-   configurations, the endpoint uses the discovered encrypted DNS server
-   to resolve domain names for which the VPN provider claims authority.
-   For non-split-tunnel VPN configurations, the endpoint uses the
-   discovered encrypted DNS server to resolve both global and private
-   domain names.  For split-tunnel VPN configurations, the IKE client
-   can use any one of the mechanisms discussed in Section 5 to determine
-   if the VPN service provider is authoritative over the Split-Horizon
-   DNS domains.
+   defined in [I-D.ietf-ipsecme-add-ike].
 
    Other VPN tunnel types have similar configuration capabilities, not
    detailed here.
 
-8.  Security Considerations
-
-   When using dnsZones (Section 4.2) the content of dnsZones may be
-   passed to another (DNS) program for processing.  As with any network
-   input, the content SHOULD be considered untrusted and handled
-   accordingly.  The client must perform the mechanisms discussed in
-
-
-
-Reddy, et al.          Expires September 30, 2022              [Page 11]
-
-Internet-Draft     Validating Claims of DNS Authority         March 2022
-
-
-   Section 5 to determine if the network-designated encrypted resolvers
-   are authoritative over the domains in dnsZones.  If they are not, the
-   client must ignore those dnsZones.
+9.  Security Considerations
 
    This specification does not alter DNSSEC validation behaviour.  To
    ensure compatibility with validating clients, network operators MUST
    ensure that names under the split-horizon are correctly signed or
    place them in an unsigned zone.
 
-9.  IANA Considerations
+10.  IANA Considerations
 
    This document has no IANA actions.
 
-10.  Acknowledgements
+11.  Acknowledgements
 
    Thanks to Mohamed Boucadair, Jim Reid, Tommy Pauly, Paul Vixie, Paul
    Wouters and Vinny Parla for the discussion and comments.
 
-11.  References
 
-11.1.  Normative References
+
+
+
+
+
+
+Reddy, et al.            Expires October 1, 2022               [Page 12]
+
+Internet-Draft      Establishing Local DNS Authority          March 2022
+
+
+12.  References
+
+12.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
-
-   [RFC2826]  Internet Architecture Board, "IAB Technical Comment on the
-              Unique DNS Root", RFC 2826, DOI 10.17487/RFC2826, May
-              2000, <https://www.rfc-editor.org/info/rfc2826>.
 
    [RFC4035]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "Protocol Modifications for the DNS Security
@@ -667,24 +701,12 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
-
-
-Reddy, et al.          Expires September 30, 2022              [Page 12]
-
-Internet-Draft     Validating Claims of DNS Authority         March 2022
-
-
    [RFC8801]  Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
               Shao, "Discovering Provisioning Domain Names and Data",
               RFC 8801, DOI 10.17487/RFC8801, July 2020,
               <https://www.rfc-editor.org/info/rfc8801>.
 
-11.2.  Informative References
-
-   [I-D.ietf-add-ddr]
-              Pauly, T., Kinnear, E., Wood, C. A., McManus, P., and T.
-              Jensen, "Discovery of Designated Resolvers", draft-ietf-
-              add-ddr-05 (work in progress), January 2022.
+12.2.  Informative References
 
    [I-D.ietf-add-dnr]
               Boucadair, M., Reddy, T., Wing, D., Cook, N., and T.
@@ -698,14 +720,71 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
               Configuration for Encrypted DNS", draft-ietf-ipsecme-add-
               ike-01 (work in progress), March 2022.
 
+
+
+
+
+
+Reddy, et al.            Expires October 1, 2022               [Page 13]
+
+Internet-Draft      Establishing Local DNS Authority          March 2022
+
+
+   [RFC2132]  Alexander, S. and R. Droms, "DHCP Options and BOOTP Vendor
+              Extensions", RFC 2132, DOI 10.17487/RFC2132, March 1997,
+              <https://www.rfc-editor.org/info/rfc2132>.
+
+   [RFC2937]  Smith, C., "The Name Service Search Option for DHCP",
+              RFC 2937, DOI 10.17487/RFC2937, September 2000,
+              <https://www.rfc-editor.org/info/rfc2937>.
+
+   [RFC3397]  Aboba, B. and S. Cheshire, "Dynamic Host Configuration
+              Protocol (DHCP) Domain Search Option", RFC 3397,
+              DOI 10.17487/RFC3397, November 2002,
+              <https://www.rfc-editor.org/info/rfc3397>.
+
+   [RFC3646]  Droms, R., Ed., "DNS Configuration options for Dynamic
+              Host Configuration Protocol for IPv6 (DHCPv6)", RFC 3646,
+              DOI 10.17487/RFC3646, December 2003,
+              <https://www.rfc-editor.org/info/rfc3646>.
+
+   [RFC4702]  Stapp, M., Volz, B., and Y. Rekhter, "The Dynamic Host
+              Configuration Protocol (DHCP) Client Fully Qualified
+              Domain Name (FQDN) Option", RFC 4702,
+              DOI 10.17487/RFC4702, October 2006,
+              <https://www.rfc-editor.org/info/rfc4702>.
+
+   [RFC4704]  Volz, B., "The Dynamic Host Configuration Protocol for
+              IPv6 (DHCPv6) Client Fully Qualified Domain Name (FQDN)
+              Option", RFC 4704, DOI 10.17487/RFC4704, October 2006,
+              <https://www.rfc-editor.org/info/rfc4704>.
+
+   [RFC5986]  Thomson, M. and J. Winterbottom, "Discovering the Local
+              Location Information Server (LIS)", RFC 5986,
+              DOI 10.17487/RFC5986, September 2010,
+              <https://www.rfc-editor.org/info/rfc5986>.
+
    [RFC6106]  Jeong, J., Park, S., Beloeil, L., and S. Madanapalli,
               "IPv6 Router Advertisement Options for DNS Configuration",
               RFC 6106, DOI 10.17487/RFC6106, November 2010,
               <https://www.rfc-editor.org/info/rfc6106>.
 
+   [RFC6731]  Savolainen, T., Kato, J., and T. Lemon, "Improved
+              Recursive DNS Server Selection for Multi-Interfaced
+              Nodes", RFC 6731, DOI 10.17487/RFC6731, December 2012,
+              <https://www.rfc-editor.org/info/rfc6731>.
+
    [RFC7556]  Anipko, D., Ed., "Multiple Provisioning Domain
               Architecture", RFC 7556, DOI 10.17487/RFC7556, June 2015,
               <https://www.rfc-editor.org/info/rfc7556>.
+
+
+
+
+Reddy, et al.            Expires October 1, 2022               [Page 14]
+
+Internet-Draft      Establishing Local DNS Authority          March 2022
+
 
    [RFC7686]  Appelbaum, J. and A. Muffett, "The ".onion" Special-Use
               Domain Name", RFC 7686, DOI 10.17487/RFC7686, October
@@ -719,16 +798,6 @@ Internet-Draft     Validating Claims of DNS Authority         March 2022
               Internet Key Exchange Protocol Version 2 (IKEv2)",
               RFC 8598, DOI 10.17487/RFC8598, May 2019,
               <https://www.rfc-editor.org/info/rfc8598>.
-
-
-
-
-
-
-Reddy, et al.          Expires September 30, 2022              [Page 13]
-
-Internet-Draft     Validating Claims of DNS Authority         March 2022
-
 
    [RFC8806]  Kumari, W. and P. Hoffman, "Running a Root Server Local to
               a Resolver", RFC 8806, DOI 10.17487/RFC8806, June 2020,
@@ -767,6 +836,12 @@ Authors' Addresses
    Email: kevin.smith@vodafone.com
 
 
+
+Reddy, et al.            Expires October 1, 2022               [Page 15]
+
+Internet-Draft      Establishing Local DNS Authority          March 2022
+
+
    Benjamin Schwartz
    Google LLC
 
@@ -781,4 +856,41 @@ Authors' Addresses
 
 
 
-Reddy, et al.          Expires September 30, 2022              [Page 14]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Reddy, et al.            Expires October 1, 2022               [Page 16]

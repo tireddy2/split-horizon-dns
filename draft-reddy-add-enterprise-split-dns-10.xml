@@ -34,7 +34,9 @@
 <rfc category="std" docName="draft-reddy-add-enterprise-split-dns-10"
      ipr="trust200902">
   <front>
-    <title abbrev="Validating Claims of DNS Authority">Validating Claims of DNS Authority</title>
+    <title abbrev="Establishing Local DNS Authority">
+      Establishing Local DNS Authority in Split-Horizon Environments
+    </title>
     
     <author fullname="Tirumaleswar Reddy" initials="T." surname="Reddy">
       <organization>Akamai</organization>
@@ -152,14 +154,25 @@
       while using a different resolution method for some or all other
       names.</t>
 
-      <t>To achieve the required security properties, clients must be able to
-      authenticate the DNS servers provided by the network, for example using
-      the techniques proposed in <xref target="I-D.ietf-add-dnr"></xref> and
-      <xref target="I-D.ietf-add-ddr"></xref>, and prove that they are
-      authorized to serve the offered split-horizon DNS names. As a result,
-      use of this specification is limited to servers that support
-      authenticated encryption and split-horizon DNS names that are properly
-      rooted in the global DNS.</t>
+      <t>There are several existing mechanisms for a network to provide
+      clients with "local domain hints", listing domain names that have
+      special treatment in this network (<xref target="learning"/>).
+      However, none of the local domain hint mechanisms enable clients to
+      determine whether this special treatment is authorized by the domain
+      owner.  Instead, these specifications require clients to make their own
+      determinations about whether to trust and rely on these hints.</t>
+
+      <t>This specification describes a protocol between domains, networks,
+      and clients that allows the network to establish its authority over a
+      domain to a client (<xref target="establishing"/>).  Clients can use
+      this protocol to confirm that a local domain hint was authorized by the
+      domain (<xref target="validating"/>), which might influence its processing
+      of that hint.</t>
+
+      <t>This specification relies on securely identified local DNS servers and
+      globally valid NS records.  Use of this specification is therefore limited
+      to servers that support authenticated encryption and split-horizon DNS names
+      that are properly rooted in the global DNS.</t>
     </section>
 
     <section anchor="notation" title="Terminology">
@@ -176,34 +189,14 @@
       <t>'Encrypted DNS' refers to a DNS protocol that provides an encrypted
       channel between a DNS client and server (e.g., DoT, DoH, or DoQ).</t>
 
-      <t>The terms 'Validated Split-Horizon' and 'Domain Camping' are also
-      defined.</t>
+      <t>The term 'Validated Split-Horizon' is also defined.</t>
 
       <section title="Validated Split-Horizon">
         <t>A split horizon configuration for some name is considered
-        "validated" if any parent of that name has given the local network
-        permission to serve its own responses for that name. Such
-        validation generally extend to the entire subtree of names below
-        the authorization point.</t>
-      </section>
-
-      <section title="Domain Camping">
-        <t>Domain Camping refers to operating a nameserver which claims to be
-        authoritative for a zone, but actually isn't. For example, a domain
-        called example.com on the Internet and an internal DNS server also
-        claims to be authoritative for example.com, but has no delegation from
-        example.com on the Internet. Someone might domain camp on a popular
-        domain name providing the ability to monitor queries and modify
-        answers for that domain.</t>
-
-        <t>A common variation on domain camping is "NXDOMAIN camping", in
-        which a nameserver claims a zone that does not exist in the global
-        DNS. This is a form of domain camping because it seizes a portion of
-        the parent zone without permission. The use of nonexistent TLDs for
-        local services is a form of NXDOMAIN camping on the root zone.</t>
-
-        <t>Any form of domain camping likely violates the IAB's guidance
-        regarding "the Unique DNS Root" <xref target="RFC2826"></xref>.</t>
+        "validated" if the network client has confirmed that a parent of that
+        name has authorized the local network to serve its own responses
+        for that name. Such authorization generally extends to the entire
+        subtree of names below the authorization point.</t>
       </section>
     </section>
 
@@ -214,12 +207,48 @@
       enabled by this protocol.</t>
     </section>
     
-    <section anchor="learning" title="Learning Local Claims of DNS Authority">
+    <section anchor="learning" title="Local Domain Hint Mechanisms">
 
-      <t>As a first step, the host joins a network and determines if that
-      network contains a local DNS server which claims authority over a
-      zone.  Two methods of performing that function are described below,
-      host configuration and provisioning domains.</t>
+      <t>There are various mechanisms by which a network client might learn
+      "local domain hints", which indicate a special treatment for particular
+      domain names upon joining a network.  This section provides a review of
+      some common and standardized mechanisms for receiving domain hints.</t>
+
+    <section anchor="dhcp" title="DHCP Options">
+      <t>There are several DHCP options that convey local domain hints of
+      different kinds.  The most directly relevant is "RDNSS Selection"
+      <xref target="RFC6731"/>, which provides "a list of domains ... about
+      which the RDNSS has special knowledge", along with a "High", "Medium",
+      or "Low" preference for each name.  The specification notes the
+      difficulty of relying on these hints without validation:
+      <list><t>
+        Trustworthiness of an interface and configuration information
+        received over the interface is implementation and/or node deployment
+        dependent, and the details of determining that trust are beyond the
+        scope of this specification.
+      </t></list></t>
+
+      <t>Other local domain hints in DHCP include the "Domain Name"
+      <xref target="RFC2132"/>, "Access Network Domain Name"
+      <xref target="RFC5986"/>, "Client FQDN" <xref target="RFC4702"/><xref target="RFC4704"/>,
+      and "Name Service Search" <xref target="RFC2937"/> options.  This
+      specification may help clients to interpret these hints.  For example,
+      a rogue DHCP server could use the "Client FQDN" option to assign a client
+      the name "www.example.com" in order to prevent the client from reaching
+      the true "www.example.com".  A client could use this specification to
+      check the network's authority over this name, and adjust its behavior to
+      avoid this attack if authority is not established.
+      </t>
+
+      <t>The Domain Search option <xref target="RFC3397"/>
+      <xref target="RFC3646"/>, which offers clients
+      a way to expand short names into Fully Qualified Domain Names, is not a
+      "local domain hint" by this definition, because it does not modify the
+      processing of any specific domain.  (The specification notes that this
+      option can be a "fruitful avenue of attack for a rogue DHCP server",
+      and provides a number of cautions against accepting it unconditionally.)
+      </t>
+    </section>
 
 
     <section anchor="hostconfig" title="Host Configuration">
@@ -247,49 +276,73 @@
       <t>Provisioning Domains (PvDs) are defined in <xref
       target="RFC7556"></xref> as sets of network configuration information
       that clients can use to access networks, including rules for DNS
-      resolution and proxy configuration. The PvD Key dnsZones is defined in
-      <xref target="RFC8801"></xref>. The PvD Key dnsZones notifies clients of
-      names for which one of the network-provided resolvers is authoritative.
+      resolution and proxy configuration. The PvD Key "dnsZones" is defined in
+      <xref target="RFC8801"/> as a list of "DNS zones searchable and
+      accessible" in this provisioning domain.
       Attempting to resolve these names via another resolver might fail or
       return results that are not correct for this network.</t>
+    </section> <!-- provisioning domains -->
 
-      <t>Each dnsZones entry indicates a claim of authority over a domain and
-      its subdomains. For example, if the dnsZones entry is "example.test",
-      this covers "example.test", "www.example.test", and
-      "mail.eng.example.test", but not "otherexample.test" or
-      "example.test.net".</t>
-
-      <t><xref target="RFC8801"></xref> defines a mechanism for discovering
-      multiple Explicit PvDs on a single network and their Additional
-      Information by means of an HTTP-over-TLS query using a URI derived from
-      the PvD ID. This set of additional configuration information is referred
-      to as a Web Provisioning Domain (Web PvD). The PvD RA option defined in
-      <xref target="RFC8801"></xref> SHOULD set the H-flag to indicate that
-      Additional Information is available. This Additional Information JSON
-      object SHOULD include the "dnsZones" key to define the DNS domains for
-      which the network claims authority.</t>
-
-      </section> <!-- provisioning domains -->
+    <section title="Split DNS Configuration for IKEv2">
+      <t>In IKEv2 VPNs, the INTERNAL_DNS_DOMAIN configuration attribute can be
+      used to indicate that a domain is "internal" to the VPN
+      <xref target="RFC8598"/>.  To prevent abuse, the specification notes
+      various possible restrictions on the use of this attribute:
+      <list>
+        <t>
+          "If a client is configured by local policy to only accept a limited
+          set of INTERNAL_DNS_DOMAIN values, the client MUST ignore any other
+          INTERNAL_DNS_DOMAIN values."
+        </t>
+        <t>
+          "IKE clients MAY want to require whitelisted domains for Top-Level
+          Domains (TLDs) and Second-Level Domains (SLDs) to further prevent
+          malicious DNS redirections for well-known domains."
+        </t>
+      </list>
+      Within these guidelines, a client could adopt a local policy of
+      accepting INTERNAL_DNS_DOMAIN values only when it can validate the
+      local DNS server's authority over those names as described in this
+      specification.</t>
+    </section>
 
 </section>  <!-- Learning -->
 
-      <section anchor="validating"
-               title="Validating Claims of DNS Authority">
-        <t>The client validates each of the learned DNS claim of authority learned above
-	using a public resolver or DNSSEC.</t>
-	
-	<t>Each learned DNS claim of authority is authorized only for the specific
-        resolvers whose names appear in its NS RRSet. If a network offers
-        multiple encrypted resolvers (for example via DNR or via host
-	configuration), each DNS zone entry may be authorized for distinct
-	subset(s) of the network-provided resolvers.</t>
+      <section anchor="establishing" title="Establishing Local DNS Authority">
+        <t>To establish its authority over some DNS zone, a participating
+        network MUST offer one or more encrypted resolvers via DNR
+        <xref target="I-D.ietf-add-dnr"/> or an equivalent mechanism
+        (see <xref target="vpn"/>).  At least one of these
+        resolvers' Authentication Domain Names (ADNs) MUST appear in an NS
+        record for that zone.  This arrangement establishes this resolver's
+        authority over the zone.</t>
+      </section>
 
-	<t>A zone is termed a "Validated Split-Horizon zone" after successful
-	validation by a public resolver or by DNSSEC.</t>
+      <section anchor="validating"
+               title="Validating Authority over Local Domain Hints">
+        <t>To validate the network's authority over a domain name, participating
+        clients MUST resolve the NS record for that name.  If the resolution
+        result is NODATA, the client MUST remove the last label and repeat
+        the query until a response other than NODATA is received.</t>
+
+        <t>Once the NS record has been resolved, the client MUST check if
+        each local encrypted resolver's Authentication Domain Name appears in the
+        NS record.  The client SHALL regard each such resolver as
+        authoritative for the zone of this NS record.</t>
+	
+      	<t>Each validation of authority applies only to the specific
+        resolvers whose names appear in the NS RRSet. If a network offers
+        multiple encrypted resolvers, each DNS entry may be authorized for a distinct
+	      subset of the network-provided resolvers.</t>
+
+        <t>A zone is termed a "Validated Split-Horizon zone" after successful
+        validation using a "tamperproof" NS resolution method, i.e. a method
+        that is not subject to interference by the local network operator.
+        Two possible tamperproof resolution methods are presented below.</t>
 
         <section anchor="validating-public"
                  title="Using Pre-configured Public Resolver">
-          <t>The client sends an NS query for the domain in dnsZones to a
+          <t>The client sends the NS query to a
           pre-configured resolver that is external to the network, over a
           secure transport. Clients SHOULD apply whatever acceptance rules
           they would otherwise apply when using this resolver (e.g. checking
@@ -304,9 +357,9 @@
           processed based on its DNSSEC validation state (Section 4.3 of <xref
           target="RFC4035"></xref>):
 	  <list style="hanging">
-              <t hangText="Secure:"> the NS record is used for validation.</t>
+              <t hangText="Secure:"> the response is used for validation.</t>
 
-              <t hangText="Bogus or Indeterminate:"> the record is rejected and
+              <t hangText="Bogus or Indeterminate:"> the response is rejected and
               validation is considered to have failed.</t>
 
               <t hangText="Insecure:"> the client SHOULD retry the validation process
@@ -531,7 +584,7 @@
   the internal DNS server will need a certificate signed by a CA trusted
   by the client.  If a publicly-signed certificate is used, this means
   the internal zone name will exist in
-  <xref target="RFC9162">Certificate Transparancy</xref> logs.  However,
+  <xref target="RFC9162">Certificate Transparency</xref> logs.  However,
   individual host names   (e.g., www.internal.example.com) will not be listed in Certificate Transparancy
   logs for the validation described in this document.</t>
 
@@ -547,40 +600,17 @@
 
 
 
-    <section anchor="vpn" title="Split-Horizon DNS Configuration for IKEv2">
-      <t>The split-tunnel Virtual Private Network (VPN) configuration allows
-      the endpoint to access resources that reside in the VPN <xref
-      target="RFC8598"></xref> via the tunnel; other traffic not destined to
-      the VPN does not traverse the tunnel. In contrast, a non-split-tunnel
-      VPN configuration causes all traffic to traverse the tunnel into the
-      VPN.</t>
-
+    <section anchor="vpn" title="Validation with IKEv2">
       <t>When the VPN tunnel is IPsec, the encrypted DNS resolver hosted by
       the VPN service provider can be securely discovered by the endpoint
       using the ENCDNS_IP*_* IKEv2 Configuration Payload Attribute Types
-      defined in <xref target="I-D.ietf-ipsecme-add-ike"></xref>. For
-      split-tunnel VPN configurations, the endpoint uses the discovered
-      encrypted DNS server to resolve domain names for which the VPN provider
-      claims authority. For non-split-tunnel VPN configurations, the endpoint
-      uses the discovered encrypted DNS server to resolve both global and
-      private domain names. For split-tunnel VPN configurations, the IKE
-      client can use any one of the mechanisms discussed in <xref
-      target="validating"></xref> to determine if the VPN service provider is
-      authoritative over the Split-Horizon DNS domains.</t>
+      defined in <xref target="I-D.ietf-ipsecme-add-ike"></xref>.</t>
 
       <t>Other VPN tunnel types have similar configuration capabilities, not
       detailed here.</t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
-      <t>When using dnsZones (<xref target="dnsZones"/>) the content of dnsZones may be passed to another (DNS) program for
-      processing. As with any network input, the content SHOULD be considered
-      untrusted and handled accordingly. The client must perform the
-      mechanisms discussed in <xref target="validating"></xref> to determine if
-      the network-designated encrypted resolvers are authoritative over the
-      domains in dnsZones. If they are not, the client must ignore those
-      dnsZones.</t>
-
       <t>This specification does not alter DNSSEC validation behaviour. To
       ensure compatibility with validating clients, network operators MUST
       ensure that names under the split-horizon are correctly signed or place
@@ -608,8 +638,6 @@
 
       <?rfc include='reference.RFC.8801'?>
 
-      <?rfc include='reference.RFC.2826'?>
-
       <?rfc include='reference.RFC.6762'?>
 
       <?rfc include='reference.RFC.6698'?>
@@ -632,11 +660,25 @@
 
       <?rfc include='reference.RFC.6106' ?>
 
+      <?rfc include='reference.RFC.3646' ?>
+
+      <?rfc include='reference.RFC.3397' ?>
+
+      <?rfc include='reference.RFC.4702' ?>
+
+      <?rfc include='reference.RFC.4704' ?>
+
+      <?rfc include='reference.RFC.6731' ?>
+
+      <?rfc include='reference.RFC.2937' ?>
+
+      <?rfc include='reference.RFC.2132' ?>
+
+      <?rfc include='reference.RFC.5986' ?>
+
       <?rfc include='reference.I-D.ietf-add-dnr'?>
 
       <?rfc include='reference.I-D.ietf-ipsecme-add-ike'?>
-
-      <?rfc include='reference.I-D.ietf-add-ddr' ?>
 
       <!---->
     </references>
