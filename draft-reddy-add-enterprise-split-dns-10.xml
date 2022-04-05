@@ -389,25 +389,21 @@
       <xref target="fig-learn"/> is learning using DNR and PvD.</t>
 
       <t>Validation is then perfomed using either <xref
-      target="fig-verify-public">Public DNS</xref> or <xref
-      target="fig-verify-dnssec">DNSSEC</xref>.</t>
-      
-      <t>Note steps 1-7 determine the local network claims which could also
-      be determined with a priori host configuration and probing the local
-      network (<xref target="learning"/>).</t>
-
+      target="example-verify-public">Public DNS</xref> or <xref
+      target="example-verify-dnssec">DNSSEC</xref>.</t>
+            
       <t><list style="hanging">
-        <t hangText="steps 1-7:">The client determines the network's
-	DNS claims using other standards.  Step 1 the host
-	discovers the network resolvers "ns1.example.com" and
-          "ns2.example.com" and their IP addresses using DNR <xref
-          target="I-D.ietf-add-dnr"></xref>. In step 2  using <xref
-          target="RFC8801"></xref> the client also discovers the PvD FQDN is
-          "pvd.example.com".  In step 3 The client establishes an encrypted DNS
-          connection with "ns1.example.com", validates its TLS certificate,
-          and queries it for "pvd.example.com" to retrieve the PvD JSON
-          object. Note that <xref target="RFC8801"></xref> in Section 4.1
-          mandates the PvD FQDN MUST be resolved using the DNS servers
+        <t hangText="steps 1-2:">The client determines the network's
+	DNS server (ns1.example.com) and Provisioning Domain (pvd.example.com) using
+	<xref target="I-D.ietf-add-dnr">DNR</xref> and <xref
+          target="RFC8801">PvD</xref>, using one of DNR Router Solicitation, DHCPv4,
+	or DHCPv6.</t>
+	<t hangText="step 3-5:">The client connects to the DNR-learned
+	DNS server (ns1.example.com), validates its certificate, and
+	queries for pvd.example.com.</t>
+	<t hangText="steps 6-7:">The client connects to the PvD
+	server, validates its certificate, and retrieves the provisioning
+	domain JSON information.
           indicated by the associated PvD. The PvD contains:<figure>
               <artwork><![CDATA[ {
     "identifier": "pvd.example.com",   
@@ -463,16 +459,16 @@
 ]]></artwork>
       </figure>
 
-      <section title="Verification using Public Resolver">
+      <section anchor="example-verify-public" title="Verification using Public Resolver">
       <t>The figure below shows the steps performed to verify the local claims of DNS authority using a public resolver.</t>
 
       <t><list style="hanging">
-        <t hangText="Steps 8-9:">The client uses an encrypted DNS
+        <t hangText="Steps 1-2:">The client uses an encrypted DNS
           connection to a public resolver (e.g., 1.1.1.1) to issue NS queries
           for the domains in dnsZones. The NS lookup for "example.com" will
           return "ns1.example.com" and "ns2.example.com".</t>
 
-          <t hangText="Step 10:">As the network-provided nameservers are the
+          <t hangText="Step 3:">As the network-provided nameservers are the
           same as the names retrieved from the public resolver and the
           network-designated resolver's certificate includes at least one of
           the names retrieved from the public resolver, the client has
@@ -498,10 +494,10 @@
      |-| validate TLS certificate |             |         |
      | |--------------------------|             |         |
      |                                          |         |
-     | NS? example.com  (8)                     |         |
+     | NS? example.com  (1)                     |         |
      |--------------------------------------------------->|
      |                                          |         |
-     |  NS=ns1.example.com, ns2.example.com (9) |         |
+     |  NS=ns1.example.com, ns2.example.com (2) |         |
      |<---------------------------------------------------|
      | -------------------------------\         |         |
      |-| both DNR ADNs are authorized |         |         |
@@ -510,7 +506,7 @@
      | |---------------------|                  |         |
      |                                          |         |
      |  use network-designated resolver         |         |
-     |  for example.com (10)                    |         |
+     |  for example.com (3)                     |         |
      |----------------------------------------->|         |
      |                                          |         |
 ]]></artwork>
@@ -519,17 +515,17 @@
 
 </section> <!-- public -->
 
-<section title="Verification using DNSSEC">
+<section anchor="example-verify-dnssec" title="Verification using DNSSEC">
           <t>The figure below shows the steps performed to verify the local claims of DNS authority using DNSSEC.</t>
 
       <t><list style="hanging">
-        <t hangText="Steps 8-9:">The client queries the network
+        <t hangText="Steps 1-2:">The client queries the network
 	encrypted resolver
           connection to a public resolver (e.g., 1.1.1.1) to issue NS queries
           for the domains in dnsZones. The NS lookup for "example.com" will
           return "ns1.example.com" and "ns2.example.com".</t>
 
-          <t hangText="Step 10:">As the network-provided nameservers are the
+          <t hangText="Step 3:">As the network-provided nameservers are the
           same as the names retrieved from the public resolver and the
           network-designated resolver's certificate includes at least one of
           the names retrieved from the public resolver, the client has
@@ -549,17 +545,17 @@
 |         |                  | encrypted resolver |
 +---------+                  +--------------------+ 
      |                                          |    
-     |  RRSIG? example.com  (8)                 |         
+     |  RRSIG? example.com  (1)                 |         
      |----------------------------------------->|
-     |  RRSIG=abcdef (9)                        |
+     |  RRSIG=abcdef (2)                        |
      |<-----------------------------------------|     
      |                                          |
-     |  DNSKEY? example.com  (10)               |
+     |  DNSKEY? example.com  (3)                |
      |----------------------------------------->|
-     |  DNSKEY==abcdef (11)                     |
+     |  DNSKEY==zyxwvutsrq (4)                  |
      |<-----------------------------------------|
      |                                          |
-     |  NS=ns1.example.com,ns2.example.com (12) |
+     |  NS=ns1.example.com,ns2.example.com (5)  |
      |<-----------------------------------------|
      | -------------------------------\         |
      |-| both DNR ADNs are authorized |         |
@@ -568,7 +564,7 @@
      | |---------------------|                  |
      |                                          |
      |  use encrypted network-designated        | 
-     |  resolver for example.com (10)           |
+     |  resolver for example.com (6)            |
      |----------------------------------------->|
 ]]></artwork>
       </figure>
