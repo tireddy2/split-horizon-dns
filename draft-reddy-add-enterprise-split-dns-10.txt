@@ -5,12 +5,12 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: October 1, 2022                                          Citrix
+Expires: October 7, 2022                                          Citrix
                                                                 K. Smith
                                                                 Vodafone
                                                              B. Schwartz
                                                                   Google
-                                                          March 30, 2022
+                                                           April 5, 2022
 
 
      Establishing Local DNS Authority in Split-Horizon Environments
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 1, 2022.
+   This Internet-Draft will expire on October 7, 2022.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Reddy, et al.            Expires October 1, 2022                [Page 1]
+Reddy, et al.            Expires October 7, 2022                [Page 1]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
    carefully, as they describe your rights and restrictions with respect
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Reddy, et al.            Expires October 1, 2022                [Page 2]
+Reddy, et al.            Expires October 7, 2022                [Page 2]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
    Most DNS resolvers are hybrids of some kind.  For example, stub
@@ -165,9 +165,9 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022                [Page 3]
+Reddy, et al.            Expires October 7, 2022                [Page 3]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 2.  Terminology
@@ -221,9 +221,9 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022                [Page 4]
+Reddy, et al.            Expires October 7, 2022                [Page 4]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
       Trustworthiness of an interface and configuration information
@@ -277,9 +277,9 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022                [Page 5]
+Reddy, et al.            Expires October 7, 2022                [Page 5]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 4.3.  Provisioning Domains dnsZones
@@ -333,9 +333,9 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022                [Page 6]
+Reddy, et al.            Expires October 7, 2022                [Page 6]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
    NS record.  The client SHALL regard each such resolver as
@@ -389,9 +389,9 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022                [Page 7]
+Reddy, et al.            Expires October 7, 2022                [Page 7]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 7.1.  Split-Horizon Entire Zone
@@ -405,24 +405,21 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
    described in learning (Section 4).  Shown in Figure 1 is learning
    using DNR and PvD.
 
-   Validation is then perfomed using either Public DNS (Figure 2) or
-   DNSSEC (Figure 3).
+   Validation is then perfomed using either Public DNS (Section 7.1.1)
+   or DNSSEC (Section 7.1.2).
 
-   Note steps 1-7 determine the local network claims which could also be
-   determined with a priori host configuration and probing the local
-   network (Section 4).
+   steps 1-2:  The client determines the network's DNS server
+      (ns1.example.com) and Provisioning Domain (pvd.example.com) using
+      DNR [I-D.ietf-add-dnr] and PvD [RFC8801], using one of DNR Router
+      Solicitation, DHCPv4, or DHCPv6.
 
-   steps 1-7:  The client determines the network's DNS claims using
-      other standards.  Step 1 the host discovers the network resolvers
-      "ns1.example.com" and "ns2.example.com" and their IP addresses
-      using DNR [I-D.ietf-add-dnr].  In step 2 using [RFC8801] the
-      client also discovers the PvD FQDN is "pvd.example.com".  In step
-      3 The client establishes an encrypted DNS connection with
-      "ns1.example.com", validates its TLS certificate, and queries it
-      for "pvd.example.com" to retrieve the PvD JSON object.  Note that
-      [RFC8801] in Section 4.1 mandates the PvD FQDN MUST be resolved
-      using the DNS servers indicated by the associated PvD.  The PvD
-      contains:
+   step 3-5:  The client connects to the DNR-learned DNS server
+      (ns1.example.com), validates its certificate, and queries for
+      pvd.example.com.
+
+   steps 6-7:  The client connects to the PvD server, validates its
+      certificate, and retrieves the provisioning domain JSON
+      information.  indicated by the associated PvD.  The PvD contains:
 
     {
        "identifier": "pvd.example.com",
@@ -445,9 +442,12 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022                [Page 8]
+
+
+
+Reddy, et al.            Expires October 7, 2022                [Page 8]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 +---------+            +--------------------+  +------------+ +--------+
@@ -495,21 +495,21 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
    The figure below shows the steps performed to verify the local claims
    of DNS authority using a public resolver.
 
-   Steps 8-9:  The client uses an encrypted DNS connection to a public
+   Steps 1-2:  The client uses an encrypted DNS connection to a public
       resolver (e.g., 1.1.1.1) to issue NS queries for the domains in
 
 
 
 
-Reddy, et al.            Expires October 1, 2022                [Page 9]
+Reddy, et al.            Expires October 7, 2022                [Page 9]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
       dnsZones.  The NS lookup for "example.com" will return
       "ns1.example.com" and "ns2.example.com".
 
-   Step 10:  As the network-provided nameservers are the same as the
+   Step 3:  As the network-provided nameservers are the same as the
       names retrieved from the public resolver and the network-
       designated resolver's certificate includes at least one of the
       names retrieved from the public resolver, the client has finished
@@ -530,10 +530,10 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
         |-| validate TLS certificate |             |         |
         | |--------------------------|             |         |
         |                                          |         |
-        | NS? example.com  (8)                     |         |
+        | NS? example.com  (1)                     |         |
         |--------------------------------------------------->|
         |                                          |         |
-        |  NS=ns1.example.com, ns2.example.com (9) |         |
+        |  NS=ns1.example.com, ns2.example.com (2) |         |
         |<---------------------------------------------------|
         | -------------------------------\         |         |
         |-| both DNR ADNs are authorized |         |         |
@@ -542,7 +542,7 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
         | |---------------------|                  |         |
         |                                          |         |
         |  use network-designated resolver         |         |
-        |  for example.com (10)                    |         |
+        |  for example.com (3)                     |         |
         |----------------------------------------->|         |
         |                                          |         |
 
@@ -557,17 +557,17 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022               [Page 10]
+Reddy, et al.            Expires October 7, 2022               [Page 10]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
-   Steps 8-9:  The client queries the network encrypted resolver
+   Steps 1-2:  The client queries the network encrypted resolver
       connection to a public resolver (e.g., 1.1.1.1) to issue NS
       queries for the domains in dnsZones.  The NS lookup for
       "example.com" will return "ns1.example.com" and "ns2.example.com".
 
-   Step 10:  As the network-provided nameservers are the same as the
+   Step 3:  As the network-provided nameservers are the same as the
       names retrieved from the public resolver and the network-
       designated resolver's certificate includes at least one of the
       names retrieved from the public resolver, the client has finished
@@ -582,17 +582,17 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
    |         |                  | encrypted resolver |
    +---------+                  +--------------------+
         |                                          |
-        |  RRSIG? example.com  (8)                 |
+        |  RRSIG? example.com  (1)                 |
         |----------------------------------------->|
-        |  RRSIG=abcdef (9)                        |
+        |  RRSIG=abcdef (2)                        |
         |<-----------------------------------------|
         |                                          |
-        |  DNSKEY? example.com  (10)               |
+        |  DNSKEY? example.com  (3)                |
         |----------------------------------------->|
-        |  DNSKEY==abcdef (11)                     |
+        |  DNSKEY==zyxwvutsrq (4)                  |
         |<-----------------------------------------|
         |                                          |
-        |  NS=ns1.example.com,ns2.example.com (12) |
+        |  NS=ns1.example.com,ns2.example.com (5)  |
         |<-----------------------------------------|
         | -------------------------------\         |
         |-| both DNR ADNs are authorized |         |
@@ -601,7 +601,7 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
         | |---------------------|                  |
         |                                          |
         |  use encrypted network-designated        |
-        |  resolver for example.com (10)           |
+        |  resolver for example.com (6)            |
         |----------------------------------------->|
 
                   Figure 3: Verifying Claims using DNSSEC
@@ -613,9 +613,9 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022               [Page 11]
+Reddy, et al.            Expires October 7, 2022               [Page 11]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 7.2.  Split-Horizon Only Subdomain of Zone
@@ -669,9 +669,9 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022               [Page 12]
+Reddy, et al.            Expires October 7, 2022               [Page 12]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 12.  References
@@ -725,9 +725,9 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022               [Page 13]
+Reddy, et al.            Expires October 7, 2022               [Page 13]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
    [RFC2132]  Alexander, S. and R. Droms, "DHCP Options and BOOTP Vendor
@@ -781,9 +781,9 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022               [Page 14]
+Reddy, et al.            Expires October 7, 2022               [Page 14]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
    [RFC7686]  Appelbaum, J. and A. Muffett, "The ".onion" Special-Use
@@ -837,9 +837,9 @@ Authors' Addresses
 
 
 
-Reddy, et al.            Expires October 1, 2022               [Page 15]
+Reddy, et al.            Expires October 7, 2022               [Page 15]
 
-Internet-Draft      Establishing Local DNS Authority          March 2022
+Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
    Benjamin Schwartz
@@ -893,4 +893,4 @@ Internet-Draft      Establishing Local DNS Authority          March 2022
 
 
 
-Reddy, et al.            Expires October 1, 2022               [Page 16]
+Reddy, et al.            Expires October 7, 2022               [Page 16]
