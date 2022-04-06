@@ -5,12 +5,12 @@
 ADD                                                             T. Reddy
 Internet-Draft                                                    Akamai
 Intended status: Standards Track                                 D. Wing
-Expires: October 7, 2022                                          Citrix
+Expires: October 8, 2022                                          Citrix
                                                                 K. Smith
                                                                 Vodafone
                                                              B. Schwartz
                                                                   Google
-                                                           April 5, 2022
+                                                           April 6, 2022
 
 
      Establishing Local DNS Authority in Split-Horizon Environments
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 7, 2022.
+   This Internet-Draft will expire on October 8, 2022.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Reddy, et al.            Expires October 7, 2022                [Page 1]
+Reddy, et al.            Expires October 8, 2022                [Page 1]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Reddy, et al.            Expires October 7, 2022                [Page 2]
+Reddy, et al.            Expires October 8, 2022                [Page 2]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -165,7 +165,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022                [Page 3]
+Reddy, et al.            Expires October 8, 2022                [Page 3]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -221,7 +221,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022                [Page 4]
+Reddy, et al.            Expires October 8, 2022                [Page 4]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -277,7 +277,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022                [Page 5]
+Reddy, et al.            Expires October 8, 2022                [Page 5]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -333,7 +333,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022                [Page 6]
+Reddy, et al.            Expires October 8, 2022                [Page 6]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -389,7 +389,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022                [Page 7]
+Reddy, et al.            Expires October 8, 2022                [Page 7]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -445,7 +445,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022                [Page 8]
+Reddy, et al.            Expires October 8, 2022                [Page 8]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -501,7 +501,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022                [Page 9]
+Reddy, et al.            Expires October 8, 2022                [Page 9]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -557,17 +557,18 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022               [Page 10]
+Reddy, et al.            Expires October 8, 2022               [Page 10]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
-   Steps 1-2:  The client queries the network encrypted resolver
-      connection to a public resolver (e.g., 1.1.1.1) to issue NS
-      queries for the domains in dnsZones.  The NS lookup for
-      "example.com" will return "ns1.example.com" and "ns2.example.com".
+   Steps 1-4:  The DNSSEC-validating client queries the network
+      encrypted resolver to issue NS queries for the domains in
+      dnsZones.  The NS lookup for "example.com" will return a signed
+      response containing "ns1.example.com" and "ns2.example.com".  The
+      client then performs full DNSSEC validation locally.
 
-   Step 3:  As the network-provided nameservers are the same as the
+   Steps 5-6:  As the network-provided nameservers are the same as the
       names retrieved from the public resolver and the network-
       designated resolver's certificate includes at least one of the
       names retrieved from the public resolver, the client has finished
@@ -612,8 +613,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-
-Reddy, et al.            Expires October 7, 2022               [Page 11]
+Reddy, et al.            Expires October 8, 2022               [Page 11]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -624,17 +624,12 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
    zone internal.example.com exists only on the internal DNS server).
    For successful validation described in this document the the internal
    DNS server will need a certificate signed by a CA trusted by the
-   client.  If a publicly-signed certificate is used, this means the
-   internal zone name will exist in Certificate Transparency [RFC9162]
-   logs.  However, individual host names (e.g.,
-   www.internal.example.com) will not be listed in Certificate
-   Transparancy logs for the validation described in this document.
+   client.
 
-   For such a name internal.example.com the message flows work
-   identically as with Section 7.1, the only difference that queries for
-   example.com (e.g., www.example.com) which are not within
-   internal.example.com are sent to the normal resolver rather than to
-   the internal resolver.
+   For such a name internal.example.com the message flow is similar to
+   Section 7.1 the differenc is that queries for hosts not within the
+   subdomain (www.example.com) are sent to the public resolver rather
+   than resolver for internal.example.com.
 
 8.  Validation with IKEv2
 
@@ -653,6 +648,14 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
    ensure that names under the split-horizon are correctly signed or
    place them in an unsigned zone.
 
+   If an internal zone name (e.g., internal.example.com) is used with in
+   conjunction with this specification and a public certificate is
+   obtained for validation, that internal zone name will exist in
+   Certificate Transparency [RFC9162] logs.  It should be noted,
+   however, that this specification does not leak individual host names
+   (e.g., www.internal.example.com) into the Certificate Transparancy
+   logs or to public DNS resolvers.
+
 10.  IANA Considerations
 
    This document has no IANA actions.
@@ -666,10 +669,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-
-
-
-Reddy, et al.            Expires October 7, 2022               [Page 12]
+Reddy, et al.            Expires October 8, 2022               [Page 12]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -725,7 +725,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022               [Page 13]
+Reddy, et al.            Expires October 8, 2022               [Page 13]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -781,7 +781,7 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022               [Page 14]
+Reddy, et al.            Expires October 8, 2022               [Page 14]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -837,7 +837,7 @@ Authors' Addresses
 
 
 
-Reddy, et al.            Expires October 7, 2022               [Page 15]
+Reddy, et al.            Expires October 8, 2022               [Page 15]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
@@ -893,4 +893,4 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 
 
-Reddy, et al.            Expires October 7, 2022               [Page 16]
+Reddy, et al.            Expires October 8, 2022               [Page 16]

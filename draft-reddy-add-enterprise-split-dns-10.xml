@@ -519,13 +519,12 @@
           <t>The figure below shows the steps performed to verify the local claims of DNS authority using DNSSEC.</t>
 
       <t><list style="hanging">
-        <t hangText="Steps 1-2:">The client queries the network
-	encrypted resolver
-          connection to a public resolver (e.g., 1.1.1.1) to issue NS queries
-          for the domains in dnsZones. The NS lookup for "example.com" will
-          return "ns1.example.com" and "ns2.example.com".</t>
+        <t hangText="Steps 1-4:">The DNSSEC-validating client queries the network encrypted resolver
+     to issue NS queries for the domains in dnsZones.  The NS lookup for "example.com" will 
+     return a signed response containing "ns1.example.com" and "ns2.example.com". The client
+     then performs full DNSSEC validation locally.</t>
 
-          <t hangText="Step 3:">As the network-provided nameservers are the
+          <t hangText="Steps 5-6:">As the network-provided nameservers are the
           same as the names retrieved from the public resolver and the
           network-designated resolver's certificate includes at least one of
           the names retrieved from the public resolver, the client has
@@ -578,17 +577,14 @@
   (e.g., the zone internal.example.com exists only on the internal DNS
   server).  For successful validation described in this document the
   the internal DNS server will need a certificate signed by a CA trusted
-  by the client.  If a publicly-signed certificate is used, this means
-  the internal zone name will exist in
-  <xref target="RFC9162">Certificate Transparency</xref> logs.  However,
-  individual host names   (e.g., www.internal.example.com) will not be listed in Certificate Transparancy
-  logs for the validation described in this document.</t>
-
-  <t>For such a name internal.example.com the message flows work
-  identically as with <xref target="internal-only"></xref>, the only
-  difference that queries for example.com (e.g., www.example.com)
-  which are not within internal.example.com are sent to the normal
-  resolver rather than to the internal resolver.</t>
+  by the client.</t>
+  
+  <t>For such a name internal.example.com the message flow is similar
+  to <xref target="internal-only"></xref> the differenc is that
+  queries for hosts not within the subdomain (www.example.com) are
+  sent to the public resolver rather than resolver for
+  internal.example.com.</t>
+       
 </section> <!-- specific zone -->  
 
 </section>
@@ -611,6 +607,16 @@
       ensure compatibility with validating clients, network operators MUST
       ensure that names under the split-horizon are correctly signed or place
       them in an unsigned zone.</t>
+
+      <t>If an internal zone name (e.g., internal.example.com) is used
+      with in conjunction with this specification and a
+      public certificate is obtained for validation,
+      that internal zone name will exist in <xref
+      target="RFC9162">Certificate Transparency</xref> logs.  It should
+      be noted, however, that this specification does not leak
+      individual host names (e.g., www.internal.example.com) into the
+      Certificate Transparancy logs or to public DNS resolvers.</t>
+
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
