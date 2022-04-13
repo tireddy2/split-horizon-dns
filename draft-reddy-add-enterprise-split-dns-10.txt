@@ -89,7 +89,7 @@ Table of Contents
    10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
    11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  12
    12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  12
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  12
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  13
      12.2.  Informative References . . . . . . . . . . . . . . . . .  13
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  15
 
@@ -643,12 +643,13 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
    ensure that names under the split-horizon are correctly signed or
    place them in an unsigned zone.
 
-   If an internal zone name (e.g., internal.example.com) with this
-   specification and a public certificate is obtained for validation,
-   that internal zone name will exist in Certificate Transparency
-   [RFC9162] logs.  It should be noted, however, that this specification
-   does not leak individual host names (e.g., www.internal.example.com)
-   into the Certificate Transparancy logs or to public DNS resolvers.
+   If an internal zone name (e.g., internal.example.com) is used with
+   this specification and a public certificate is obtained for
+   validation, that internal zone name will exist in Certificate
+   Transparency [RFC9162] logs.  It should be noted, however, that this
+   specification does not leak individual host names (e.g.,
+   www.internal.example.com) into the Certificate Transparancy logs or
+   to public DNS resolvers.
 
 10.  IANA Considerations
 
@@ -661,7 +662,6 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
 
 12.  References
 
-12.1.  Normative References
 
 
 
@@ -673,6 +673,8 @@ Reddy, et al.           Expires October 15, 2022               [Page 12]
 
 Internet-Draft      Establishing Local DNS Authority          April 2022
 
+
+12.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -719,8 +721,6 @@ Internet-Draft      Establishing Local DNS Authority          April 2022
    [RFC2132]  Alexander, S. and R. Droms, "DHCP Options and BOOTP Vendor
               Extensions", RFC 2132, DOI 10.17487/RFC2132, March 1997,
               <https://www.rfc-editor.org/info/rfc2132>.
-
-
 
 
 

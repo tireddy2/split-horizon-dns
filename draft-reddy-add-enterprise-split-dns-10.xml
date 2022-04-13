@@ -603,7 +603,7 @@
       ensure that names under the split-horizon are correctly signed or place
       them in an unsigned zone.</t>
 
-      <t>If an internal zone name (e.g., internal.example.com) with
+      <t>If an internal zone name (e.g., internal.example.com) is used with
       this specification and a public certificate is obtained
       for validation, that internal zone name will exist in <xref
       target="RFC9162">Certificate Transparency</xref> logs. It should be
