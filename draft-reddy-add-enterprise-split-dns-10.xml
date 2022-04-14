@@ -603,8 +603,8 @@
       ensure that names under the split-horizon are correctly signed or place
       them in an unsigned zone.</t>
 
-      <t>If an internal zone name (e.g., internal.example.com) is used with in
-      conjunction with this specification and a public certificate is obtained
+      <t>If an internal zone name (e.g., internal.example.com) is used with
+      this specification and a public certificate is obtained
       for validation, that internal zone name will exist in <xref
       target="RFC9162">Certificate Transparency</xref> logs. It should be
       noted, however, that this specification does not leak individual host
